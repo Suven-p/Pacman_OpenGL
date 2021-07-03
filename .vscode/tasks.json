@@ -1,0 +1,57 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "Freeglut project",
+			"windows": {
+				"command": "g++",
+				"args": [
+					"-std=c++17",
+					"-g",
+					"-I",
+					"include",
+					"-I",
+					"freeglut/include",
+					"src\\*.cpp",
+					"src\\glad.c",
+					"-o",
+					"bin\\${workspaceFolderBasename}.exe",
+					"-L",
+					"freeglut\\lib\\x64",
+					"-lfreeglut",
+					"-lopengl32",
+					"-lglu32"
+				]
+			},
+			"linux": {
+				"command": "make"
+			},
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "Compile a freeglut project"
+		},
+		{
+			"label": "Run freeglut project",
+			"dependsOn": [
+				"Freeglut project"
+			],
+			"dependsOrder": "sequence",
+			"windows": {
+				"command": "bin\\${workspaceFolderBasename}.exe"
+			},
+			"linux": {
+				"command": "./bin/${workspaceFolderBasename}"
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	]
+}

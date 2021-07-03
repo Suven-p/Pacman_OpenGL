@@ -1,0 +1,4 @@
+obj/Linux/*
+obj/Windows/*
+*.depend
+*.layout
