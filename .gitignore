@@ -2,3 +2,7 @@ obj/Linux/*
 obj/Windows/*
 *.depend
 *.layout
+bin/project_1
+bin/project_1.exe
+bin/project_2
+bin/project_2.exe
