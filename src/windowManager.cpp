@@ -64,7 +64,6 @@ void WindowManager::run()
 
 void redisplayfunc(int value)
 {
-    std::cout << "redisplay\n";
     glutPostRedisplay();
     glutTimerFunc(value, redisplayfunc, value);
 };
