@@ -340,7 +340,6 @@
 		<Unit filename="include/project/texture.h" />
 		<Unit filename="include/project/windowManager.h" />
 		<Unit filename="src/game.cpp" />
-		<Unit filename="src/game.cpp/" />
 		<Unit filename="src/glad.c">
 			<Option compilerVar="CC" />
 		</Unit>
