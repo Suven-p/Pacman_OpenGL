@@ -43,12 +43,12 @@ void WindowManager::createNewWindow(const std::string &windowName, const freeglu
     glutTimerFunc(data.refreshInterval, redisplayfunc, data.refreshInterval);
 }
 
-COORD WindowManager::getWindowSize()
+std::pair<double, double> WindowManager::getWindowSize()
 {
     return std::make_pair(glutGet(GLUT_SCREEN_WIDTH), glutGet(GLUT_SCREEN_HEIGHT));
 }
 
-void WindowManager::setWindowSize(COORD newSize)
+void WindowManager::setWindowSize(std::pair<double, double> newSize)
 {
     auto currentSize = getWindowSize();
     int w = (newSize.first > 0) ? newSize.first : currentSize.first;

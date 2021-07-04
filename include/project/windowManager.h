@@ -2,6 +2,7 @@
 #define WINDOW_MANAGER_HPP_GUARD
 
 #include <string>
+#include <utility>
 #include <project/helpers.h>
 
 class WindowManager
@@ -13,8 +14,8 @@ private:
 public:
     static WindowManager *getInstance();
     void createNewWindow(const std::string &windowName, const freeglutData &data);
-    COORD getWindowSize();
-    void setWindowSize(COORD newSize);
+    std::pair<double, double> getWindowSize();
+    void setWindowSize(std::pair<double, double> newSize);
     void run();
 };
 

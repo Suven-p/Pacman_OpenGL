@@ -10,7 +10,6 @@ enum struct DIRECTION : int
     left = 2,
     up = 3
 };
-typedef std::pair<double, double> COORD;
 
 struct freeglutData
 {
