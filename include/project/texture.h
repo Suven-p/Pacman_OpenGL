@@ -16,7 +16,7 @@ public:
     unsigned int Filter_Max;
     Texture2D();
     void Generate(unsigned int width, unsigned int height, unsigned char* data);
-    void Bind() const;
+    void Bind(int index=0) const;
 };
 
 #endif
