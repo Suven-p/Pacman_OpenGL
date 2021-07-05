@@ -6,8 +6,8 @@
 Game::Game()
 {
     ResourceManager::LoadShader("./shaders/shader.vs", "./shaders/shader.fs", nullptr, "mainShader");
-    ResourceManager::LoadTexture("./resources/map/pacman_map.png", true, "map");
-    map_vao = map_setup();
+    ResourceManager::LoadTexture("./resources/map/pacman_map.png", true, "baseMap");
+    baseMap = Map();
 }
 
 Game *Game::instance = nullptr;
@@ -32,14 +32,10 @@ Game *Game::getInstance()
 
 void Game::render()
 {
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    ResourceManager::GetShader("mainShader").Use();
-    ResourceManager::GetTexture("map").Bind();
-
-    glBindVertexArray(map_vao);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    baseMap.draw("mainShader");
     glutSwapBuffers();
 }
 

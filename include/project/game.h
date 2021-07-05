@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include <project/common.h>
+#include <project/map.h>
 
 class Game
 {
@@ -13,8 +14,11 @@ class Game
     static std::unordered_map<int, int> special_key_map;
     static std::vector<bool> special_key_states;
 
+    Map baseMap;
+
 public:
-    static constexpr int numRows = 36, numCols = 28;
+    static constexpr int numRows = 36,
+                         numCols = 28;
 
     static Game *getInstance();
     void init();
@@ -24,8 +28,6 @@ public:
     static void key_up(unsigned char key, int x, int y);
     static void special_key_down(int key, int x, int y);
     static void special_key_up(int key, int x, int y);
-
-    unsigned int map_vao;
 };
 
 #endif
