@@ -1,5 +1,6 @@
 obj/Linux/*
 obj/Windows/*
+docs/*
 *.depend
 *.layout
 bin/project_1
