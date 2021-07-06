@@ -20,7 +20,6 @@ std::unordered_map<int, int> Game::special_key_map =
         {GLUT_KEY_LEFT, int(DIRECTION::left)},
         {GLUT_KEY_LEFT, int(DIRECTION::right)}};
 std::vector<bool> Game::special_key_states(Game::special_key_map.size(), false);
-constexpr int Game::numRows, Game::numCols;
 
 Game *Game::getInstance()
 {

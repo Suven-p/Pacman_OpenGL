@@ -6,6 +6,11 @@
 #include <project/common.h>
 #include <project/map.h>
 
+/**
+ * @brief Main class to co-oridinate the different components.
+ * Initializes all the shaders, textures, and sprites.
+ * Provides render function to draw all game objects.
+ */
 class Game
 {
     Game();
@@ -15,16 +20,49 @@ class Game
     static std::vector<bool> special_key_states;
 
 public:
-    static constexpr int numRows = 36,
-                         numCols = 28;
-
+    /**
+    * @brief Get the current instance.
+    * Get the current instance if it exists and generate one if it doesn't exist.
+    * This is used to enforce singleton pattern.
+    * @return Game*
+    */
     static Game *getInstance();
-    void init();
+
+    /** @brief Draw function to be called for every render.
+    */
     void render();
-    static void reshape(int w, int h);
+
+    /**
+     * @brief Callback function for key pressed.
+     *
+     * @param key Ascii code for the key pressed.
+     * @param x X coordinate for mouse position.
+     * @param y Y coordinate for Mouse position.
+     */
     static void key_down(unsigned char key, int x, int y);
+    /**
+     * @brief Callback function for key released.
+     *
+     * @param key Ascii code for the key released.
+     * @param x X coordinate for mouse position.
+     * @param y Y coordinate for Mouse position.
+     */
     static void key_up(unsigned char key, int x, int y);
+    /**
+     * @brief Callback function for special key pressed.
+     *
+     * @param key Value for the key pressed. Value is defined in macros.
+     * @param x X coordinate for mouse position.
+     * @param y Y coordinate for Mouse position.
+     */
     static void special_key_down(int key, int x, int y);
+    /**
+     * @brief Callback function for special key released.
+     *
+     * @param key Value for the key released. Value is defined in macros.
+     * @param x X coordinate for mouse position.
+     * @param y Y coordinate for Mouse position.
+     */
     static void special_key_up(int key, int x, int y);
 };
 
