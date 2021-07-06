@@ -8,20 +8,32 @@
 
 #include <project/texture.h>
 #include <project/shader.h>
+#include <project/sprite.h>
+#include <memory>
 
+// An interface to access objects from another class
 class ResourceManager
 {
 public:
-    static std::map<std::string, Shader>    Shaders;
+    static std::map<std::string, Shader> Shaders;
     static std::map<std::string, Texture2D> Textures;
-    static Shader    LoadShader(const char *vShaderFile, const char *fShaderFile, const char *gShaderFile, std::string name);
-    static Shader    GetShader(std::string name);
-    static Texture2D LoadTexture(const char *file, bool alpha, std::string name);
-    static Texture2D GetTexture(std::string name);
-    static void      Clear();
+    static std::map<std::string, std::shared_ptr<Sprite>> Sprites;
+
+    static Shader LoadShader(const char *vShaderFile, const char *fShaderFile, const char *gShaderFile, const std::string &name);
+    static Shader GetShader(const std::string &name);
+
+    static Texture2D LoadTexture(const char *file, bool alpha, const std::string &name);
+    static Texture2D GetTexture(const std::string &name);
+
+    static std::shared_ptr<Sprite> LoadSprite(const std::string &name, Sprite *sprite);
+    static std::shared_ptr<Sprite> LoadSprite(const std::string &name, std::shared_ptr<Sprite> sprite);
+    static std::shared_ptr<Sprite> GetSprite(const std::string name);
+
+    static void Clear();
+
 private:
-    ResourceManager() { }
-    static Shader    loadShaderFromFile(const char *vShaderFile, const char *fShaderFile, const char *gShaderFile = nullptr);
+    ResourceManager() {}
+    static Shader loadShaderFromFile(const char *vShaderFile, const char *fShaderFile, const char *gShaderFile = nullptr);
     static Texture2D loadTextureFromFile(const char *file, bool alpha);
 };
 

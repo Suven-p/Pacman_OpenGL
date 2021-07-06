@@ -1,3 +1,4 @@
+#include <memory>
 #include <project/game.h>
 #include <project/helpers.h>
 #include <project/resourceManager.h>
@@ -7,7 +8,7 @@ Game::Game()
 {
     ResourceManager::LoadShader("./shaders/shader.vs", "./shaders/shader.fs", nullptr, "mainShader");
     ResourceManager::LoadTexture("./resources/map/pacman_map.png", true, "baseMap");
-    baseMap = Map();
+    ResourceManager::LoadSprite("baseMap", std::make_shared<Map>());
 }
 
 Game *Game::instance = nullptr;
@@ -35,7 +36,7 @@ void Game::render()
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    baseMap.draw("mainShader");
+    ResourceManager::GetSprite("baseMap")->draw("mainShader");
     glutSwapBuffers();
 }
 

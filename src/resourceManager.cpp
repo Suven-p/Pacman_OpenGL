@@ -7,30 +7,47 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <project/stb_image.h>
 
-std::map<std::string, Texture2D>    ResourceManager::Textures;
-std::map<std::string, Shader>       ResourceManager::Shaders;
+std::map<std::string, Texture2D> ResourceManager::Textures;
+std::map<std::string, Shader> ResourceManager::Shaders;
+std::map<std::string, std::shared_ptr<Sprite>> ResourceManager::Sprites;
 
-
-Shader ResourceManager::LoadShader(const char *vShaderFile, const char *fShaderFile, const char *gShaderFile, std::string name)
+Shader ResourceManager::LoadShader(const char *vShaderFile, const char *fShaderFile, const char *gShaderFile, const std::string &name)
 {
     Shaders[name] = loadShaderFromFile(vShaderFile, fShaderFile, gShaderFile);
     return Shaders[name];
 }
 
-Shader ResourceManager::GetShader(std::string name)
+Shader ResourceManager::GetShader(const std::string &name)
 {
     return Shaders[name];
 }
 
-Texture2D ResourceManager::LoadTexture(const char *file, bool alpha, std::string name)
+Texture2D ResourceManager::LoadTexture(const char *file, bool alpha, const std::string &name)
 {
     Textures[name] = loadTextureFromFile(file, alpha);
     return Textures[name];
 }
 
-Texture2D ResourceManager::GetTexture(std::string name)
+Texture2D ResourceManager::GetTexture(const std::string &name)
 {
     return Textures[name];
+}
+
+std::shared_ptr<Sprite> ResourceManager::LoadSprite(const std::string &name, Sprite *sprite)
+{
+    Sprites[name] = std::shared_ptr<Sprite>(sprite);
+    return Sprites[name];
+}
+
+std::shared_ptr<Sprite> ResourceManager::LoadSprite(const std::string &name, std::shared_ptr<Sprite> sprite)
+{
+    Sprites[name] = sprite;
+    return Sprites[name];
+}
+
+std::shared_ptr<Sprite> ResourceManager::GetSprite(const std::string name)
+{
+    return Sprites[name];
 }
 
 void ResourceManager::Clear()
@@ -100,8 +117,9 @@ Texture2D ResourceManager::loadTextureFromFile(const char *file, bool alpha)
     int width, height, nrChannels;
 
     stbi_set_flip_vertically_on_load(true);
-    unsigned char* data = stbi_load(file, &width, &height, &nrChannels, 0);
-    if (!data){
+    unsigned char *data = stbi_load(file, &width, &height, &nrChannels, 0);
+    if (!data)
+    {
         std::cout << "Failed to load texture file. File location: " << file << std::endl;
     }
     // now generate texture

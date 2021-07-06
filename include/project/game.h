@@ -14,8 +14,6 @@ class Game
     static std::unordered_map<int, int> special_key_map;
     static std::vector<bool> special_key_states;
 
-    Map baseMap;
-
 public:
     static constexpr int numRows = 36,
                          numCols = 28;

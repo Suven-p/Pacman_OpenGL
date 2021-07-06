@@ -6,7 +6,8 @@
 #include <project/common.h>
 #include <project/sprite.h>
 
-class Map : Sprite
+// Inheritance must be public to use Sprite* in resource manager
+class Map : public Sprite
 {
     GLuint VAO, VBO, EBO;
 
