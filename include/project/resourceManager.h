@@ -11,7 +11,12 @@
 #include <project/sprite.h>
 #include <memory>
 
-// An interface to access objects from another class
+/**
+ * @brief Manage all game resources.
+ * Stores all the shaders, textures and sprites in string indexed map.
+ * Stored objects can be accessed from any class or function since the methods
+ * are static.
+ */
 class ResourceManager
 {
 public:
@@ -19,16 +24,71 @@ public:
     static std::map<std::string, Texture2D> Textures;
     static std::map<std::string, std::shared_ptr<Sprite>> Sprites;
 
+    /**
+     * @brief Compile and link shaders.
+     *
+     * @param vShaderFile Path to vertex shader file.
+     * @param fShaderFile Path to fragment shader file.
+     * @param gShaderFile Path to geometric shader file.
+     * @param name Index for the stored shader.
+     * @return Shader
+     */
     static Shader LoadShader(const char *vShaderFile, const char *fShaderFile, const char *gShaderFile, const std::string &name);
+
+    /**
+     * @brief Get the Shader object.
+     *
+     * @param name Index for the shader to get.
+     * @return Shader
+     */
     static Shader GetShader(const std::string &name);
 
+    /**
+     * @brief Generate and configure a texture.
+     *
+     * @param file Path to image file.
+     * @param alpha Presence of alpha channel in image.
+     * @param name Index for the generated texture.
+     * @return Texture2D
+     */
     static Texture2D LoadTexture(const char *file, bool alpha, const std::string &name);
+
+    /**
+     * @brief Get the Texture object.
+     *
+     * @param name Index for the texture to get.
+     * @return Texture2D
+     */
     static Texture2D GetTexture(const std::string &name);
 
+    /**
+     * @brief Store a pointer to Sprite.
+     *
+     * @param name Index for the generated sprite.
+     * @param sprite Pointer to the generated sprite.
+     * @return std::shared_ptr<Sprite>
+     */
     static std::shared_ptr<Sprite> LoadSprite(const std::string &name, Sprite *sprite);
+    /**
+     * @brief Store a pointer to Sprite.
+     *
+     * @param name Index for the generated sprite.
+     * @param sprite shared_ptr to the generated sprite.
+     * @return std::shared_ptr<Sprite>
+     */
     static std::shared_ptr<Sprite> LoadSprite(const std::string &name, std::shared_ptr<Sprite> sprite);
+    /**
+     * @brief Get the Sprite object.
+     *
+     * @param name Index for the stored sprite.
+     * @return std::shared_ptr<Sprite>
+     */
     static std::shared_ptr<Sprite> GetSprite(const std::string name);
 
+    /**
+     * @brief Clear all stored textures and shaders.
+     *
+     */
     static void Clear();
 
 private:

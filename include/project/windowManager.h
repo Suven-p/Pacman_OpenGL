@@ -5,6 +5,11 @@
 #include <utility>
 #include <project/helpers.h>
 
+/**
+ * @brief Abstraction for window management.
+ * Allow swapping of window manager by swapping this class with equivalent class
+ * for other library such as glfw.
+ */
 class WindowManager
 {
 private:
@@ -12,6 +17,11 @@ private:
     static WindowManager *instance;
 
 public:
+    /**
+     * @brief Get the current instance if it exists and create one if it doesn't.
+     * Enforce singleton pattern.
+     * @return WindowManager*
+     */
     static WindowManager *getInstance();
     void createNewWindow(const std::string &windowName, const freeglutData &data);
     std::pair<double, double> getWindowSize();

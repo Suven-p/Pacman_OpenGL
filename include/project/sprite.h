@@ -5,6 +5,11 @@
 #include <project/texture.h>
 #include <glm/glm.hpp>
 
+/**
+ * @brief A abstract class for game objects
+ * An abstract base class so that all game objects can be stored in ResourceMap
+ * without std::variant. All derived class must use public inheritance.
+ */
 class Sprite
 {
 protected:

@@ -6,13 +6,25 @@
 #include <project/common.h>
 #include <project/sprite.h>
 
-// Inheritance must be public to use Sprite* in resource manager
+/**
+ * @brief Class to handle basic transparent map without any characters.
+ *
+ */
 class Map : public Sprite
 {
     GLuint VAO, VBO, EBO;
 
 public:
+    /**
+     * @brief Construct a new Map object.
+     * Generates and configures the vao required for render.
+     */
     Map();
+    /**
+     * @brief Draw the actual map.
+     *
+     * @param shader Index of shader to use. Shader must be stored in ResourceManager.
+     */
     void draw(std::string shader);
 };
 
