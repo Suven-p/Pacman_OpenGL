@@ -5,7 +5,7 @@
 			"type": "shell",
 			"label": "Freeglut project",
 			"windows": {
-				"command": "make || mingw32-make",
+				"command": "mingw32-make SHELL=cmd"
 			},
 			"linux": {
 				"command": "make"
