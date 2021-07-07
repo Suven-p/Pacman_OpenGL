@@ -11,10 +11,15 @@ ifeq ($(OS),Windows_NT)
 	LIB_FLAGS = -L freeglut\lib\x64 -lfreeglut -lopengl32 -lglu32
 	OBJ = obj/Windows
 	EXE = $(BIN)/$(PROJECT_NAME).exe
+# CREATE_DIR = new-item -type directory -Force
+	CREATE_DIR = mkdir -p
+	NULL_DEV = /dev/null
 else
 	LIB_FLAGS = -lGL -lGLU -lglut -ldl
 	OBJ = obj/Linux
 	EXE = $(BIN)/$(PROJECT_NAME)
+	CREATE_DIR = mkdir -p
+	NULL_DEV = /dev/null
 endif
 
 
@@ -31,20 +36,20 @@ DEP = $(OBJECTFILES:%.o=%.d)
 all: $(EXE)
 
 $(EXE): $(OBJECTFILES)
-	mkdir -p $(@D)
+	$(CREATE_DIR) $(@D) > $(NULL_DEV)
 	$(CXX) $(CXX_FLAGS) -c $(SRC)/glad.c -o $(OBJ)/glad.o $(LIB_FLAGS)
 	$(CXX) $(CXX_FLAGS) -o $@ $(OBJ)/glad.o $^ $(LIB_FLAGS)
 
 -include $(DEP)
 
 $(OBJ)/%.o : %.cpp
-	mkdir -p $(@D)
+	$(CREATE_DIR) $(@D) > $(NULL_DEV)
 	$(CXX) $(CXX_FLAGS) -MMD -c $< -o $@
 
 .PHONY : clean all .FORCE
 clean :
 	# This should remove all generated files.
-	-rm $(EXE) $(OBJECTFILES) $(DEP) $(OBJ)/glad.o
+	rm $(EXE) $(OBJECTFILES) $(DEP) $(OBJ)/glad.o
 
 
 
