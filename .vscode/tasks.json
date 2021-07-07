@@ -5,24 +5,7 @@
 			"type": "shell",
 			"label": "Freeglut project",
 			"windows": {
-				"command": "g++",
-				"args": [
-					"-std=c++17",
-					"-g",
-					"-I",
-					"include",
-					"-I",
-					"freeglut/include",
-					"src\\*.cpp",
-					"src\\glad.c",
-					"-o",
-					"bin\\${workspaceFolderBasename}.exe",
-					"-L",
-					"freeglut\\lib\\x64",
-					"-lfreeglut",
-					"-lopengl32",
-					"-lglu32"
-				]
+				"command": "make || mingw32-make",
 			},
 			"linux": {
 				"command": "make"
