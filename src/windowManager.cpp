@@ -19,8 +19,8 @@ WindowManager *WindowManager::getInstance()
 void WindowManager::createNewWindow(const std::string &windowName, const freeglutData &data)
 {
     glutInit(data.argc, data.argv);
-    glutInitContextVersion(3, 3);
-    glutInitContextProfile(GLUT_CORE_PROFILE);
+    glutInitContextVersion(4, 3);
+    glutInitContextProfile(GLUT_CORE_PROFILE | GLUT_DEBUG);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize(data.width, data.height);
     glutInitWindowPosition(0, 0);
