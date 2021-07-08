@@ -43,6 +43,18 @@
 			<Add option="-std=c++17" />
 			<Add directory="include" />
 		</Compiler>
+		<Unit filename="freeglut/include/GL/freeglut.h">
+			<Option target="Windows" />
+		</Unit>
+		<Unit filename="freeglut/include/GL/freeglut_ext.h">
+			<Option target="Windows" />
+		</Unit>
+		<Unit filename="freeglut/include/GL/freeglut_std.h">
+			<Option target="Windows" />
+		</Unit>
+		<Unit filename="freeglut/include/GL/glut.h">
+			<Option target="Windows" />
+		</Unit>
 		<Unit filename="include/KHR/khrplatform.h" />
 		<Unit filename="include/glad/glad.h" />
 		<Unit filename="include/glm/common.hpp" />
@@ -336,6 +348,7 @@
 		<Unit filename="include/project/map.h" />
 		<Unit filename="include/project/resourceManager.h" />
 		<Unit filename="include/project/shader.h" />
+		<Unit filename="include/project/sprite.h" />
 		<Unit filename="include/project/stb_image.h" />
 		<Unit filename="include/project/texture.h" />
 		<Unit filename="include/project/windowManager.h" />
@@ -347,6 +360,7 @@
 		<Unit filename="src/map.cpp" />
 		<Unit filename="src/resourceManager.cpp" />
 		<Unit filename="src/shader.cpp" />
+		<Unit filename="src/sprite.cpp" />
 		<Unit filename="src/texture.cpp" />
 		<Unit filename="src/windowManager.cpp" />
 		<Extensions />
