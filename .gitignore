@@ -3,8 +3,4 @@ obj/Windows/*
 docs/*
 *.depend
 *.layout
-bin/project_1
-bin/project_1.exe
-bin/project_2
-bin/project_2.exe
-bin/*.exe
+bin/*
