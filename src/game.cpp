@@ -3,12 +3,17 @@
 #include <project/helpers.h>
 #include <project/resourceManager.h>
 #include <project/map.h>
+#include <project/ghost.h>
 
 Game::Game()
 {
     ResourceManager::LoadShader("./shaders/shader.vs", "./shaders/shader.fs", nullptr, "mainShader");
     ResourceManager::LoadTexture("./resources/map/pacman_map.png", true, "baseMap");
+    ResourceManager::LoadTexture("./resources/blinky.png", true, "blinky");
+    ResourceManager::LoadTexture("./resources/inky.png", true, "inky");
     ResourceManager::LoadSprite("baseMap", std::make_shared<Map>());
+    ResourceManager::LoadSprite("blinky", std::make_shared<Ghost>("blinky"));
+    ResourceManager::LoadSprite("inky", std::make_shared<Ghost>("inky"));
 }
 
 Game *Game::instance = nullptr;
@@ -33,9 +38,13 @@ Game *Game::getInstance()
 void Game::render()
 {
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     ResourceManager::GetSprite("baseMap")->draw("mainShader");
+    ResourceManager::GetSprite("blinky")->setPosition(std::make_pair(5, 3));
+    ResourceManager::GetSprite("inky")->setPosition(std::make_pair(5, 6));
+    ResourceManager::GetSprite("blinky")->draw("mainShader");
+    ResourceManager::GetSprite("inky")->draw("mainShader");
     glutSwapBuffers();
 }
 
