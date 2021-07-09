@@ -20,7 +20,7 @@ void WindowManager::createNewWindow(const std::string &windowName, const freeglu
 {
     glutInit(data.argc, data.argv);
     glutInitContextVersion(4, 3);
-    glutInitContextProfile(GLUT_CORE_PROFILE | GLUT_DEBUG);
+    glutInitContextProfile(GLUT_CORE_PROFILE | GLUT_DEBUG | GLUT_DEPTH);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowSize(data.width, data.height);
     glutInitWindowPosition(0, 0);

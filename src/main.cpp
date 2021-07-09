@@ -30,6 +30,7 @@ int main(int argc, char **argv)
 
     auto game_obj = Game::getInstance();
 
+    glEnable(GL_DEPTH);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
