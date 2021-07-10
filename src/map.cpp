@@ -41,7 +41,7 @@ void Map::draw(std::string shaderName)
 
     glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 view = glm::mat4(1.0f);
-    glm::mat4 projection = glm::ortho(0.0f, 28.0f, 36.0f, 0.0f, -1.0f, 1.0f);
+    glm::mat4 projection = glm::ortho(0.0f, 28.0f, 36.0f, 0.0f, 1.0f, -1.0f);
     shader.SetMatrix4("model", model);
     shader.SetMatrix4("view", view);
     shader.SetMatrix4("projection", projection);

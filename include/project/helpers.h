@@ -1,7 +1,9 @@
 #ifndef HELPERS_HPP_GUARD
 #define HELPERS_HPP_GUARD
 
-#include <utility>
+#include <project/common.h>
+
+void draw_gridlines();
 
 enum struct DIRECTION : int
 {
