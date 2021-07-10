@@ -10,8 +10,8 @@ Map::Map()
     float vertices[] = {
         // positions              // colors               // texture coords
         28.0f, 03.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, // top right
-        28.0f, 33.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom right
-        00.0f, 33.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, // bottom left
+        28.0f, 34.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom right
+        00.0f, 34.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, // bottom left
         00.0f, 03.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f  // top left
     };
     unsigned int indices[] = {
@@ -51,4 +51,5 @@ void Map::draw(std::string shaderName)
     texture.Bind(0);
     shader.SetInteger("texture1", 0, true);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
 }
