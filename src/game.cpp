@@ -40,8 +40,9 @@ void Game::render()
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    ResourceManager::GetSprite("baseMap")->draw("mainShader");
-    draw_gridlines();
+    auto baseMapPtr = std::dynamic_pointer_cast<Map>(ResourceManager::GetSprite("baseMap"));
+    baseMapPtr->draw("mainShader");
+    baseMapPtr->drawGridLines("mainShader");
     ResourceManager::GetSprite("blinky")->setPosition(std::make_pair(5, 3));
     ResourceManager::GetSprite("inky")->setPosition(std::make_pair(5, 6));
     ResourceManager::GetSprite("blinky")->draw("mainShader");

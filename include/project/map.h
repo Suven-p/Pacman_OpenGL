@@ -12,7 +12,10 @@
  */
 class Map : public Sprite
 {
+    std::pair<int, int> gridSize;
     GLuint VAO, VBO, EBO;
+    GLuint gridVAO, gridVBO;
+    void initializeGrid();
 
 public:
     /**
@@ -25,7 +28,9 @@ public:
      *
      * @param shader Index of shader to use. Shader must be stored in ResourceManager.
      */
+    void draw(std::string shader, bool drawGrid);
     void draw(std::string shader);
+    void drawGridLines(std::string shader);
 };
 
 #endif

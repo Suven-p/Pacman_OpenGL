@@ -2,7 +2,7 @@
 #include <project/map.h>
 #include <project/resourceManager.h>
 
-Map::Map()
+Map::Map() : gridSize({28, 36})
 {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -31,6 +31,7 @@ Map::Map()
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
+    initializeGrid();
 }
 
 void Map::draw(std::string shaderName)
@@ -51,5 +52,83 @@ void Map::draw(std::string shaderName)
     texture.Bind(0);
     shader.SetInteger("texture1", 0, true);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+}
+
+void Map::draw(std::string shaderName, bool drawGrid)
+{
+    draw(shaderName);
+    if (drawGrid)
+    {
+        drawGridLines(shaderName);
+    }
+}
+
+void Map::drawGridLines(std::string shaderName)
+{
+    auto shader = ResourceManager::GetShader(shaderName);
+    glBindVertexArray(gridVAO);
+    shader.SetFloat("textureColorMix", 1.0f);
+    glDrawArrays(GL_LINES, 0, (gridSize.first + gridSize.second) * 2);
+}
+
+void Map::initializeGrid()
+{
+    glGenVertexArrays(1, &gridVAO);
+    glGenBuffers(1, &gridVBO);
+    int count = 0;
+    float *vertices = new float[((gridSize.first + gridSize.second) * 16)]();
+    for (int i = 1; i <= gridSize.first; i++)
+    {
+        vertices[count++] = i;
+        vertices[count++] = 0.0f;
+        vertices[count++] = 0.2f;
+        vertices[count++] = 1.0f;
+
+        vertices[count++] = 1.0f;
+        vertices[count++] = 1.0f;
+        vertices[count++] = 0.0f;
+        vertices[count++] = 1.0f;
+
+        vertices[count++] = i;
+        vertices[count++] = 36.0f;
+        vertices[count++] = 0.2f;
+        vertices[count++] = 1.0f;
+
+        vertices[count++] = 1.0f;
+        vertices[count++] = 1.0f;
+        vertices[count++] = 0.0f;
+        vertices[count++] = 1.0f;
+    }
+    for (int i = 1; i <= gridSize.second; i++)
+    {
+        vertices[count++] = 0.0f;
+        vertices[count++] = float(i);
+        vertices[count++] = 0.2f;
+        vertices[count++] = 1.0f;
+
+        vertices[count++] = 1.0f;
+        vertices[count++] = 1.0f;
+        vertices[count++] = 0.0f;
+        vertices[count++] = 1.0f;
+
+        vertices[count++] = 28.0f;
+        vertices[count++] = float(i);
+        vertices[count++] = 0.2f;
+        vertices[count++] = 1.0f;
+
+        vertices[count++] = 1.0f;
+        vertices[count++] = 1.0f;
+        vertices[count++] = 0.0f;
+        vertices[count++] = 1.0f;
+    }
+    glBindVertexArray(gridVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, gridVBO);
+    glBufferData(GL_ARRAY_BUFFER, (gridSize.first + gridSize.second) * 16 * sizeof(float), vertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)4);
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    delete[] vertices;
     glBindVertexArray(0);
 }
