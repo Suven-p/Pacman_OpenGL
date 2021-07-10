@@ -11,10 +11,10 @@ Ghost::Ghost(std::string name) : name(name)
     glGenBuffers(1, &ebo);
 
     float vertices[] = {
-        0.5f, 0.5f, 0.1f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-        0.5f, 2.5f, 0.1f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-        2.5f, 2.5f, 0.1f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-        2.5f, 0.5f, 0.1f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f};
+        -0.5f, -0.5f, 0.1f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+        -0.5f, 1.5f, 0.1f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+        1.5f, 1.5f, 0.1f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+        1.5f, -0.5f, 0.1f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f};
 
     float texCoord[] = {
         0.0f, 1.0f,
