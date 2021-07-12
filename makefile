@@ -6,16 +6,21 @@ CC = $(CXX)
 INCLUDE_DIRS = -I include
 SRC = src
 BIN = bin
+RESOURCES = resources
+SHADERS = shaders
+
 ifeq ($(OS),Windows_NT)
 	INCLUDE_DIRS := $(INCLUDE_DIRS) -I freeglut/include
 	LIB_FLAGS = -L freeglut\lib\x64 -lfreeglut -lopengl32 -lglu32
 	OBJ = obj\Windows
 	EXE = $(BIN)/$(PROJECT_NAME).exe
+	COPY_FILE = Xcopy /E /I
 else
 	LIB_FLAGS = -lGL -lGLU -lglut -ldl
 	OBJ = obj/Linux
 	EXE = $(BIN)/$(PROJECT_NAME)
 	CREATE_DIR = mkdir -p
+	COPY_FILE = cp -rf
 	NULL_DEV = /dev/null
 endif
 
@@ -25,9 +30,13 @@ CXX_FLAGS = -std=c++17 -g $(INCLUDE_DIRS)
 CPPSOURCEFILES = $(wildcard $(SRC)/*.cpp)
 SOURCEFILES = $(notdir $(CPPSOURCEFILES))
 OBJECTFILES = $(CPPSOURCEFILES:%.cpp=$(OBJ)/%.o)
+RESOURCEFILES_SRC = $(wildcard $(RESOURCES)/*)
+SHADERFILES_SRC = $(wildcard $(SHADERS)/*)
+RESOURCEFILES_DEST = $(RESOURCEFILES_SRC:%=$(BIN)/%)
+SHADERFILES_DEST = $(SHADERFILES_SRC:%=$(BIN)/%)
 DEP = $(OBJECTFILES:%.o=%.d)
 
-all: setup $(EXE)
+all: setup $(EXE) $(RESOURCEFILES_DEST) $(SHADERFILES_DEST)
 
 ifeq ($(OS),Windows_NT)
 setup:
@@ -36,9 +45,17 @@ setup:
 	copy freeglut\bin\x64\freeglut.dll bin\freeglut.dll
 else
 setup:
-		$(CREATE_DIR) $(OBJ)/$(SRC)
-		$(CREATE_DIR) $(BIN)
+	$(CREATE_DIR) $(OBJ)/$(SRC)
+	$(CREATE_DIR) $(BIN)
 endif
+
+$(BIN)/$(RESOURCES)/%: $(RESOURCES)/%
+	$(CREATE_DIR) $(@D)
+	$(COPY_FILE) $^ $@
+
+$(BIN)/$(SHADERS)/%: $(SHADERS)/%
+	$(CREATE_DIR) $(@D)
+	$(COPY_FILE) $^ $@
 
 $(EXE): $(OBJECTFILES)
 	$(CXX) $(CXX_FLAGS) -c $(SRC)/glad.c -o $(OBJ)/glad.o $(LIB_FLAGS)
