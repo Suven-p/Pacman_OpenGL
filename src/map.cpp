@@ -174,22 +174,23 @@ void Map::drawObstacles(std::string shaderName)
     shader.SetInteger("texture1", 0, true);
 
     glm::mat4 model;
+    auto mapData = mapDataColRow;
     for (int i = 0; i < mapData.size(); i++)
     {
         for (int j = 0; j < mapData[i].size(); j++)
         {
             model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(0.0f, 6.0f, 0.0f));
-            model = glm::translate(model, glm::vec3(float(j), float(27 - i), 0.0f));
+            model = glm::translate(model, glm::vec3(0.0f, 3.0f, 0.0f));
+            model = glm::translate(model, glm::vec3(float(i), float(j), 0.0f));
             shader.SetMatrix4("model", model);
             switch (mapData[i][j])
             {
-            case 'P':
             case 'G':
             case 'o':
-            case 'W':
-                break;
             case 'n':
+            case 'P':
+                break;
+            case 'W':
             default:
                 glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
             }
