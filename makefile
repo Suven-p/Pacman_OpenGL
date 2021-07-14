@@ -43,11 +43,18 @@ setup:
 	if not exist $(OBJ)\$(SRC) mkdir $(OBJ)\$(SRC)
 	if not exist $(BIN) mkdir $(BIN)
 	copy freeglut\bin\x64\freeglut.dll bin\freeglut.dll
+
+$(BIN)/$(RESOURCES)/%: $(RESOURCES)/%
+	if not exist $(@D) mkdir $(@D)
+	$(COPY_FILE) $^ $@
+
+$(BIN)/$(SHADERS)/%: $(SHADERS)/%
+	if not exist $(@D) mkdir $(@D)
+	$(COPY_FILE) $^ $@
 else
 setup:
 	$(CREATE_DIR) $(OBJ)/$(SRC)
 	$(CREATE_DIR) $(BIN)
-endif
 
 $(BIN)/$(RESOURCES)/%: $(RESOURCES)/%
 	$(CREATE_DIR) $(@D)
@@ -56,6 +63,9 @@ $(BIN)/$(RESOURCES)/%: $(RESOURCES)/%
 $(BIN)/$(SHADERS)/%: $(SHADERS)/%
 	$(CREATE_DIR) $(@D)
 	$(COPY_FILE) $^ $@
+endif
+
+
 
 $(EXE): $(OBJECTFILES)
 	$(CXX) $(CXX_FLAGS) -c $(SRC)/glad.c -o $(OBJ)/glad.o $(LIB_FLAGS)
