@@ -58,6 +58,7 @@ setup:
 
 $(BIN)/$(RESOURCES)/%: $(RESOURCES)/%
 	$(CREATE_DIR) $(@D)
+
 	$(COPY_FILE) $^ $@
 
 $(BIN)/$(SHADERS)/%: $(SHADERS)/%
