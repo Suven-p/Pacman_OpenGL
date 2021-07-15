@@ -16,18 +16,19 @@ set(${PROJECT_NAME}_SOURCES
     src/windowManager.cpp
 )
 
-find_package(OpenGL REQUIRED)
-find_package(GLUT REQUIRED)
-
 if (UNIX)
     set(EXTRA_LIBS
         dl
     )
 elseif(WIN32)
     set(EXTRA_LIBS)
+    set(CMAKE_PREFIX_PATH "freeglut")
 else()
     message(WARNING "This OS might not be supported!!!")
 endif()
+
+find_package(OpenGL REQUIRED)
+find_package(GLUT REQUIRED)
 
 add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_SOURCES})
 set_target_properties(${PROJECT_NAME}
@@ -47,11 +48,9 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     ${GLUT_LIBRARIES}
 )
 
-# message(STATUS
-#     "Include directory are: ${OPENGL_INCLUDE_DIR}\n"
-#     "OpenGL libraries are: ${OPENGL_LIBRARIES}\n"
-#     "Glut include directory is: ${GLUT_INCLUDE_DIR}\n"
-#     "Glut libraries are: ${GLUT_LIBRARIES}\n"
-#     "GL is ${OpenGL::GL}"
-#     "GLU is ${OpenGL::GLU"
-# )
+message(STATUS
+    "Include directory are: ${OPENGL_INCLUDE_DIR}\n"
+    "OpenGL libraries are: ${OPENGL_LIBRARIES}\n"
+    "Glut include directory is: ${GLUT_INCLUDE_DIR}\n"
+    "Glut libraries are: ${GLUT_LIBRARIES}\n"
+)
