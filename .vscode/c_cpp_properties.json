@@ -4,7 +4,6 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/freeglut/include",
                 "${workspaceFolder}/include"
             ],
             "defines": [
@@ -12,9 +11,9 @@
                 "UNICODE",
                 "_UNICODE"
             ],
-            "cStandard": "gnu17",
             "cppStandard": "c++17",
-            "intelliSenseMode": "windows-gcc-x64"
+            "intelliSenseMode": "windows-gcc-x64",
+            "configurationProvider": "ms-vscode.cmake-tools"
         },
         {
             "name": "Linux",
@@ -27,9 +26,9 @@
                 "UNICODE",
                 "_UNICODE"
             ],
-            "cStandard": "gnu17",
             "cppStandard": "c++17",
-            "intelliSenseMode": "gcc-x64"
+            "intelliSenseMode": "gcc-x64",
+            "configurationProvider": "ms-vscode.cmake-tools"
         }
     ],
     "version": 4

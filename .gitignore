@@ -4,3 +4,4 @@ docs/*
 *.depend
 *.layout
 bin/*
+build/*

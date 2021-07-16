@@ -4,12 +4,7 @@
 		{
 			"type": "shell",
 			"label": "Freeglut project",
-			"windows": {
-				"command": "mingw32-make SHELL=cmd"
-			},
-			"linux": {
-				"command": "make"
-			},
+			"command": "cmake --build build",
 			"options": {
 				"cwd": "${workspaceFolder}"
 			},
@@ -26,10 +21,10 @@
 			],
 			"dependsOrder": "sequence",
 			"windows": {
-				"command": "bin\\${workspaceFolderBasename}.exe"
+				"command": "bin\\Pacman.exe"
 			},
 			"linux": {
-				"command": "./bin/${workspaceFolderBasename}"
+				"command": "./bin/Pacman"
 			},
 			"group": {
 				"kind": "build",
