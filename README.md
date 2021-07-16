@@ -6,6 +6,9 @@ This is an attempt to recreate a clone of the classic game Pacman using freeglut
 You will need:
  * A modern C++ compiler supporting C++17
  * CMake 3.2+
+ * On linux install following packages:
+   * `build-essentials` for compiler, debuggers and other basic libraries
+   * `freeglut3-dev` for freeglut
  
 ### Building The Project
 
