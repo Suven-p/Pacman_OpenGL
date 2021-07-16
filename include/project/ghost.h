@@ -7,6 +7,10 @@ class Ghost: public Sprite
 {
     GLuint vao, vbo[2], ebo;
     std::string name;
+    glm::vec3 targetTile;
+    DIRECTION currentDirection;
+    DIRECTION setDirection();
+    void getNewPosition();
 
     public:
     Ghost(std::string name);

@@ -189,8 +189,8 @@ void Map::drawObstacles(std::string shaderName)
             case 'o':
             case 'n':
             case 'P':
-                break;
             case 'W':
+                break;
             default:
                 glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
             }
