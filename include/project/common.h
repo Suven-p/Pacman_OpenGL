@@ -5,7 +5,6 @@
 #include <glad/glad.h>
 #include <GL/freeglut.h>
 #include <project/helpers.h>
-
-#define PROJECT_NAME "Project 2"
+#include <project/CMakeConfig.h>
 
 #endif

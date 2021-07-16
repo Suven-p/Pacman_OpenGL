@@ -2,6 +2,19 @@ cmake_minimum_required(VERSION 3.20)
 
 project(Pacman VERSION 1.0 LANGUAGES CXX C)
 
+configure_file(
+    ${CMAKE_SOURCE_DIR}/include/project/CMakeConfig.h.in
+    ${CMAKE_SOURCE_DIR}/include/project/CMakeConfig.h
+    @ONLY
+)
+
+file(
+    GENERATE
+    OUTPUT ${CMAKE_SOURCE_DIR}/include/project/CMakeConfig.h
+    INPUT ${CMAKE_SOURCE_DIR}/include/project/CMakeConfig.h
+    TARGET ${PROJECT_NAME}
+)
+
 set(${PROJECT_NAME}_SOURCES
     src/game.cpp
     src/ghost.cpp
@@ -16,9 +29,14 @@ set(${PROJECT_NAME}_SOURCES
     src/windowManager.cpp
 )
 
+file(GLOB_RECURSE ${PROJECT_NAME}_HEADERS include/*.h include/*.hpp)
+
 set(USE_32BIT False CACHE BOOL "Use 32 bit library")
 
-add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_SOURCES})
+add_executable(${PROJECT_NAME}
+    ${${PROJECT_NAME}_SOURCES}
+    ${${PROJECT_NAME}_HEADERS}
+)
 
 # Os specific configurations
 if (UNIX)
