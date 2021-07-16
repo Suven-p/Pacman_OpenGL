@@ -1,5 +1,0 @@
-#define PROJECT_NAME "Pacman"
-#define PACMAN_VERSION_MAJOR "1"
-#define PACMAN_VERSION_MINOR "0"
-#define BINARY_DIRECTORY "D:/5th Semester/Computer Graphics/project_2_win/bin"
-#define ROOT_DIRECTORY "D:/5th Semester/Computer Graphics/project_2_win"
