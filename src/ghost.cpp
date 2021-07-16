@@ -1,5 +1,6 @@
 #include <project/common.h>
 #include <project/ghost.h>
+#include <project/game.h>
 #include <project/resourceManager.h>
 
 using namespace std;
@@ -48,6 +49,8 @@ Ghost::~Ghost()
 
 void Ghost::draw(std::string shader)
 {
+    getNewPosition();
+    //cout << "X = " << position.first << " Y = " << position.second << endl << Game::getInstance()->getTime() << endl;
     ResourceManager::GetShader(shader).Use();
     glBindVertexArray(vao);
     glm::mat4 model = glm::mat4(1.0f);
@@ -69,4 +72,33 @@ void Ghost::draw(std::string shader)
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void *)0);
 
     glBindVertexArray(0);
+}
+
+DIRECTION Ghost::setDirection() 
+{
+    //TODO: is junction?, get target tile, get possible directions, set direction towards target tile through possible direction.
+    currentDirection = DIRECTION::down;
+    return currentDirection;
+}
+
+void Ghost::getNewPosition() 
+{
+    // TODO: set ghost speed as variable  
+    setDirection();
+    float diffPixels = Game::getInstance()->getSpeed() * Game::getInstance()->getTime() * 0.75;
+    switch (currentDirection) 
+    {
+        case DIRECTION::left:
+            position.first -= diffPixels;
+            break;
+        case DIRECTION::right:
+            position.first += diffPixels;
+            break;
+        case DIRECTION::up:
+            position.second -= diffPixels;
+            break;
+        case DIRECTION::down:
+            position.second += diffPixels;
+            break;
+    }
 }
