@@ -5,3 +5,4 @@ docs/*
 *.layout
 bin/*
 build/*
+include/project/CMakeConfig.h

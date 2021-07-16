@@ -1,3 +1,6 @@
+[![Build-Linux](https://github.com/Suven-p/gl_project_2/actions/workflows/cmake-linux.yml/badge.svg)](https://github.com/Suven-p/gl_project_2/actions/workflows/cmake-linux.yml)
+[![Build-Windows](https://github.com/Suven-p/gl_project_2/actions/workflows/cmake-windows.yml/badge.svg)](https://github.com/Suven-p/gl_project_2/actions/workflows/cmake-windows.yml)
+
 # Pacman
 This is an attempt to recreate a clone of the classic game Pacman using freeglut and OpenGL. This project is to be used as project work for our Computer Graphics course. This project aims to practically apply studied graphics concepts such as transformations and textures using OpenGL and also learn about teamwork and code organization.
 
