@@ -12,7 +12,8 @@
                 "_UNICODE"
             ],
             "cppStandard": "c++17",
-            "intelliSenseMode": "windows-gcc-x64"
+            "intelliSenseMode": "windows-gcc-x64",
+            "configurationProvider": "ms-vscode.cmake-tools"
         },
         {
             "name": "Linux",
