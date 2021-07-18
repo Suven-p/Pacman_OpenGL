@@ -7,15 +7,15 @@
 
 Game::Game()
 {
-    ResourceManager::LoadShader("./shaders/shader.vs", "./shaders/shader.fs", nullptr, "mainShader");
-    ResourceManager::LoadTexture("./resources/map/pacman_map.png", true, "baseMap");
-    ResourceManager::LoadTexture("./resources/blinky.png", true, "blinky");
-    ResourceManager::LoadTexture("./resources/inky.png", true, "inky");
+    ResourceManager::LoadShader("shaders/shader.vs", "./shaders/shader.fs", nullptr, "mainShader");
+    ResourceManager::LoadTexture("resources/map/pacman_map.png", true, "baseMap");
+    ResourceManager::LoadTexture("resources/blinky.png", true, "blinky");
+    ResourceManager::LoadTexture("resources/inky.png", true, "inky");
     ResourceManager::LoadSprite("baseMap", std::make_shared<Map>());
     ResourceManager::LoadSprite("blinky", std::make_shared<Ghost>("blinky"));
     ResourceManager::LoadSprite("inky", std::make_shared<Ghost>("inky"));
-    ResourceManager::GetSprite("blinky")->setPosition(std::make_pair(1, 1));
-    ResourceManager::GetSprite("inky")->setPosition(std::make_pair(5, 10));
+    ResourceManager::GetSprite("blinky")->setPosition(std::make_pair(10, 29));
+    ResourceManager::GetSprite("inky")->setPosition(std::make_pair(2, 1));
 }
 
 float Game::baseSpeed = 0.01;
@@ -53,7 +53,7 @@ void Game::render()
     baseMapPtr->draw("mainShader");
     baseMapPtr->drawGridLines("mainShader");
     ResourceManager::GetSprite("blinky")->draw("mainShader");
-    ResourceManager::GetSprite("inky")->draw("mainShader");
+    // ResourceManager::GetSprite("inky")->draw("mainShader");
     baseMapPtr->drawObstacles("mainShader");
     glutSwapBuffers();
 }
@@ -78,14 +78,17 @@ void Game::special_key_up(int key, int x, int y)
     Game::special_key_states[Game::special_key_map[key]] = false;
 }
 
-float Game::getSpeed() {
+float Game::getSpeed()
+{
     return Game::baseSpeed;
 }
 
-void Game::setSpeed(float newSpeed) {
+void Game::setSpeed(float newSpeed)
+{
     Game::baseSpeed = newSpeed;
 }
 
-unsigned long long Game::getTime() {
+unsigned long long Game::getTime()
+{
     return Game::deltaTime;
 }

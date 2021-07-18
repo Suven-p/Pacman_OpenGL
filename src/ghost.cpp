@@ -2,6 +2,10 @@
 #include <project/ghost.h>
 #include <project/game.h>
 #include <project/resourceManager.h>
+#include <spdlog/spdlog.h>
+#include <cmath>
+#include <utility>
+#include <random>
 
 using namespace std;
 
@@ -41,6 +45,9 @@ Ghost::Ghost(std::string name) : name(name)
     glBufferData(GL_ARRAY_BUFFER, sizeof(texCoord), texCoord, GL_STATIC_DRAW);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void *)(0));
     glEnableVertexAttribArray(2);
+
+    currentDirection = DIRECTION::right;
+    nextDirection = DIRECTION::right;
 }
 
 Ghost::~Ghost()
@@ -74,31 +81,112 @@ void Ghost::draw(std::string shader)
     glBindVertexArray(0);
 }
 
-DIRECTION Ghost::setDirection() 
+DIRECTION Ghost::setNextDirection()
 {
     //TODO: is junction?, get target tile, get possible directions, set direction towards target tile through possible direction.
-    currentDirection = DIRECTION::down;
-    return currentDirection;
+    std::pair<int, int> nextTile;
+    DIRECTION oppositeDirection;
+    switch (currentDirection)
+    {
+    case DIRECTION::up:
+    {
+        nextTile = {position.first, std::ceil(position.second) - 1};
+        oppositeDirection = DIRECTION::down;
+        break;
+    }
+    case DIRECTION::down:
+    {
+        nextTile = {position.first, position.second + 1};
+        oppositeDirection = DIRECTION::up;
+        break;
+    }
+    case DIRECTION::left:
+    {
+        nextTile = {position.first - 1, position.second};
+        oppositeDirection = DIRECTION::right;
+        break;
+    }
+    case DIRECTION::right:
+    {
+        nextTile = {position.first + 1, position.second};
+        oppositeDirection = DIRECTION::left;
+        break;
+    }
+    }
+    auto baseMapPtr = std::dynamic_pointer_cast<Map>(ResourceManager::GetSprite("baseMap"));
+    auto possible = baseMapPtr->possibleDirections(nextTile);
+    possible.erase(currentDirection);
+    possible.erase(oppositeDirection);
+    std::random_device rd;  //Will be used to obtain a seed for the random number engine
+    std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+    std::uniform_int_distribution<> distrib(0, possible.size() - 1);
+    if (possible.size())
+    {
+        auto it = possible.begin();
+        auto index = distrib(gen);
+        std::advance(it, index);
+        nextDirection = *it;
+    }
+    return nextDirection;
 }
 
-void Ghost::getNewPosition() 
+void Ghost::getNewPosition()
 {
-    // TODO: set ghost speed as variable  
-    setDirection();
-    float diffPixels = Game::getInstance()->getSpeed() * Game::getInstance()->getTime() * 0.75;
-    switch (currentDirection) 
+    // float diffPixels = Game::getInstance()->getSpeed() * Game::getInstance()->getTime() * 0.75;
+    float diffPixels = Game::getInstance()->getSpeed() * 16 * 0.75;
+    auto oldPosition = position;
+    bool reachedNewTile = false;
+    switch (currentDirection)
     {
-        case DIRECTION::left:
-            position.first -= diffPixels;
-            break;
-        case DIRECTION::right:
-            position.first += diffPixels;
-            break;
-        case DIRECTION::up:
-            position.second -= diffPixels;
-            break;
-        case DIRECTION::down:
-            position.second += diffPixels;
-            break;
+    case DIRECTION::left:
+    {
+        position.first -= diffPixels;
+        float temp1 = int(position.first) - oldPosition.first;
+        float temp2 = int(position.first) - position.first;
+        if (temp1 < 0 and temp2 >= 0)
+        {
+            reachedNewTile = true;
+        }
+        break;
     }
+    case DIRECTION::up:
+    {
+        position.second -= diffPixels;
+        // int toCompare = std::max(int(position.second, oldPosition.second);
+        // float temp1 = int(position.second) - oldPosition.second;
+        // float temp2 = int(position.second) - position.second;
+        if (oldPosition.second > int(oldPosition.second) and position.second <= int(oldPosition.second))
+        {
+            reachedNewTile = true;
+        }
+        break;
+    }
+    case DIRECTION::right:
+    {
+        position.first += diffPixels;
+        if ((int(position.first) - int(oldPosition.first)) == 1)
+        {
+            reachedNewTile = true;
+        }
+        break;
+    }
+    case DIRECTION::down:
+    {
+        position.second += diffPixels;
+        if ((int(position.second) - int(oldPosition.second)) == 1)
+        {
+            reachedNewTile = true;
+        }
+        break;
+    }
+    }
+    if (reachedNewTile)
+    {
+        spdlog::debug("Current position is: {}, {}", int(position.first), int(position.second));
+        spdlog::debug("Current direction is {}", toString(currentDirection));
+        spdlog::debug("Switching direction to {}", toString(nextDirection));
+        currentDirection = nextDirection;
+        setNextDirection();
+        spdlog::debug("Next direction is {}", toString(nextDirection));
+    };
 }

@@ -2,6 +2,7 @@
 
 #include <project/common.h>
 #include <project/sprite.h>
+#include <set>
 
 class Ghost : public Sprite
 {
@@ -9,8 +10,10 @@ class Ghost : public Sprite
     std::string name;
     glm::vec3 targetTile;
     DIRECTION currentDirection;
-    DIRECTION setDirection();
+    DIRECTION nextDirection;
+    DIRECTION setNextDirection();
     void getNewPosition();
+    std::set<DIRECTION> possibleDirections();
 
 public:
     Ghost(std::string name);

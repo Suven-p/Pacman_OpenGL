@@ -1,4 +1,5 @@
 #include <project/main.h>
+#include <spdlog/spdlog.h>
 
 using namespace std;
 
@@ -22,6 +23,7 @@ int main(int argc, char **argv)
     windowData.refreshInterval = 1000.0f / 60.0f;
     auto windowManagerPtr = WindowManager::getInstance();
     windowManagerPtr->createNewWindow(PROJECT_NAME, windowData);
+    spdlog::set_level(spdlog::level::debug);
 
     if (!gladLoadGL())
     {
