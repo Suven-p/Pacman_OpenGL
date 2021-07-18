@@ -28,14 +28,19 @@ set(${PROJECT_NAME}_SOURCES
     src/texture.cpp
     src/windowManager.cpp
 )
-
 file(GLOB_RECURSE ${PROJECT_NAME}_HEADERS include/*.h include/*.hpp)
+file(GLOB_RECURSE
+    SPDLOG_HEADERS
+    ${CMAKE_SOURCE_DIR}/spdlog/include/*.h
+    ${CMAKE_SOURCE_DIR}/spdlog/include/*.hpp
+)
 
 set(USE_32BIT False CACHE BOOL "Use 32 bit library")
 
 add_executable(${PROJECT_NAME}
     ${${PROJECT_NAME}_SOURCES}
     ${${PROJECT_NAME}_HEADERS}
+    ${SPDLOG_HEADERS}
 )
 
 # Os specific configurations
@@ -84,6 +89,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     "include"
     ${OPENGL_INCLUDE_DIR}
     ${GLUT_INCLUDE_DIR}
+    ${CMAKE_SOURCE_DIR}/spdlog/include
 )
 target_link_libraries(${PROJECT_NAME} PUBLIC
     ${EXTRA_LIBS}
