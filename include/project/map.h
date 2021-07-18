@@ -4,6 +4,7 @@
 #define MAP_HPP_GUARD
 
 #include <vector>
+#include <set>
 #include <project/common.h>
 #include <project/sprite.h>
 #include <project/mapData.h>
@@ -40,13 +41,15 @@ public:
      *
      * @param shader Index of shader to use. Shader must be stored in ResourceManager.
      */
-    void drawGridLines(std::string shader);
+    void drawGridLines(const std::string &shader) const;
     /**
      * @brief Show obstacles as colored blocks.
      * This is used to demonstrate and verify position of obstacles according to stored map data.
      *
      */
-    void drawObstacles(std::string shader);
+    void drawObstacles(const std::string &shader) const;
+    bool checkObstacle(const std::pair<float, float> &toCheck) const;
+    std::set<DIRECTION> possibleDirections(const std::pair<float, float>& toCheck) const;
 };
 
 #endif

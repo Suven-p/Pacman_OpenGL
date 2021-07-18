@@ -13,6 +13,8 @@ enum struct DIRECTION : int
     up = 3
 };
 
+std::string toString(DIRECTION d);
+
 struct freeglutData
 {
     int *argc;

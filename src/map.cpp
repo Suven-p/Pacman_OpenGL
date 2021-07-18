@@ -1,3 +1,4 @@
+#include <utility>
 #include <project/common.h>
 #include <project/map.h>
 #include <project/resourceManager.h>
@@ -89,7 +90,7 @@ void Map::draw(std::string shaderName, bool drawGrid)
     }
 }
 
-void Map::drawGridLines(std::string shaderName)
+void Map::drawGridLines(const std::string &shaderName) const
 {
     auto shader = ResourceManager::GetShader(shaderName);
     glBindVertexArray(gridVAO);
@@ -158,7 +159,7 @@ void Map::initializeGrid()
     glBindVertexArray(0);
 }
 
-void Map::drawObstacles(std::string shaderName)
+void Map::drawObstacles(const std::string &shaderName) const
 {
     auto shader = ResourceManager::GetShader(shaderName);
     shader.Use();
@@ -197,4 +198,81 @@ void Map::drawObstacles(std::string shaderName)
         }
     }
     glBindVertexArray(0);
+}
+
+bool Map::checkObstacle(const std::pair<float, float> &toCheck) const
+{
+    std::pair<int, int> position({toCheck.first, toCheck.second});
+    if (position.first < 0 or position.first >= mapDataColRow.size())
+    {
+        return true;
+    }
+    if (position.second < 0 or position.second >= mapDataColRow[0].size())
+    {
+        return true;
+    }
+    auto block = mapDataColRow[position.first][position.second];
+    return (block == MAP_WALL or block == MAP_GATE);
+}
+
+std::set<DIRECTION> Map::possibleDirections(const std::pair<float, float> &toCheck) const
+{
+    std::set<DIRECTION> possible = {
+        DIRECTION::up,
+        DIRECTION::down,
+        DIRECTION::left,
+        DIRECTION::right};
+
+    for (auto it = possible.begin(); it != possible.end();)
+    {
+        auto c = *it;
+        bool deleted = false;
+        switch (c)
+        {
+        case DIRECTION::up:
+        {
+            std::pair<float, float> newPosition = {toCheck.first, toCheck.second - 1};
+            if (checkObstacle(newPosition))
+            {
+                it = possible.erase(it);
+                deleted = true;
+            }
+            break;
+        }
+        case DIRECTION::down:
+        {
+            std::pair<float, float> newPosition = {toCheck.first, toCheck.second + 1};
+            if (checkObstacle(newPosition))
+            {
+                it = possible.erase(it);
+                deleted = true;
+            }
+            break;
+        }
+        case DIRECTION::left:
+        {
+            std::pair<float, float> newPosition = {toCheck.first - 1, toCheck.second};
+            if (checkObstacle(newPosition))
+            {
+                it = possible.erase(it);
+                deleted = true;
+            }
+            break;
+        }
+        case DIRECTION::right:
+        {
+            std::pair<float, float> newPosition = {toCheck.first + 1, toCheck.second};
+            if (checkObstacle(newPosition))
+            {
+                it = possible.erase(it);
+                deleted = true;
+            }
+            break;
+        }
+        }
+        // std::set<>.erase increments the pointer so increment iff no elements was deleted
+        if (!deleted)
+            it++;
+    }
+    return possible;
 }
