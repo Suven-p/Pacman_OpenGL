@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "preLaunchTask": "Freeglut project",
-            "program": "${workspaceRoot}/bin/project_1",
+            "program": "${workspaceRoot}/bin/Pacman",
             "cwd": "${workspaceFolder}",
         },
         {
@@ -17,7 +17,7 @@
             "type": "cppdbg",
             "request": "launch",
             "preLaunchTask": "Freeglut project",
-            "program": "${workspaceFolder}/bin/${workspaceFolderBasename}",
+            "program": "${workspaceFolder}/bin/Pacman",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
