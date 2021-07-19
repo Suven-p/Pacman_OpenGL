@@ -14,5 +14,7 @@ std::string toString(DIRECTION d)
         return "up";
     case DIRECTION::down:
         return "down";
+    default: // Not necessarily required but gives warning for void return
+        return "";
     }
 }

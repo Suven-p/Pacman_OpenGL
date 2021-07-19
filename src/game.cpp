@@ -7,7 +7,7 @@
 
 Game::Game()
 {
-    ResourceManager::LoadShader("shaders/shader.vs", "./shaders/shader.fs", nullptr, "mainShader");
+    ResourceManager::LoadShader("shaders/shader.vs", "shaders/shader.fs", nullptr, "mainShader");
     ResourceManager::LoadTexture("resources/map/pacman_map.png", true, "baseMap");
     ResourceManager::LoadTexture("resources/blinky.png", true, "blinky");
     ResourceManager::LoadTexture("resources/inky.png", true, "inky");

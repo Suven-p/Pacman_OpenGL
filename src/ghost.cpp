@@ -102,7 +102,7 @@ DIRECTION Ghost::setNextDirection()
     }
     case DIRECTION::left:
     {
-        nextTile = {position.first - 1, position.second};
+        nextTile = {std::ceil(position.first) - 1, position.second};
         oppositeDirection = DIRECTION::right;
         break;
     }
@@ -141,23 +141,26 @@ void Ghost::getNewPosition()
     case DIRECTION::left:
     {
         position.first -= diffPixels;
-        float temp1 = int(position.first) - oldPosition.first;
-        float temp2 = int(position.first) - position.first;
-        if (temp1 < 0 and temp2 >= 0)
+        if (oldPosition.first > std::ceil(position.first) and position.first <= std::ceil(position.first))
         {
             reachedNewTile = true;
+            if (nextDirection == DIRECTION::up || nextDirection == DIRECTION::down)
+            {
+                position.first = std::ceil(position.first);
+            }
         }
         break;
     }
     case DIRECTION::up:
     {
         position.second -= diffPixels;
-        // int toCompare = std::max(int(position.second, oldPosition.second);
-        // float temp1 = int(position.second) - oldPosition.second;
-        // float temp2 = int(position.second) - position.second;
-        if (oldPosition.second > int(oldPosition.second) and position.second <= int(oldPosition.second))
+        if (oldPosition.second > std::ceil(position.second) and position.second <= std::ceil(position.second))
         {
             reachedNewTile = true;
+            if (nextDirection == DIRECTION::left || nextDirection == DIRECTION::right)
+            {
+                position.second = std::ceil(position.second);
+            }
         }
         break;
     }
@@ -167,6 +170,10 @@ void Ghost::getNewPosition()
         if ((int(position.first) - int(oldPosition.first)) == 1)
         {
             reachedNewTile = true;
+            if (nextDirection == DIRECTION::up || nextDirection == DIRECTION::down)
+            {
+                position.first = int(position.first);
+            }
         }
         break;
     }
@@ -176,6 +183,10 @@ void Ghost::getNewPosition()
         if ((int(position.second) - int(oldPosition.second)) == 1)
         {
             reachedNewTile = true;
+            if (nextDirection == DIRECTION::left || nextDirection == DIRECTION::right)
+            {
+                position.second = int(position.second);
+            }
         }
         break;
     }
