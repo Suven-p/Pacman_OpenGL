@@ -203,16 +203,16 @@ void Map::drawObstacles(const std::string &shaderName) const
 bool Map::checkObstacle(const std::pair<float, float> &toCheck) const
 {
     std::pair<int, int> position({toCheck.first, toCheck.second});
-    if (position.first < 0 or position.first >= mapDataColRow.size())
+    if (position.first < 0 || position.first >= mapDataColRow.size())
     {
         return true;
     }
-    if (position.second < 0 or position.second >= mapDataColRow[0].size())
+    if (position.second < 0 || position.second >= mapDataColRow[0].size())
     {
         return true;
     }
     auto block = mapDataColRow[position.first][position.second];
-    return (block == MAP_WALL or block == MAP_GATE);
+    return (block == MAP_WALL || block == MAP_GATE);
 }
 
 std::set<DIRECTION> Map::possibleDirections(const std::pair<float, float> &toCheck) const

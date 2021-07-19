@@ -53,7 +53,7 @@ void Game::render()
     baseMapPtr->draw("mainShader");
     baseMapPtr->drawGridLines("mainShader");
     ResourceManager::GetSprite("blinky")->draw("mainShader");
-    // ResourceManager::GetSprite("inky")->draw("mainShader");
+    ResourceManager::GetSprite("inky")->draw("mainShader");
     baseMapPtr->drawObstacles("mainShader");
     glutSwapBuffers();
 }

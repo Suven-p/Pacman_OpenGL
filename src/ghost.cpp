@@ -9,6 +9,9 @@
 
 using namespace std;
 
+std::random_device rd;  //Will be used to obtain a seed for the random number engine
+std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+
 Ghost::Ghost(std::string name) : name(name)
 {
     glGenVertexArrays(1, &vao);
@@ -48,6 +51,7 @@ Ghost::Ghost(std::string name) : name(name)
 
     currentDirection = DIRECTION::right;
     nextDirection = DIRECTION::right;
+    currentMode = GhostMode::scatter;
 }
 
 Ghost::~Ghost()
@@ -83,7 +87,7 @@ void Ghost::draw(std::string shader)
 
 DIRECTION Ghost::setNextDirection()
 {
-    //TODO: is junction?, get target tile, get possible directions, set direction towards target tile through possible direction.
+    //TODO: get target tile, get possible directions, set direction towards target tile through possible direction.
     std::pair<int, int> nextTile;
     DIRECTION oppositeDirection;
     switch (currentDirection)
@@ -115,25 +119,101 @@ DIRECTION Ghost::setNextDirection()
     }
     auto baseMapPtr = std::dynamic_pointer_cast<Map>(ResourceManager::GetSprite("baseMap"));
     auto possible = baseMapPtr->possibleDirections(nextTile);
-    possible.erase(currentDirection);
     possible.erase(oppositeDirection);
-    std::random_device rd;  //Will be used to obtain a seed for the random number engine
-    std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
-    std::uniform_int_distribution<> distrib(0, possible.size() - 1);
+    
     if (possible.size())
     {
-        auto it = possible.begin();
-        auto index = distrib(gen);
-        std::advance(it, index);
-        nextDirection = *it;
+        if (currentMode == GhostMode::frightened)
+        {
+            std::uniform_int_distribution<> distrib(0, possible.size() - 1);
+            auto it = possible.begin();
+            auto index = distrib(gen);
+            std::advance(it, index);
+            nextDirection = *it;
+        }
+        else if (currentMode == GhostMode::scatter)
+        {
+            if(name == "blinky")
+            {
+                targetTile = {25, -3};
+            }
+            else if(name == "inky")
+            {
+                targetTile = {27, 32};
+            }
+            else if (name == "pinky")
+            {
+                targetTile = {2, -3};
+            }
+            else if (name == "clyde")
+            {
+                targetTile = {0, 32};
+            }
+            float minValue = 1e9;
+            DIRECTION bestDirection;
+            std::map<DIRECTION, int> priorityOrder = {{DIRECTION::up, 4}, {DIRECTION::left, 3}, {DIRECTION::down, 2}, {DIRECTION::right, 1}};
+            for (auto it = possible.begin(); it != possible.end(); it++)
+            {
+                auto c = *it;
+                std::pair<float, float> newPosition;
+                switch (c)
+                {
+                case DIRECTION::up:
+                {
+                    newPosition = {nextTile.first, nextTile.second - 1};
+                    break;
+                }
+                case DIRECTION::down:
+                {
+                    newPosition = {nextTile.first, nextTile.second + 1};
+                    break;
+                }
+                case DIRECTION::left:
+                {
+                    newPosition = {nextTile.first - 1, nextTile.second};
+                    break;
+                }
+                case DIRECTION::right:
+                {
+                    newPosition = {nextTile.first + 1, nextTile.second};
+                    break;
+                }
+                }
+                float distance = sqrt(pow((position.first - newPosition.first), 2) + pow((position.second - newPosition.second), 2));
+                if (distance < minValue)
+                {
+                    minValue = distance;
+                    bestDirection = c;
+                }
+                else if (distance == minValue)
+                {
+                    bestDirection = priorityOrder[c] > priorityOrder[bestDirection] ? c:bestDirection;
+                }
+            }
+            nextDirection = bestDirection;
+        }
+        else if (currentMode == GhostMode::chase)
+        {
+            if(name == "blinky")
+            {
+                
+            }
+            else if(name == "inky")
+            {}
+            else if (name == "pinky")
+            {}
+            else if (name == "clyde")
+            {}
+
+        }
     }
     return nextDirection;
 }
 
 void Ghost::getNewPosition()
 {
-    // float diffPixels = Game::getInstance()->getSpeed() * Game::getInstance()->getTime() * 0.75;
-    float diffPixels = Game::getInstance()->getSpeed() * 16 * 0.75;
+    float diffPixels = Game::getInstance()->getSpeed() * Game::getInstance()->getTime() * 0.75;
+    // float diffPixels = Game::getInstance()->getSpeed() * 16 * 0.75;
     auto oldPosition = position;
     bool reachedNewTile = false;
     switch (currentDirection)
@@ -193,11 +273,21 @@ void Ghost::getNewPosition()
     }
     if (reachedNewTile)
     {
-        spdlog::debug("Current position is: {}, {}", int(position.first), int(position.second));
-        spdlog::debug("Current direction is {}", toString(currentDirection));
-        spdlog::debug("Switching direction to {}", toString(nextDirection));
+        //spdlog::debug("Current position is: {}, {}", int(position.first), int(position.second));
+        //spdlog::debug("Current direction is {}", toString(currentDirection));
+        // spdlog::debug("Switching direction to {}", toString(nextDirection));
         currentDirection = nextDirection;
         setNextDirection();
-        spdlog::debug("Next direction is {}", toString(nextDirection));
+        // spdlog::debug("Next direction is {}", toString(nextDirection));
     };
+}
+
+GhostMode Ghost::getMode()
+{
+    return currentMode;
+}
+
+void Ghost::setMode(GhostMode newMode)
+{
+    currentMode = newMode;
 }
