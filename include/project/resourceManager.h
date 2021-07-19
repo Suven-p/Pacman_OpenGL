@@ -95,6 +95,7 @@ private:
     ResourceManager() {}
     static Shader loadShaderFromFile(const char *vShaderFile, const char *fShaderFile, const char *gShaderFile = nullptr);
     static Texture2D loadTextureFromFile(const char *file, bool alpha);
+    static std::string resolvePath(const std::string &toResolve);
 };
 
 #endif

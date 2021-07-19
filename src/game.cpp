@@ -7,10 +7,10 @@
 
 Game::Game()
 {
-    ResourceManager::LoadShader("./shaders/shader.vs", "./shaders/shader.fs", nullptr, "mainShader");
-    ResourceManager::LoadTexture("./resources/map/pacman_map.png", true, "baseMap");
-    ResourceManager::LoadTexture("./resources/blinky.png", true, "blinky");
-    ResourceManager::LoadTexture("./resources/inky.png", true, "inky");
+    ResourceManager::LoadShader("shaders/shader.vs", "shaders/shader.fs", nullptr, "mainShader");
+    ResourceManager::LoadTexture("resources/map/pacman_map.png", true, "baseMap");
+    ResourceManager::LoadTexture("resources/blinky.png", true, "blinky");
+    ResourceManager::LoadTexture("resources/inky.png", true, "inky");
     ResourceManager::LoadSprite("baseMap", std::make_shared<Map>());
     ResourceManager::LoadSprite("blinky", std::make_shared<Ghost>("blinky"));
     ResourceManager::LoadSprite("inky", std::make_shared<Ghost>("inky"));

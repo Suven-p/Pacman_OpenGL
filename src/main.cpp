@@ -1,4 +1,5 @@
 #include <project/main.h>
+#include <spdlog/spdlog.h>
 
 using namespace std;
 
@@ -14,6 +15,7 @@ void GLAPIENTRY MessageCallback(GLenum source,
 
 int main(int argc, char **argv)
 {
+    spdlog::set_level(spdlog::level::debug);
     freeglutData windowData;
     windowData.argc = &argc;
     windowData.argv = argv;
