@@ -186,7 +186,7 @@ DIRECTION Ghost::setNextDirection()
                     break;
                 }
                 }
-                float distance = sqrt(pow((position.first - newPosition.first), 2) + pow((position.second - newPosition.second), 2));
+                float distance = sqrt(pow((targetTile.first - newPosition.first), 2) + pow((targetTile.second - newPosition.second), 2));
                 logger->trace("New position is {} {}", newPosition.first, newPosition.second);
                 logger->trace("Distance in direction {} is {}", toString(c), distance);
                 if (distance < minValue)
