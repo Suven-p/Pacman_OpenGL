@@ -66,7 +66,6 @@ Ghost::~Ghost()
 void Ghost::draw(std::string shader)
 {
     getNewPosition();
-    //cout << "X = " << position.first << " Y = " << position.second << endl << Game::getInstance()->getTime() << endl;
     ResourceManager::GetShader(shader).Use();
     glBindVertexArray(vao);
     glm::mat4 model = glm::mat4(1.0f);
@@ -139,11 +138,11 @@ DIRECTION Ghost::setNextDirection()
         }
         else if (currentMode == GhostMode::scatter)
         {
-            if(name == "blinky")
+            if (name == "blinky")
             {
                 targetTile = {25, -3};
             }
-            else if(name == "inky")
+            else if (name == "inky")
             {
                 targetTile = {27, 32};
             }
