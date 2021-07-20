@@ -27,6 +27,7 @@ set(${PROJECT_NAME}_SOURCES
     src/sprite.cpp
     src/texture.cpp
     src/windowManager.cpp
+    src/pacman.cpp
 )
 file(GLOB_RECURSE ${PROJECT_NAME}_HEADERS include/*.h include/*.hpp)
 file(GLOB_RECURSE
