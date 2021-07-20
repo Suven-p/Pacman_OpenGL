@@ -6,3 +6,4 @@ docs/*
 bin/*
 build/*
 include/project/CMakeConfig.h
+logs/
