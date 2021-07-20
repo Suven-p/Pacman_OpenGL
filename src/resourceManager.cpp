@@ -1,4 +1,5 @@
 #include <project/resourceManager.h>
+#include <spdlog/spdlog.h>
 
 #include <iostream>
 #include <sstream>
@@ -93,7 +94,7 @@ Shader ResourceManager::loadShaderFromFile(const char *vShaderFile, const char *
     }
     catch (std::exception e)
     {
-        std::cout << "ERROR::SHADER: Failed to read shader files" << std::endl;
+        spdlog::error("SHADER::Failed to read shader files");
     }
     const char *vShaderCode = vertexCode.c_str();
     const char *fShaderCode = fragmentCode.c_str();
@@ -120,7 +121,7 @@ Texture2D ResourceManager::loadTextureFromFile(const char *file, bool alpha)
     unsigned char *data = stbi_load(file, &width, &height, &nrChannels, 0);
     if (!data)
     {
-        std::cout << "Failed to load texture file. File location: " << file << std::endl;
+        spdlog::error("Failed to load texture file: {}", file);
     }
     // now generate texture
     texture.Generate(width, height, data);

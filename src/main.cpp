@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 
     if (!gladLoadGL())
     {
-        std::cout << "Failed to initialize GLAD" << std::endl;
+        spdlog::error("Failed to initialize GLAD");
     }
 
     auto game_obj = Game::getInstance();

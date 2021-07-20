@@ -1,4 +1,5 @@
 #include <project/shader.h>
+#include <spdlog/spdlog.h>
 
 #include <iostream>
 
@@ -8,7 +9,7 @@ Shader &Shader::Use()
     return *this;
 }
 
-void Shader::Compile(const char* vertexSource, const char* fragmentSource, const char* geometrySource)
+void Shader::Compile(const char *vertexSource, const char *fragmentSource, const char *geometrySource)
 {
     unsigned int sVertex, sFragment, gShader;
     // vertex Shader
@@ -99,7 +100,6 @@ void Shader::SetMatrix4(const char *name, const glm::mat4 &matrix, bool useShade
     glUniformMatrix4fv(glGetUniformLocation(this->ID, name), 1, false, glm::value_ptr(matrix));
 }
 
-
 void Shader::checkCompileErrors(unsigned int object, std::string type)
 {
     int success;
@@ -110,9 +110,7 @@ void Shader::checkCompileErrors(unsigned int object, std::string type)
         if (!success)
         {
             glGetShaderInfoLog(object, 1024, NULL, infoLog);
-            std::cout << "| ERROR::SHADER: Compile-time error: Type: " << type << "\n"
-                << infoLog << "\n -- --------------------------------------------------- -- "
-                << std::endl;
+            spdlog::error("Shader::Compile-time error\n\tType: {}\n\tInfo: {}", type, infoLog);
         }
     }
     else
@@ -121,9 +119,7 @@ void Shader::checkCompileErrors(unsigned int object, std::string type)
         if (!success)
         {
             glGetProgramInfoLog(object, 1024, NULL, infoLog);
-            std::cout << "| ERROR::Shader: Link-time error: Type: " << type << "\n"
-                << infoLog << "\n -- --------------------------------------------------- -- "
-                << std::endl;
+            spdlog::error("Shader::Link-time error\n\tType: {}\n\tInfo: {}", type, infoLog);
         }
     }
 }
