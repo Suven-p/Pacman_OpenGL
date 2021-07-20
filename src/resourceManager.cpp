@@ -173,7 +173,7 @@ std::string ResourceManager::resolvePath(const std::string &toResolve)
         auto attemptPath = executionPath / pathToResolve;
         if (std::filesystem::exists(attemptPath))
         {
-            std::string fullPath = attemptPath;
+            std::string fullPath = attemptPath.string();
             spdlog::debug("Resolved {} to {}", toResolve, fullPath);
             return fullPath;
         }
@@ -191,7 +191,7 @@ std::string ResourceManager::resolvePath(const std::string &toResolve)
         auto attemptPath = binaryPath / pathToResolve;
         if (std::filesystem::exists(attemptPath))
         {
-            std::string fullPath = attemptPath.c_str();
+            std::string fullPath = attemptPath.string();
             spdlog::debug("Resolved {} to {}", toResolve, fullPath);
             return fullPath;
         }
@@ -211,7 +211,7 @@ std::string ResourceManager::resolvePath(const std::string &toResolve)
     auto attemptPath = currentPath / pathToResolve;
     if (std::filesystem::exists(attemptPath))
     {
-        std::string fullPath = attemptPath.c_str();
+        std::string fullPath = attemptPath.string();
         spdlog::debug("Resolved {} to {}", toResolve, fullPath);
         return fullPath;
     }
