@@ -3,6 +3,7 @@
 #include <project/game.h>
 #include <project/resourceManager.h>
 #include <spdlog/spdlog.h>
+#include <spdlog/sinks/basic_file_sink.h>
 #include <cmath>
 #include <utility>
 #include <random>
@@ -52,6 +53,10 @@ Ghost::Ghost(std::string name) : name(name)
     currentDirection = DIRECTION::right;
     nextDirection = DIRECTION::right;
     currentMode = GhostMode::scatter;
+
+    std::string loggerName = std::string("ghostLogger::") + name;
+    logger = spdlog::basic_logger_mt(loggerName, "logs/ghostLog.txt");
+    logger->set_level(spdlog::level::trace);
 }
 
 Ghost::~Ghost()
@@ -87,7 +92,7 @@ void Ghost::draw(std::string shader)
 
 DIRECTION Ghost::setNextDirection()
 {
-    //TODO: get target tile, get possible directions, set direction towards target tile through possible direction.
+    // TODO: get target tile for chase mode
     std::pair<int, int> nextTile;
     DIRECTION oppositeDirection;
     switch (currentDirection)
@@ -120,7 +125,8 @@ DIRECTION Ghost::setNextDirection()
     auto baseMapPtr = std::dynamic_pointer_cast<Map>(ResourceManager::GetSprite("baseMap"));
     auto possible = baseMapPtr->possibleDirections(nextTile);
     possible.erase(oppositeDirection);
-    
+    logger->trace("Next tile is: {}, {}", nextTile.first, nextTile.second);
+
     if (possible.size())
     {
         if (currentMode == GhostMode::frightened)
@@ -149,6 +155,7 @@ DIRECTION Ghost::setNextDirection()
             {
                 targetTile = {0, 32};
             }
+            logger->trace("Target Tile is: {} {}", targetTile.first, targetTile.second);
             float minValue = 1e9;
             DIRECTION bestDirection;
             std::map<DIRECTION, int> priorityOrder = {{DIRECTION::up, 4}, {DIRECTION::left, 3}, {DIRECTION::down, 2}, {DIRECTION::right, 1}};
@@ -180,31 +187,37 @@ DIRECTION Ghost::setNextDirection()
                 }
                 }
                 float distance = sqrt(pow((position.first - newPosition.first), 2) + pow((position.second - newPosition.second), 2));
+                logger->trace("New position is {} {}", newPosition.first, newPosition.second);
+                logger->trace("Distance in direction {} is {}", toString(c), distance);
                 if (distance < minValue)
                 {
+                    logger->trace("Updating direction to {} based on value.", toString(c));
                     minValue = distance;
                     bestDirection = c;
                 }
                 else if (distance == minValue)
                 {
-                    bestDirection = priorityOrder[c] > priorityOrder[bestDirection] ? c:bestDirection;
+                    logger->trace("Updating direction to {} based on priority.", toString(c));
+                    bestDirection = priorityOrder[c] > priorityOrder[bestDirection] ? c : bestDirection;
                 }
             }
             nextDirection = bestDirection;
+            logger->trace("Best direction is set to be: {}", toString(bestDirection));
         }
         else if (currentMode == GhostMode::chase)
         {
-            if(name == "blinky")
+            if (name == "blinky")
             {
-                
             }
-            else if(name == "inky")
-            {}
+            else if (name == "inky")
+            {
+            }
             else if (name == "pinky")
-            {}
+            {
+            }
             else if (name == "clyde")
-            {}
-
+            {
+            }
         }
     }
     return nextDirection;
@@ -273,12 +286,11 @@ void Ghost::getNewPosition()
     }
     if (reachedNewTile)
     {
-        //spdlog::debug("Current position is: {}, {}", int(position.first), int(position.second));
-        //spdlog::debug("Current direction is {}", toString(currentDirection));
-        // spdlog::debug("Switching direction to {}", toString(nextDirection));
+        logger->trace("Current position is: {} {}", position.first, position.second);
+        logger->trace("Current direction is: {}", toString(currentDirection));
+        logger->trace("Switching direction to {}", toString(nextDirection));
         currentDirection = nextDirection;
         setNextDirection();
-        // spdlog::debug("Next direction is {}", toString(nextDirection));
     };
 }
 

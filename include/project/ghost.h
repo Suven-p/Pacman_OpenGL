@@ -3,8 +3,14 @@
 #include <project/common.h>
 #include <project/sprite.h>
 #include <set>
+#include <spdlog/sinks/basic_file_sink.h>
 
-enum struct GhostMode{chase, scatter, frightened};
+enum struct GhostMode
+{
+    chase,
+    scatter,
+    frightened
+};
 
 class Ghost : public Sprite
 {
@@ -17,6 +23,7 @@ class Ghost : public Sprite
     void getNewPosition();
     std::set<DIRECTION> possibleDirections();
     GhostMode currentMode;
+    std::shared_ptr<spdlog::logger> logger;
 
 public:
     Ghost(std::string name);
