@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <glad/glad.h>
-#include <GL/freeglut.h>
+#include <GLFW/glfw3.h>
 #include <project/helpers.h>
 #include <project/CMakeConfig.h>
 

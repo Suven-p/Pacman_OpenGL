@@ -29,14 +29,21 @@ set(${PROJECT_NAME}_SOURCES
     src/windowManager.cpp
     src/pacman.cpp
 )
-file(GLOB_RECURSE ${PROJECT_NAME}_HEADERS include/*.h include/*.hpp)
+file(GLOB_RECURSE ${PROJECT_NAME}_HEADERS
+    include/*.h
+    include/*.hpp
+    glfw/include/*.h
+)
 file(GLOB_RECURSE
     SPDLOG_HEADERS
     ${CMAKE_SOURCE_DIR}/spdlog/include/*.h
     ${CMAKE_SOURCE_DIR}/spdlog/include/*.hpp
 )
 
-set(USE_32BIT False CACHE BOOL "Use 32 bit library")
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+add_subdirectory(${CMAKE_SOURCE_DIR}/glfw)
 
 add_executable(${PROJECT_NAME}
     ${${PROJECT_NAME}_SOURCES}
@@ -49,37 +56,9 @@ if (UNIX)
     set(EXTRA_LIBS
         dl
     )
-elseif(WIN32)
-    set(EXTRA_LIBS)
-    if (${CMAKE_GENERATOR} MATCHES "^Visual Studio")
-        set(FREEGLUT_DIR msvc)
-    else()
-        set(FREEGLUT_DIR mingw)
-    endif()
-
-    if (USE_32BIT)
-        message(STATUS "Using 32 bit libraries for freeglut.")
-        set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/freeglut/${FREEGLUT_DIR}/x86")
-        add_custom_command(
-            TARGET ${PROJECT_NAME}
-            POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/freeglut/${FREEGLUT_DIR}/x86/bin/freeglut.dll $<TARGET_FILE_DIR:${PROJECT_NAME}>/freeglut.dll
-        )
-    else()
-         message(STATUS "Using 64 bit libraries for freeglut.")
-        set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/freeglut/${FREEGLUT_DIR}/x64")
-        add_custom_command(
-            TARGET ${PROJECT_NAME}
-            POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/freeglut/${FREEGLUT_DIR}/x64/bin/freeglut.dll $<TARGET_FILE_DIR:${PROJECT_NAME}>/freeglut.dll
-        )
-    endif()
-else()
-    message(WARNING "This OS might not be supported!!!")
 endif()
 
 find_package(OpenGL REQUIRED)
-find_package(GLUT REQUIRED)
 
 set_target_properties(${PROJECT_NAME}
     PROPERTIES
@@ -87,16 +66,16 @@ set_target_properties(${PROJECT_NAME}
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
 )
 target_include_directories(${PROJECT_NAME} PUBLIC
-    "include"
+    ${CMAKE_SOURCE_DIR}/include
     ${OPENGL_INCLUDE_DIR}
-    ${GLUT_INCLUDE_DIR}
+    ${CMAKE_SOURCE_DIR}/glfw/include
     ${CMAKE_SOURCE_DIR}/spdlog/include
 )
 target_link_libraries(${PROJECT_NAME} PUBLIC
     ${EXTRA_LIBS}
     OpenGL::GL
     OpenGL::GLU
-    ${GLUT_LIBRARIES}
+    glfw
 )
 
 add_custom_command(

@@ -15,7 +15,7 @@ enum struct DIRECTION : int
 
 std::string toString(DIRECTION d);
 
-struct freeglutData
+struct windowData
 {
     int *argc;
     char **argv;

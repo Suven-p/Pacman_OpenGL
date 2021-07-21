@@ -29,10 +29,10 @@ unsigned long long Game::lastRedraw = 0;
 unsigned long long Game::deltaTime = 0;
 std::unordered_map<int, int> Game::special_key_map =
     {
-        {GLUT_KEY_DOWN, int(DIRECTION::down)},
-        {GLUT_KEY_UP, int(DIRECTION::up)},
-        {GLUT_KEY_LEFT, int(DIRECTION::left)},
-        {GLUT_KEY_LEFT, int(DIRECTION::right)}};
+        {0, int(DIRECTION::down)},
+        {0, int(DIRECTION::up)},
+        {0, int(DIRECTION::left)},
+        {0, int(DIRECTION::right)}};
 std::vector<bool> Game::special_key_states(Game::special_key_map.size(), false);
 
 Game *Game::getInstance()
@@ -46,7 +46,7 @@ Game *Game::getInstance()
 
 void Game::render()
 {
-    int currentTime = glutGet(GLUT_ELAPSED_TIME);
+    double currentTime = glfwGetTime() * 1000.0f;
     deltaTime = currentTime - lastRedraw;
     lastRedraw = currentTime;
 
@@ -60,7 +60,6 @@ void Game::render()
     ResourceManager::GetSprite("inky")->draw("mainShader");
     ResourceManager::GetSprite("pacman")->draw("mainShader");
     baseMapPtr->drawObstacles("mainShader");
-    glutSwapBuffers();
 }
 
 void Game::key_down(unsigned char key, int x, int y)

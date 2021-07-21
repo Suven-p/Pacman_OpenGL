@@ -15,7 +15,7 @@ void GLAPIENTRY MessageCallback(GLenum source,
 
 int main(int argc, char **argv)
 {
-    freeglutData windowData;
+    windowData windowData;
     windowData.argc = &argc;
     windowData.argv = argv;
     windowData.width = 448;
