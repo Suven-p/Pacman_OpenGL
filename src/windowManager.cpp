@@ -40,6 +40,7 @@ void WindowManager::createNewWindow(const std::string &windowName, const windowD
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, windowResizeCallback);
+    glfwSwapInterval(1);
 }
 
 std::pair<double, double> WindowManager::getWindowSize()
