@@ -4,6 +4,7 @@
 #include <project/resourceManager.h>
 #include <project/map.h>
 #include <project/ghost.h>
+#include <project/pacman.h>
 
 Game::Game()
 {
@@ -11,11 +12,14 @@ Game::Game()
     ResourceManager::LoadTexture("resources/map/pacman_map.png", true, "baseMap");
     ResourceManager::LoadTexture("resources/blinky.png", true, "blinky");
     ResourceManager::LoadTexture("resources/inky.png", true, "inky");
+    ResourceManager::LoadTexture("resources/pacman.png", true, "pacman");
     ResourceManager::LoadSprite("baseMap", std::make_shared<Map>());
     ResourceManager::LoadSprite("blinky", std::make_shared<Ghost>("blinky"));
     ResourceManager::LoadSprite("inky", std::make_shared<Ghost>("inky"));
+    ResourceManager::LoadSprite("pacman", std::make_shared<Pacman>());
     ResourceManager::GetSprite("blinky")->setPosition(std::make_pair(10, 29));
     ResourceManager::GetSprite("inky")->setPosition(std::make_pair(2, 1));
+    ResourceManager::GetSprite("pacman")->setPosition(std::make_pair(13.5, 23));
 }
 
 float Game::baseSpeed = 0.01;
@@ -54,6 +58,7 @@ void Game::render()
     baseMapPtr->drawGridLines("mainShader");
     ResourceManager::GetSprite("blinky")->draw("mainShader");
     ResourceManager::GetSprite("inky")->draw("mainShader");
+    ResourceManager::GetSprite("pacman")->draw("mainShader");
     baseMapPtr->drawObstacles("mainShader");
     glutSwapBuffers();
 }
