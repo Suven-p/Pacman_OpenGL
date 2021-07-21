@@ -1,4 +1,4 @@
-[![Build](https://github.com/Suven-p/Pacman_OpenGL/actions/workflows/cmake-build.yml/badge.svg?branch=main)](https://github.com/Suven-p/Pacman_OpenGL/actions/workflows/cmake-build.yml)
+[![Build](https://github.com/Suven-p/Pacman_OpenGL/actions/workflows/build.yml/badge.svg)](https://github.com/Suven-p/Pacman_OpenGL/actions/workflows/build.yml)
 [![CodeQL](https://github.com/Suven-p/Pacman_OpenGL/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/Suven-p/Pacman_OpenGL/actions/workflows/codeql-analysis.yml)
 
 # Pacman
