@@ -12,6 +12,7 @@ You will need:
  * On linux install following packages:
    * `build-essentials` for compiler, debuggers and other basic libraries
    * `freeglut3-dev` for freeglut
+ * On windows when using gcc or g++ lower than version 9.x, there is a known bug with standard filesystem library ([Bug #78870](https://gcc.gnu.org/bugzilla/show_bug.cgi?id=78870)). Compatible versions can be downloaded using [msys2](https://www.msys2.org/#installation).
  
 ### Building The Project
 
@@ -19,7 +20,7 @@ You will need:
 First, check out the git repo:
 ```
 ❯ mkdir pacman
-❯ git clone https://github.com/Suven-p/gl_project_2.git pacman
+❯ git clone https://github.com/Suven-p/Pacman_OpenGL pacman
 ❯ cd pacman
 ```
 
@@ -39,6 +40,6 @@ Build the project using CMake. This should work for all build systems.
 ```
 
 ## Running the project
-The output executable files are located at `/path/to/pacman/bin/`. CMake should also copy required assests(images, shaders and dll files) to the `bin` directory.
+The output executable files are located at `/path/to/pacman/bin/`. CMake should automatically copy required assests(images, shaders and dll files) to the `bin` directory.
 For codeblocks, open the generated project file and change the project execution directory to `/path/to/pacman/bin/` instead of `/path/to/pacman/build/`.
 
