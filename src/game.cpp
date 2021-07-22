@@ -22,11 +22,11 @@ Game::Game()
     ResourceManager::GetSprite("pacman")->setPosition(std::make_pair(13.5, 23));
 }
 
-float Game::baseSpeed = 0.01;
+double Game::baseSpeed = 0.01;
 Game *Game::instance = nullptr;
 std::vector<bool> Game::key_states(256, false);
-unsigned long long Game::lastRedraw = 0;
-unsigned long long Game::deltaTime = 0;
+double Game::lastRedraw = 0;
+double Game::deltaTime = 0;
 std::unordered_map<int, int> Game::special_key_map =
     {
         {0, int(DIRECTION::down)},
@@ -46,8 +46,8 @@ Game *Game::getInstance()
 
 void Game::render()
 {
-    double currentTime = glfwGetTime() * 1000.0f;
-    deltaTime = currentTime - lastRedraw;
+    double currentTime = (glfwGetTime() * 1000.0);
+    deltaTime = std::min(currentTime - lastRedraw, 25.0);
     lastRedraw = currentTime;
 
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
@@ -82,17 +82,17 @@ void Game::special_key_up(int key, int x, int y)
     Game::special_key_states[Game::special_key_map[key]] = false;
 }
 
-float Game::getSpeed()
+double Game::getSpeed()
 {
     return Game::baseSpeed;
 }
 
-void Game::setSpeed(float newSpeed)
+void Game::setSpeed(double newSpeed)
 {
     Game::baseSpeed = newSpeed;
 }
 
-unsigned long long Game::getTime()
+double Game::getTime()
 {
     return Game::deltaTime;
 }

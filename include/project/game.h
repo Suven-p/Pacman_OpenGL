@@ -18,10 +18,9 @@ class Game
     static std::vector<bool> key_states;
     static std::unordered_map<int, int> special_key_map;
     static std::vector<bool> special_key_states;
-    static float baseSpeed;
-    static unsigned long long lastRedraw;
-    static unsigned long long deltaTime;
-    
+    static double baseSpeed;
+    static double lastRedraw;
+    static double deltaTime;
 
 public:
     /**
@@ -70,21 +69,21 @@ public:
     static void special_key_up(int key, int x, int y);
     /**
      * @brief Get the value of base speed
-     * 
+     *
      */
-    static float getSpeed();
+    static double getSpeed();
     /**
      * @brief Set the value of base speed
-     * 
+     *
      * @param newSpeed Value of new speed
      */
-    static void setSpeed(float newSpeed);
+    static void setSpeed(double newSpeed);
     /**
      * @brief Get the value of delta time
-     * 
-     * @return unsigned long long 
+     *
+     * @return unsigned long long
      */
-    static unsigned long long getTime();
+    static double getTime();
 };
 
 #endif
