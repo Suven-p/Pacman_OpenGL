@@ -6,7 +6,7 @@
 WindowManager::WindowManager(){};
 WindowManager *WindowManager::instance = nullptr;
 void windowResizeCallback(GLFWwindow *window, int width, int height);
-void inputCallback(GLFWwindow *window);
+void inputCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
 
 WindowManager *WindowManager::getInstance()
 {
@@ -41,6 +41,7 @@ void WindowManager::createNewWindow(const std::string &windowName, const windowD
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, windowResizeCallback);
+    glfwSetKeyCallback(window, inputCallback);
     glfwSwapInterval(1);
 }
 
@@ -62,7 +63,6 @@ void WindowManager::run()
 {
     while (!glfwWindowShouldClose(window))
     {
-        inputCallback(window);
         Game::getInstance()->render();
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -75,6 +75,32 @@ void WindowManager::windowResizeCallback(GLFWwindow *window, int w, int h)
     glViewport(0, 0, w, h);
 }
 
-void inputCallback(GLFWwindow *window)
+void inputCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
+    switch (action)
+    {
+    case GLFW_PRESS:
+    {
+        if (key < 256)
+        {
+            Game::getInstance()->key_down(key, 0, 0);
+        }
+        else
+        {
+            Game::getInstance()->special_key_down(key, 0, 0);
+        }
+        break;
+    }
+    case GLFW_RELEASE:
+    {
+        if (key < 256)
+        {
+            Game::getInstance()->key_up(key, 0, 0);
+        }
+        else
+        {
+            Game::getInstance()->special_key_up(key, 0, 0);
+        }
+    }
+    }
 }

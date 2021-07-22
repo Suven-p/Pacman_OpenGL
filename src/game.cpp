@@ -5,6 +5,7 @@
 #include <project/map.h>
 #include <project/ghost.h>
 #include <project/pacman.h>
+#include <spdlog/spdlog.h>
 
 Game::Game()
 {
@@ -29,10 +30,10 @@ double Game::lastRedraw = 0;
 double Game::deltaTime = 0;
 std::unordered_map<int, int> Game::special_key_map =
     {
-        {0, int(DIRECTION::down)},
-        {0, int(DIRECTION::up)},
-        {0, int(DIRECTION::left)},
-        {0, int(DIRECTION::right)}};
+        {GLFW_KEY_DOWN, int(DIRECTION::down)},
+        {GLFW_KEY_UP, int(DIRECTION::up)},
+        {GLFW_KEY_LEFT, int(DIRECTION::left)},
+        {GLFW_KEY_RIGHT, int(DIRECTION::right)}};
 std::vector<bool> Game::special_key_states(Game::special_key_map.size(), false);
 
 Game *Game::getInstance()
@@ -74,12 +75,20 @@ void Game::key_up(unsigned char key, int x, int y)
 
 void Game::special_key_down(int key, int x, int y)
 {
-    Game::special_key_states[Game::special_key_map[key]] = true;
+    if (Game::special_key_map.count(key))
+    {
+        Game::special_key_states[Game::special_key_map[key]] = true;
+    }
+    spdlog::debug("Switching direction to {}", toString(DIRECTION(Game::special_key_map[key])));
 }
 
 void Game::special_key_up(int key, int x, int y)
 {
-    Game::special_key_states[Game::special_key_map[key]] = false;
+    if (Game::special_key_map.count(key))
+    {
+        Game::special_key_states[Game::special_key_map[key]] = false;
+    }
+    spdlog::debug("Switching direction to {}", toString(DIRECTION(Game::special_key_map[key])));
 }
 
 double Game::getSpeed()
