@@ -225,7 +225,6 @@ DIRECTION Ghost::setNextDirection()
 void Ghost::getNewPosition()
 {
     float diffPixels = Game::getInstance()->getSpeed() * Game::getInstance()->getTime() * 0.75;
-    // float diffPixels = Game::getInstance()->getSpeed() * 16 * 0.75;
     auto oldPosition = position;
     bool reachedNewTile = false;
     switch (currentDirection)
