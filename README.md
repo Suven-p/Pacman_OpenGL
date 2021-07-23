@@ -1,5 +1,4 @@
-[![Build-Linux](https://github.com/Suven-p/gl_project_2/actions/workflows/cmake-linux.yml/badge.svg)](https://github.com/Suven-p/gl_project_2/actions/workflows/cmake-linux.yml)
-[![Build-Windows](https://github.com/Suven-p/gl_project_2/actions/workflows/cmake-windows.yml/badge.svg)](https://github.com/Suven-p/gl_project_2/actions/workflows/cmake-windows.yml)
+[![Build](https://github.com/Suven-p/Pacman_OpenGL/actions/workflows/build.yml/badge.svg?branch=glfw)](https://github.com/Suven-p/Pacman_OpenGL/actions/workflows/build.yml)
 [![CodeQL](https://github.com/Suven-p/Pacman_OpenGL/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/Suven-p/Pacman_OpenGL/actions/workflows/codeql-analysis.yml)
 
 # Pacman
