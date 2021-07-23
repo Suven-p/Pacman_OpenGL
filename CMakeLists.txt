@@ -34,11 +34,11 @@ file(GLOB_RECURSE ${PROJECT_NAME}_HEADERS
     include/*.hpp
     glfw/include/*.h
 )
-file(GLOB_RECURSE
-    SPDLOG_HEADERS
-    ${CMAKE_SOURCE_DIR}/spdlog/include/*.h
-    ${CMAKE_SOURCE_DIR}/spdlog/include/*.hpp
-)
+
+if(NOT TARGET spdlog)
+    add_subdirectory(spdlog)
+endif()
+
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
@@ -48,7 +48,6 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/glfw)
 add_executable(${PROJECT_NAME}
     ${${PROJECT_NAME}_SOURCES}
     ${${PROJECT_NAME}_HEADERS}
-    ${SPDLOG_HEADERS}
 )
 
 # Os specific configurations
@@ -69,13 +68,14 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     ${CMAKE_SOURCE_DIR}/include
     ${OPENGL_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}/glfw/include
-    ${CMAKE_SOURCE_DIR}/spdlog/include
 )
 target_link_libraries(${PROJECT_NAME} PUBLIC
     ${EXTRA_LIBS}
     OpenGL::GL
     OpenGL::GLU
+    PRIVATE
     glfw
+    spdlog::spdlog
 )
 
 add_custom_command(
