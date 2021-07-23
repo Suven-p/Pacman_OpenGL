@@ -1,7 +1,6 @@
 #include <project/resourceManager.h>
 #include <spdlog/spdlog.h>
 
-#include <iostream>
 #include <sstream>
 #include <fstream>
 
