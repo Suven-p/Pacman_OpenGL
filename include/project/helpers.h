@@ -1,6 +1,7 @@
 #ifndef HELPERS_HPP_GUARD
 #define HELPERS_HPP_GUARD
 
+#include <string>
 #include <project/common.h>
 
 void draw_gridlines();
