@@ -3,6 +3,7 @@
 
 #include <sstream>
 #include <fstream>
+#include <filesystem>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <project/stb_image.h>
@@ -62,6 +63,8 @@ void ResourceManager::Clear()
 
 Shader ResourceManager::loadShaderFromFile(const char *vShaderFile, const char *fShaderFile, const char *gShaderFile)
 {
+    auto vShaderFileResolved = resolvePath(vShaderFile);
+    auto fShaderFileResolved = resolvePath(fShaderFile);
     // 1. retrieve the vertex/fragment source code from filePath
     std::string vertexCode;
     std::string fragmentCode;
@@ -69,8 +72,8 @@ Shader ResourceManager::loadShaderFromFile(const char *vShaderFile, const char *
     try
     {
         // open files
-        std::ifstream vertexShaderFile(vShaderFile);
-        std::ifstream fragmentShaderFile(fShaderFile);
+        std::ifstream vertexShaderFile(vShaderFileResolved.c_str());
+        std::ifstream fragmentShaderFile(fShaderFileResolved.c_str());
         std::stringstream vShaderStream, fShaderStream;
         // read file's buffer contents into streams
         vShaderStream << vertexShaderFile.rdbuf();
@@ -84,7 +87,8 @@ Shader ResourceManager::loadShaderFromFile(const char *vShaderFile, const char *
         // if geometry shader path is present, also load a geometry shader
         if (gShaderFile != nullptr)
         {
-            std::ifstream geometryShaderFile(gShaderFile);
+            auto gShaderFileResolved = resolvePath(gShaderFile);
+            std::ifstream geometryShaderFile(gShaderFileResolved.c_str());
             std::stringstream gShaderStream;
             gShaderStream << geometryShaderFile.rdbuf();
             geometryShaderFile.close();
@@ -93,7 +97,13 @@ Shader ResourceManager::loadShaderFromFile(const char *vShaderFile, const char *
     }
     catch (std::exception e)
     {
-        spdlog::error("SHADER::Failed to read shader files");
+        spdlog::error("SHADER::Failed to read shader files.\n"
+                      " Vertex Shader Path: {}\n"
+                      " Fragment Shader Path: {}\n"
+                      " Geometric Shadder Path: {}\n",
+                      std::string(vShaderFile),
+                      std::string(fShaderFile),
+                      std::string(gShaderFile));
     }
     const char *vShaderCode = vertexCode.c_str();
     const char *fShaderCode = fragmentCode.c_str();
@@ -106,6 +116,7 @@ Shader ResourceManager::loadShaderFromFile(const char *vShaderFile, const char *
 
 Texture2D ResourceManager::loadTextureFromFile(const char *file, bool alpha)
 {
+    auto fileLocation = resolvePath(file);
     // create texture object
     Texture2D texture;
     if (alpha)
@@ -117,7 +128,7 @@ Texture2D ResourceManager::loadTextureFromFile(const char *file, bool alpha)
     int width, height, nrChannels;
 
     stbi_set_flip_vertically_on_load(true);
-    unsigned char *data = stbi_load(file, &width, &height, &nrChannels, 0);
+    unsigned char *data = stbi_load(fileLocation.c_str(), &width, &height, &nrChannels, 0);
     if (!data)
     {
         spdlog::error("Failed to load texture file: {}", file);
@@ -127,4 +138,86 @@ Texture2D ResourceManager::loadTextureFromFile(const char *file, bool alpha)
     // and finally free image data
     stbi_image_free(data);
     return texture;
+}
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#include <windows.h>
+std::filesystem::path getExecutablePath()
+{
+    WCHAR buffer[MAX_PATH];
+    GetModuleFileNameW(NULL, buffer, MAX_PATH);
+    return std::filesystem::path(buffer);
+}
+#elif defined(__linux__)
+std::filesystem::path getExecutablePath()
+{
+    auto execPath = std::filesystem::read_symlink("/proc/self/exe");
+    auto reqPath = execPath.parent_path();
+    return reqPath;
+}
+#else
+std::filesystem::path getExecutablePath()
+{
+    return "";
+}
+#endif
+
+std::string ResourceManager::resolvePath(const std::string &toResolve)
+{
+    auto pathToResolve = std::filesystem::path(toResolve);
+
+    auto executionPath = getExecutablePath();
+    if (std::filesystem::exists(executionPath))
+    {
+        auto attemptPath = executionPath / pathToResolve;
+        if (std::filesystem::exists(attemptPath))
+        {
+            std::string fullPath = attemptPath.string();
+            spdlog::debug("Resolved {} to {}", toResolve, fullPath);
+            return fullPath;
+        }
+        else
+        {
+            spdlog::debug("Received path to executable as: \"{}\""
+                          "but could not find file \"{}\"",
+                          executionPath.string(), toResolve);
+        }
+    }
+
+    auto binaryPath = std::filesystem::path(BINARY_DIRECTORY);
+    if (std::filesystem::exists(binaryPath))
+    {
+        auto attemptPath = binaryPath / pathToResolve;
+        if (std::filesystem::exists(attemptPath))
+        {
+            std::string fullPath = attemptPath.string();
+            spdlog::debug("Resolved {} to {}", toResolve, fullPath);
+            return fullPath;
+        }
+        else
+        {
+            spdlog::debug("Received path to binary directory as: \"{}\""
+                          "but could not find file \"{}\"",
+                          BINARY_DIRECTORY, toResolve);
+        }
+    }
+    else
+    {
+        spdlog::debug("Stored path to binary: \"{}\" is invalid.", BINARY_DIRECTORY);
+    }
+
+    auto currentPath = std::filesystem::current_path();
+    auto attemptPath = currentPath / pathToResolve;
+    if (std::filesystem::exists(attemptPath))
+    {
+        std::string fullPath = attemptPath.string();
+        spdlog::debug("Resolved {} to {}", toResolve, fullPath);
+        return fullPath;
+    }
+    else
+    {
+        spdlog::error("Could not find file: \"{}\"", toResolve);
+    }
+
+    return "";
 }
