@@ -35,10 +35,8 @@ file(GLOB_RECURSE ${PROJECT_NAME}_HEADERS
     glfw/include/*.h
 )
 
-if(NOT TARGET spdlog)
-    add_subdirectory(spdlog)
-endif()
-
+set(SPDLOG_ENABLE_PCH ON CACHE BOOL "Build static or shared library using precompiled header to speed up compilation time")
+add_subdirectory(spdlog)
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
