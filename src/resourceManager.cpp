@@ -146,7 +146,9 @@ std::filesystem::path getExecutablePath()
 {
     WCHAR buffer[MAX_PATH];
     GetModuleFileNameW(NULL, buffer, MAX_PATH);
-    return std::filesystem::path(buffer);
+    auto execPath = std::filesystem::path(buffer);
+    auto reqPath = execPath.parent_path();
+    return reqPath;
 }
 #elif defined(__linux__)
 std::filesystem::path getExecutablePath()
