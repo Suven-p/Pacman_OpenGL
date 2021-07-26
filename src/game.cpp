@@ -78,7 +78,6 @@ void Game::special_key_down(int key, int x, int y)
     Game::special_key_states[Game::special_key_map[key]] = true;
     
     getPacmanPtr()->setDirection(DIRECTION(Game::special_key_map[key]));
-    std::cout<<toString(DIRECTION(Game::special_key_map[key]))<<std::endl;
 }
 
 void Game::special_key_up(int key, int x, int y)

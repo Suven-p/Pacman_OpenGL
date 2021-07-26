@@ -153,4 +153,20 @@ void Pacman::getNewPosition()
     }
     }
     
+    auto baseMapPtr = std::dynamic_pointer_cast<Map>(ResourceManager::GetSprite("baseMap"));
+    auto possible = baseMapPtr->possibleDirections(std::pair<int,int>(oldPosition));
+    bool collision = true;
+
+    for(auto itr = possible.begin();itr!=possible.end(); ++itr)
+    {
+        if(*itr == currentDirection)
+        {
+            collision = false;
+        }
+    }
+    if(collision)
+    {
+        position = std::pair<int,int>(oldPosition);
+    }
+    
 }
