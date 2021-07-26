@@ -18,7 +18,7 @@ class Game
     static std::vector<bool> key_states;
     static std::unordered_map<int, int> special_key_map;
     static std::vector<bool> special_key_states;
-    * @brief Get the current instance.
+    /** @brief Get the current instance.
     * Get the current instance if it exists and generate one if it doesn't exist.
     * This is used to enforce singleton pattern.
     */
