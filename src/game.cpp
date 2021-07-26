@@ -5,7 +5,8 @@
 #include <project/map.h>
 #include <project/ghost.h>
 #include <project/pacman.h>
-#include <iostream>
+#include <spdlog/spdlog.h>
+
 Game::Game()
 {
     ResourceManager::LoadShader("shaders/shader.vs", "shaders/shader.fs", nullptr, "mainShader");
@@ -22,17 +23,17 @@ Game::Game()
     ResourceManager::GetSprite("pacman")->setPosition(std::make_pair(13.5, 23));//13.5,23
 }
 
-float Game::baseSpeed = 0.01;
+double Game::baseSpeed = 0.01;
 Game *Game::instance = nullptr;
 std::vector<bool> Game::key_states(256, false);
-unsigned long long Game::lastRedraw = 0;
-unsigned long long Game::deltaTime = 0;
+double Game::lastRedraw = 0;
+double Game::deltaTime = 0;
 std::unordered_map<int, int> Game::special_key_map =
     {
-        {GLUT_KEY_DOWN, int(DIRECTION::down)},
-        {GLUT_KEY_UP, int(DIRECTION::up)},
-        {GLUT_KEY_LEFT, int(DIRECTION::left)},
-        {GLUT_KEY_LEFT, int(DIRECTION::right)}};
+        {GLFW_KEY_DOWN, int(DIRECTION::down)},
+        {GLFW_KEY_UP, int(DIRECTION::up)},
+        {GLFW_KEY_LEFT, int(DIRECTION::left)},
+        {GLFW_KEY_RIGHT, int(DIRECTION::right)}};
 std::vector<bool> Game::special_key_states(Game::special_key_map.size(), false);
 
 Game *Game::getInstance()
@@ -46,8 +47,8 @@ Game *Game::getInstance()
 
 void Game::render()
 {
-    int currentTime = glutGet(GLUT_ELAPSED_TIME);
-    deltaTime = currentTime - lastRedraw;
+    double currentTime = (glfwGetTime() * 1000.0);
+    deltaTime = std::min(currentTime - lastRedraw, 25.0);
     lastRedraw = currentTime;
 
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
@@ -60,7 +61,6 @@ void Game::render()
     ResourceManager::GetSprite("inky")->draw("mainShader");
     ResourceManager::GetSprite("pacman")->draw("mainShader");
     baseMapPtr->drawObstacles("mainShader");
-    glutSwapBuffers();
 }
 
 void Game::key_down(unsigned char key, int x, int y)
@@ -75,29 +75,23 @@ void Game::key_up(unsigned char key, int x, int y)
 
 void Game::special_key_down(int key, int x, int y)
 {
-    Game::special_key_states[Game::special_key_map[key]] = true;
     
     getPacmanPtr()->setDirection(DIRECTION(Game::special_key_map[key]));
 }
-
-void Game::special_key_up(int key, int x, int y)
-{
-    Game::special_key_states[Game::special_key_map[key]] = false;
+    spdlog::debug("Switching direction to {}", toString(DIRECTION(Game::special_key_map[key])));
 }
 
-
-
-float Game::getSpeed()
+double Game::getSpeed()
 {
     return Game::baseSpeed;
 }
 
-void Game::setSpeed(float newSpeed)
+void Game::setSpeed(double newSpeed)
 {
     Game::baseSpeed = newSpeed;
 }
 
-unsigned long long Game::getTime()
+double Game::getTime()
 {
     return Game::deltaTime;
 }
