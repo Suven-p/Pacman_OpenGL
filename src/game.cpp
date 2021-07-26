@@ -5,7 +5,7 @@
 #include <project/map.h>
 #include <project/ghost.h>
 #include <project/pacman.h>
-
+#include <iostream>
 Game::Game()
 {
     ResourceManager::LoadShader("shaders/shader.vs", "shaders/shader.fs", nullptr, "mainShader");
@@ -19,7 +19,7 @@ Game::Game()
     ResourceManager::LoadSprite("pacman", std::make_shared<Pacman>());
     ResourceManager::GetSprite("blinky")->setPosition(std::make_pair(10, 29));
     ResourceManager::GetSprite("inky")->setPosition(std::make_pair(2, 1));
-    ResourceManager::GetSprite("pacman")->setPosition(std::make_pair(13.5, 23));
+    ResourceManager::GetSprite("pacman")->setPosition(std::make_pair(13.5, 23));//13.5,23
 }
 
 float Game::baseSpeed = 0.01;
@@ -76,12 +76,17 @@ void Game::key_up(unsigned char key, int x, int y)
 void Game::special_key_down(int key, int x, int y)
 {
     Game::special_key_states[Game::special_key_map[key]] = true;
+    
+    getPacmanPtr()->setDirection(DIRECTION(Game::special_key_map[key]));
+    std::cout<<toString(DIRECTION(Game::special_key_map[key]))<<std::endl;
 }
 
 void Game::special_key_up(int key, int x, int y)
 {
     Game::special_key_states[Game::special_key_map[key]] = false;
 }
+
+
 
 float Game::getSpeed()
 {

@@ -1,7 +1,10 @@
-#include<project/pacman.h>
+#include <project/pacman.h>
 #include <project/game.h>
 #include <project/resourceManager.h>
-
+#include <project/common.h>
+#include <iostream>
+#include <set>
+#include <iterator>
 Pacman::Pacman()
 {
     glGenVertexArrays(1, &vao);
@@ -13,6 +16,7 @@ Pacman::Pacman()
         -0.5f, 1.5f, 0.1f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
         1.5f, 1.5f, 0.1f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
         1.5f, -0.5f, 0.1f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f};
+
 
     float texCoord[] = {
         0.0f, 1.0f,
@@ -41,10 +45,12 @@ Pacman::Pacman()
 
     currentDirection = DIRECTION::right;
     nextDirection = DIRECTION::right;
-    
+
 }
+
 void Pacman::draw(std::string shader)
 {
+    getNewPosition();
     ResourceManager::GetShader(shader).Use();
     glBindVertexArray(vao);
     glm::mat4 model = glm::mat4(1.0f);
@@ -56,6 +62,10 @@ void Pacman::draw(std::string shader)
 
     glm::mat4 temp_model = glm::mat4(1.0f);
     temp_model = glm::translate(model, glm::vec3(position.first, position.second, 0.0f));
+    temp_model = glm::translate(temp_model, glm::vec3(0.5f, 0.5f, 0.0f));
+    temp_model = glm::rotate(temp_model,glm::radians(int(currentDirection)*90.0f),glm::vec3(0.0,0.0,1.0));
+    temp_model = glm::translate(temp_model, glm::vec3(-0.5f,-0.5f, 0.0f));
+
 
     ResourceManager::GetShader(shader).SetMatrix4("model", temp_model, true);
 
@@ -74,4 +84,73 @@ DIRECTION Pacman::getDirection()
 void Pacman::setDirection(DIRECTION newDirection)
 {
     currentDirection = newDirection;
+}
+std::shared_ptr<Pacman> getPacmanPtr()
+{
+    return std::dynamic_pointer_cast<Pacman>(ResourceManager::GetSprite("pacman"));
+}
+
+void Pacman::getNewPosition()
+{
+
+    float diffPixels = Game::getInstance()->getSpeed() * Game::getInstance()->getTime() * 0.8;
+    // float diffPixels = Game::getInstance()->getSpeed() * 16 * 0.75;
+    auto oldPosition = position;
+    bool reachedNewTile = false;
+    switch (currentDirection)
+    {
+    case DIRECTION::left:
+    {
+        position.first -= diffPixels;
+        if (oldPosition.first > std::ceil(position.first) and position.first <= std::ceil(position.first))
+        {
+            reachedNewTile = true;
+            if (nextDirection == DIRECTION::up || nextDirection == DIRECTION::down)
+            {
+                position.first = std::ceil(position.first);
+            }
+        }
+        break;
+    }
+    case DIRECTION::up:
+    {
+        position.second -= diffPixels;
+        if (oldPosition.second > std::ceil(position.second) and position.second <= std::ceil(position.second))
+        {
+            reachedNewTile = true;
+            if (nextDirection == DIRECTION::left || nextDirection == DIRECTION::right)
+            {
+                position.second = std::ceil(position.second);
+            }
+        }
+        break;
+    }
+    case DIRECTION::right:
+    {
+        position.first += diffPixels;
+        if ((int(position.first) - int(oldPosition.first)) == 1)
+        {
+            reachedNewTile = true;
+            if (nextDirection == DIRECTION::up || nextDirection == DIRECTION::down)
+            {
+                position.first = int(position.first);
+            }
+        }
+        break;
+    }
+    case DIRECTION::down:
+    {
+        position.second += diffPixels;
+        if ((int(position.second) - int(oldPosition.second)) == 1)
+        {
+            reachedNewTile = true;
+            if (nextDirection == DIRECTION::left || nextDirection == DIRECTION::right)
+            {
+                position.second = int(position.second);
+            }
+        }
+        break;
+    }
+    }
+    
 }

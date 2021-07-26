@@ -21,7 +21,7 @@ class Game
     static float baseSpeed;
     static unsigned long long lastRedraw;
     static unsigned long long deltaTime;
-    
+
 
 public:
     /**
@@ -85,6 +85,7 @@ public:
      * @return unsigned long long 
      */
     static unsigned long long getTime();
+
 };
 
 #endif
