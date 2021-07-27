@@ -17,5 +17,6 @@ public:
     DIRECTION setNextDirection();
     float getMultiplier();
     void setMultiplier(float);
+    void setNextDirection(DIRECTION);
 };
 std::shared_ptr<Pacman> getPacmanPtr();

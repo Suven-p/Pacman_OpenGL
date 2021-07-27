@@ -85,6 +85,10 @@ void Pacman::setDirection(DIRECTION newDirection)
 {
     currentDirection = newDirection;
 }
+void Pacman::setNextDirection(DIRECTION newDirection)
+{
+    nextDirection = newDirection;
+}
 std::shared_ptr<Pacman> getPacmanPtr()
 {
     return std::dynamic_pointer_cast<Pacman>(ResourceManager::GetSprite("pacman"));
