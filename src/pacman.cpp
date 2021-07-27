@@ -83,7 +83,26 @@ DIRECTION Pacman::getDirection()
 }
 void Pacman::setDirection(DIRECTION newDirection)
 {
-    currentDirection = newDirection;
+    //dont change direction if collides in the new direction
+    if(isColliding(newDirection))
+    {
+        return;
+    }
+    else
+    {
+        //prevent clipping
+        
+        if(newDirection==DIRECTION::right || newDirection==DIRECTION::left)
+        {
+            position.second = int(position.second);
+        }
+        else
+        {
+            position.first = int(position.first);
+        }
+        currentDirection = newDirection;
+    }
+    
 }
 void Pacman::setNextDirection(DIRECTION newDirection)
 {
@@ -100,7 +119,7 @@ void Pacman::getNewPosition()
     float diffPixels = Game::getInstance()->getSpeed() * Game::getInstance()->getTime() * 0.8;
     //float diffPixels = Game::getInstance()->getSpeed() * Game::getInstance()->getTime() * getMultiplier();
     // float diffPixels = Game::getInstance()->getSpeed() * 16 * 0.75;
-    auto oldPosition = position;
+    oldPosition = position;
     bool reachedNewTile = false;
     switch (currentDirection)
     {
@@ -170,17 +189,18 @@ void Pacman::getNewPosition()
         }
     }
 
-    auto baseMapPtr = std::dynamic_pointer_cast<Map>(ResourceManager::GetSprite("baseMap"));
-    auto possible = baseMapPtr->possibleDirections(std::pair<int,int>(oldPosition));
-    bool collision = true;
+    // auto baseMapPtr = std::dynamic_pointer_cast<Map>(ResourceManager::GetSprite("baseMap"));
+    // auto possible = baseMapPtr->possibleDirections(std::pair<int,int>(oldPosition));
+    // bool collision = true;
     
-    for(auto itr = possible.begin();itr!=possible.end(); ++itr)
-    {
-        if(*itr == currentDirection)
-        {
-            collision = false;
-        }
-    }
+    // for(auto itr = possible.begin();itr!=possible.end(); ++itr)
+    // {
+    //     if(*itr == currentDirection)
+    //     {
+    //         collision = false;
+    //     }
+    // }
+    bool collision = isColliding(currentDirection);
     if(collision)
     {
         //Prevent sudden tile change in left and up direction movement
@@ -204,7 +224,23 @@ void Pacman::getNewPosition()
             position = std::pair<int,int>(oldPosition);
         }
     }
+    setDirection(nextDirection);
     
+}
+bool Pacman::isColliding(DIRECTION aDirection)
+{
+    auto baseMapPtr = std::dynamic_pointer_cast<Map>(ResourceManager::GetSprite("baseMap"));
+    auto possible = baseMapPtr->possibleDirections(std::pair<int,int>(oldPosition));
+    bool collision = true;
+    
+    for(auto itr = possible.begin();itr!=possible.end(); ++itr)
+    {
+        if(*itr == aDirection)
+        {
+            collision = false;
+        }
+    }
+    return collision;
 }
 void Pacman::setMultiplier(float mul = 0.8)
 {

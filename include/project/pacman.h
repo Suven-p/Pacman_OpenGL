@@ -5,6 +5,7 @@
 class Pacman: public Sprite
 {
     DIRECTION currentDirection, nextDirection;
+    std::pair<float,float> oldPosition;
     GLuint vao,vbo[2],ebo;
     float multiplier;
 public:
@@ -18,5 +19,6 @@ public:
     float getMultiplier();
     void setMultiplier(float);
     void setNextDirection(DIRECTION);
+    bool isColliding(DIRECTION aDirection);
 };
 std::shared_ptr<Pacman> getPacmanPtr();

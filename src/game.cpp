@@ -78,7 +78,7 @@ void Game::special_key_down(int key, int x, int y)
     if (Game::special_key_map.count(key))
     {
         Game::special_key_states[Game::special_key_map[key]] = true;
-        getPacmanPtr()->setDirection(DIRECTION(Game::special_key_map[key]));
+        getPacmanPtr()->setNextDirection(DIRECTION(Game::special_key_map[key]));
     }
     spdlog::trace("Switching direction to {}", toString(DIRECTION(Game::special_key_map[key])));
 }
