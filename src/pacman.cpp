@@ -94,6 +94,7 @@ void Pacman::getNewPosition()
 {
 
     float diffPixels = Game::getInstance()->getSpeed() * Game::getInstance()->getTime() * 0.8;
+    //float diffPixels = Game::getInstance()->getSpeed() * Game::getInstance()->getTime() * getMultiplier();
     // float diffPixels = Game::getInstance()->getSpeed() * 16 * 0.75;
     auto oldPosition = position;
     bool reachedNewTile = false;
@@ -153,10 +154,22 @@ void Pacman::getNewPosition()
     }
     }
     
+    if(int(position.second)==14)
+    {
+        if(int(position.first)<=0 && currentDirection==DIRECTION::left)
+        {
+            position.first = 27;
+        }
+        else if(position.first>27 && currentDirection==DIRECTION::right)
+        {
+            position.first = 0;
+        }
+    }
+
     auto baseMapPtr = std::dynamic_pointer_cast<Map>(ResourceManager::GetSprite("baseMap"));
     auto possible = baseMapPtr->possibleDirections(std::pair<int,int>(oldPosition));
     bool collision = true;
-
+    
     for(auto itr = possible.begin();itr!=possible.end(); ++itr)
     {
         if(*itr == currentDirection)
@@ -166,7 +179,34 @@ void Pacman::getNewPosition()
     }
     if(collision)
     {
-        position = std::pair<int,int>(oldPosition);
+        //Prevent sudden tile change in left and up direction movement
+        if(currentDirection==DIRECTION::left)
+        {
+            if(position.first<int(oldPosition.first))
+            {
+                position = std::pair<int,int>(oldPosition);
+            }
+            
+        }
+        else if(currentDirection==DIRECTION::up)
+        {
+            if(position.second<int(oldPosition.second))
+            {
+                position = std::pair<int,int>(oldPosition);
+            }
+        }
+        else
+        {
+            position = std::pair<int,int>(oldPosition);
+        }
     }
     
+}
+void Pacman::setMultiplier(float mul = 0.8)
+{
+    multiplier = mul;
+}
+float Pacman::getMultiplier()
+{
+    return multiplier;
 }

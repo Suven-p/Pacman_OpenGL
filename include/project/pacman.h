@@ -6,6 +6,7 @@ class Pacman: public Sprite
 {
     DIRECTION currentDirection, nextDirection;
     GLuint vao,vbo[2],ebo;
+    float multiplier;
 public:
 
     Pacman();
@@ -14,5 +15,7 @@ public:
     void setDirection(DIRECTION newDirection);
     void getNewPosition();
     DIRECTION setNextDirection();
+    float getMultiplier();
+    void setMultiplier(float);
 };
 std::shared_ptr<Pacman> getPacmanPtr();

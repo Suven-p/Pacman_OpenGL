@@ -20,7 +20,7 @@ Game::Game()
     ResourceManager::LoadSprite("pacman", std::make_shared<Pacman>());
     ResourceManager::GetSprite("blinky")->setPosition(std::make_pair(10, 29));
     ResourceManager::GetSprite("inky")->setPosition(std::make_pair(2, 1));
-    ResourceManager::GetSprite("pacman")->setPosition(std::make_pair(13.5, 23));//13.5,23
+    ResourceManager::GetSprite("pacman")->setPosition(std::make_pair(13.5, 23));
 }
 
 double Game::baseSpeed = 0.01;
@@ -75,10 +75,20 @@ void Game::key_up(unsigned char key, int x, int y)
 
 void Game::special_key_down(int key, int x, int y)
 {
-    
-    getPacmanPtr()->setDirection(DIRECTION(Game::special_key_map[key]));
+    if (Game::special_key_map.count(key))
+    {
+        Game::special_key_states[Game::special_key_map[key]] = true;
+        getPacmanPtr()->setDirection(DIRECTION(Game::special_key_map[key]));
+    }
+    spdlog::trace("Switching direction to {}", toString(DIRECTION(Game::special_key_map[key])));
 }
-    spdlog::debug("Switching direction to {}", toString(DIRECTION(Game::special_key_map[key])));
+
+void Game::special_key_up(int key, int x, int y)
+{
+    if (Game::special_key_map.count(key))
+    {
+        Game::special_key_states[Game::special_key_map[key]] = false;
+    }
 }
 
 double Game::getSpeed()
