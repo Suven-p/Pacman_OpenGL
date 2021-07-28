@@ -1,5 +1,8 @@
 #include <project/main.h>
 #include <spdlog/spdlog.h>
+#ifdef SPDLOG_HEADER_ONLY
+#warning USING HEADER ONLY SPDLOG LIBRARY
+#endif
 
 using namespace std;
 
