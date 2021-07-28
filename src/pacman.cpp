@@ -101,6 +101,11 @@ void Pacman::setDirection(DIRECTION newDirection)
                 return;
             }
             position.second = int(position.second);
+            //fixes pacman stuck in edges
+            if(oldPosition.second<position.second)
+            {
+                return;
+            }
         }
         else
         {
@@ -110,6 +115,10 @@ void Pacman::setDirection(DIRECTION newDirection)
                 return;
             }
             position.first = int(position.first);
+            if(oldPosition.first<position.first)
+            {
+                return;
+            }
         }
         currentDirection = newDirection;
     }
@@ -202,16 +211,16 @@ void Pacman::getNewPosition()
         break;
     }
     }
-    
+    //std::cout<<position.first<<","<<position.second<<"\t"<<oldPosition.first<<","<<oldPosition.second<<std::endl;
     if(int(position.second)==14)
     {
         if(int(position.first)<=0 && currentDirection==DIRECTION::left)
         {
-            position.first = 27;
+            position.first = 28;
         }
         else if(position.first>27 && currentDirection==DIRECTION::right)
         {
-            position.first = 0;
+            position.first = -1;
         }
     }
     bool collision = isColliding(currentDirection);
