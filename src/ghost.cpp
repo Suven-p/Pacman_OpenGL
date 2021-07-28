@@ -2,6 +2,7 @@
 #include <project/ghost.h>
 #include <project/game.h>
 #include <project/resourceManager.h>
+#include <project/pacman.h>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <cmath>
@@ -20,10 +21,10 @@ Ghost::Ghost(std::string name) : name(name)
     glGenBuffers(1, &ebo);
 
     float vertices[] = {
-        -0.5f, -0.5f, 0.1f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-        -0.5f, 1.5f, 0.1f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-        1.5f, 1.5f, 0.1f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-        1.5f, -0.5f, 0.1f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f};
+        -0.5f, -0.5f, 0.3f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+        -0.5f, 1.5f, 0.3f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+        1.5f, 1.5f, 0.3f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+        1.5f, -0.5f, 0.3f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f};
 
     float texCoord[] = {
         0.0f, 1.0f,
@@ -52,7 +53,7 @@ Ghost::Ghost(std::string name) : name(name)
 
     currentDirection = DIRECTION::right;
     nextDirection = DIRECTION::right;
-    currentMode = GhostMode::scatter;
+    currentMode = GhostMode::chase;
 
     std::string loggerName = std::string("ghostLogger::") + name;
     logger = spdlog::basic_logger_mt(loggerName, "logs/ghostLog.txt");
@@ -86,7 +87,34 @@ void Ghost::draw(std::string shader)
     ResourceManager::GetShader(shader).SetFloat("textureColorMix", 0.0f);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void *)0);
 
+    drawEyes(shader);
+
     glBindVertexArray(0);
+}
+
+void Ghost::drawEyes(std::string shader)
+{
+    Texture2D texture;
+    switch(currentDirection)
+    {
+    case DIRECTION::up:
+        texture = ResourceManager::GetTexture("eyesUp");
+        break;
+    case DIRECTION::down:
+        texture = ResourceManager::GetTexture("eyesDown");
+        break;
+    case DIRECTION::right:
+        texture = ResourceManager::GetTexture("eyesRight");
+        break;
+    case DIRECTION::left:
+        texture = ResourceManager::GetTexture("eyesLeft");
+        break;
+    }
+
+    texture.Bind(0);
+    ResourceManager::GetShader(shader).SetInteger("texture1", 0, true);
+    ResourceManager::GetShader(shader).SetFloat("textureColorMix", 0.0f);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void *)0);
 }
 
 DIRECTION Ghost::setNextDirection()
@@ -136,23 +164,87 @@ DIRECTION Ghost::setNextDirection()
             std::advance(it, index);
             nextDirection = *it;
         }
-        else if (currentMode == GhostMode::scatter)
+        else 
         {
-            if (name == "blinky")
+            if (currentMode == GhostMode::scatter)
             {
-                targetTile = {25, -3};
+                if (name == "blinky")
+                {
+                    targetTile = {25, -3};
+                }
+                else if (name == "inky")
+                {
+                    targetTile = {27, 32};
+                }
+                else if (name == "pinky")
+                {
+                    targetTile = {2, -3};
+                }
+                else if (name == "clyde")
+                {
+                    targetTile = {0, 32};
+                }
             }
-            else if (name == "inky")
+            else if (currentMode == GhostMode::chase)
             {
-                targetTile = {27, 32};
-            }
-            else if (name == "pinky")
-            {
-                targetTile = {2, -3};
-            }
-            else if (name == "clyde")
-            {
-                targetTile = {0, 32};
+                auto pacmanPtr = getPacmanPtr();
+                DIRECTION pacmanDirection = pacmanPtr->getDirection();
+                auto pacmanPosition = pacmanPtr->getPosition();
+                targetTile = pacmanPosition;
+                if (name == "blinky")
+                {
+                    // target already set to pacman postion
+                }
+                else if (name == "inky")
+                {
+                    auto blinkyPtr = ResourceManager::GetSprite("blinky");
+                    auto blinkyPosition = blinkyPtr->getPosition();
+                    switch(pacmanDirection)
+                    {
+                    case DIRECTION::up:
+                        pacmanPosition.second -= 2;
+                        break;
+                    case DIRECTION::down:
+                        pacmanPosition.second += 2;
+                        break;
+                    case DIRECTION::left:
+                        pacmanPosition.first -= 2;
+                        break;
+                    case DIRECTION::right:
+                        pacmanPosition.first += 2;
+                        break;
+                    }
+                    float xdist = pacmanPosition.first - blinkyPosition.first;
+                    float ydist = pacmanPosition.second - blinkyPosition.second;
+                    targetTile = {blinkyPosition.first + 2*xdist, blinkyPosition.second + 2*ydist};
+                }
+                else if (name == "pinky")
+                {
+                    switch(pacmanDirection)
+                    {
+                    case DIRECTION::up:
+                        targetTile.second -= 3;
+                        break;
+                    case DIRECTION::down:
+                        targetTile.second += 3;
+                        break;
+                    case DIRECTION::left:
+                        targetTile.first -= 3;
+                        break;
+                    case DIRECTION::right:
+                        targetTile.first += 3;
+                        break;
+                    }
+                }
+                else if (name == "clyde")
+                {
+                    float dist2 = sqrt(pow((position.first - pacmanPosition.first), 2) + pow((position.second - pacmanPosition.second), 2));
+                    if (dist2 <= 8) 
+                    {
+                        targetTile = {0, 32};
+                    }
+                    // else target already set to pacman position
+                }
             }
             logger->trace("Target Tile is: {} {}", targetTile.first, targetTile.second);
             float minValue = 1e9;
@@ -202,21 +294,6 @@ DIRECTION Ghost::setNextDirection()
             }
             nextDirection = bestDirection;
             logger->trace("Best direction is set to be: {}", toString(bestDirection));
-        }
-        else if (currentMode == GhostMode::chase)
-        {
-            if (name == "blinky")
-            {
-            }
-            else if (name == "inky")
-            {
-            }
-            else if (name == "pinky")
-            {
-            }
-            else if (name == "clyde")
-            {
-            }
         }
     }
     return nextDirection;
@@ -287,8 +364,27 @@ void Ghost::getNewPosition()
         logger->trace("Current position is: {} {}", position.first, position.second);
         logger->trace("Current direction is: {}", toString(currentDirection));
         logger->trace("Switching direction to {}", toString(nextDirection));
-        currentDirection = nextDirection;
-        setNextDirection();
+        if(int(position.second)==14)
+        {
+            if(int(position.first)<=-2 && currentDirection==DIRECTION::left)
+            {
+                position.first = 30;
+            }
+            else if(position.first>30 && currentDirection==DIRECTION::right)
+            {
+                position.first = -2;
+            }
+            else 
+            {
+                currentDirection = nextDirection;
+                setNextDirection();
+            }
+        }
+        else
+        {
+            currentDirection = nextDirection;
+            setNextDirection();
+        }
     };
 }
 

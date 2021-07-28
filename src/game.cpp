@@ -12,13 +12,24 @@ Game::Game()
     ResourceManager::LoadShader("shaders/shader.vs", "shaders/shader.fs", nullptr, "mainShader");
     ResourceManager::LoadTexture("resources/map/pacman_map.png", true, "baseMap");
     ResourceManager::LoadTexture("resources/blinky.png", true, "blinky");
+    ResourceManager::LoadTexture("resources/pinky.png", true, "pinky");
     ResourceManager::LoadTexture("resources/inky.png", true, "inky");
+    ResourceManager::LoadTexture("resources/clyde.png", true, "clyde");
     ResourceManager::LoadTexture("resources/pacman.png", true, "pacman");
+    ResourceManager::LoadTexture("resources/pellet.png", true, "pellet");
+    ResourceManager::LoadTexture("resources/eyes/eyes_right.png", true, "eyesRight");
+    ResourceManager::LoadTexture("resources/eyes/eyes_left.png", true, "eyesLeft");
+    ResourceManager::LoadTexture("resources/eyes/eyes_up.png", true, "eyesUp");
+    ResourceManager::LoadTexture("resources/eyes/eyes_down.png", true, "eyesDown");
     ResourceManager::LoadSprite("baseMap", std::make_shared<Map>());
     ResourceManager::LoadSprite("blinky", std::make_shared<Ghost>("blinky"));
     ResourceManager::LoadSprite("inky", std::make_shared<Ghost>("inky"));
+    ResourceManager::LoadSprite("pinky", std::make_shared<Ghost>("pinky"));
+    ResourceManager::LoadSprite("clyde", std::make_shared<Ghost>("clyde"));
     ResourceManager::LoadSprite("pacman", std::make_shared<Pacman>());
     ResourceManager::GetSprite("blinky")->setPosition(std::make_pair(10, 29));
+    ResourceManager::GetSprite("pinky")->setPosition(std::make_pair(10, 29));
+    ResourceManager::GetSprite("clyde")->setPosition(std::make_pair(10, 29));
     ResourceManager::GetSprite("inky")->setPosition(std::make_pair(2, 1));
     ResourceManager::GetSprite("pacman")->setPosition(std::make_pair(13.5, 23));
 }
@@ -58,7 +69,9 @@ void Game::render()
     baseMapPtr->draw("mainShader");
     baseMapPtr->drawGridLines("mainShader");
     ResourceManager::GetSprite("blinky")->draw("mainShader");
+    ResourceManager::GetSprite("pinky")->draw("mainShader");
     ResourceManager::GetSprite("inky")->draw("mainShader");
+    ResourceManager::GetSprite("clyde")->draw("mainShader");
     ResourceManager::GetSprite("pacman")->draw("mainShader");
     baseMapPtr->drawObstacles("mainShader");
 }
