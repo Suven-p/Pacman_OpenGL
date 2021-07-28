@@ -4,6 +4,7 @@
 #include <string>
 #include <utility>
 #include <project/helpers.h>
+#include <project/common.h>
 
 /**
  * @brief Abstraction for window management.
@@ -13,8 +14,11 @@
 class WindowManager
 {
 private:
+    GLFWwindow *window;
     WindowManager();
+    int width, height;
     static WindowManager *instance;
+    static void windowResizeCallback(GLFWwindow *window, int width, int height);
 
 public:
     /**
@@ -23,7 +27,7 @@ public:
      * @return WindowManager*
      */
     static WindowManager *getInstance();
-    void createNewWindow(const std::string &windowName, const freeglutData &data);
+    void createNewWindow(const std::string &windowName, const windowData &data);
     std::pair<double, double> getWindowSize();
     void setWindowSize(std::pair<double, double> newSize);
     void run();

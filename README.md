@@ -1,9 +1,8 @@
-[![Build-Linux](https://github.com/Suven-p/gl_project_2/actions/workflows/cmake-linux.yml/badge.svg)](https://github.com/Suven-p/gl_project_2/actions/workflows/cmake-linux.yml)
-[![Build-Windows](https://github.com/Suven-p/gl_project_2/actions/workflows/cmake-windows.yml/badge.svg)](https://github.com/Suven-p/gl_project_2/actions/workflows/cmake-windows.yml)
+[![Build](https://github.com/Suven-p/Pacman_OpenGL/actions/workflows/build.yml/badge.svg?branch=glfw)](https://github.com/Suven-p/Pacman_OpenGL/actions/workflows/build.yml)
 [![CodeQL](https://github.com/Suven-p/Pacman_OpenGL/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/Suven-p/Pacman_OpenGL/actions/workflows/codeql-analysis.yml)
 
 # Pacman
-This is an attempt to recreate a clone of the classic game Pacman using freeglut and OpenGL. This project is to be used as project work for our Computer Graphics course. This project aims to practically apply studied graphics concepts such as transformations and textures using OpenGL and also learn about teamwork and code organization.
+This is an attempt to recreate a clone of the classic game Pacman using glfw and OpenGL. This project is to be used as project work for our Computer Graphics course. This project aims to practically apply studied graphics concepts such as transformations and textures using OpenGL and also learn about teamwork and code organization.
 
 ## Build instructions
 ### Prerequisites
@@ -13,7 +12,9 @@ You will need:
  * On linux install following packages:
    * `build-essentials` for compiler, debuggers and other basic libraries
    * `freeglut3-dev` for freeglut
- 
+   * [packages required by glfw](https://www.glfw.org/docs/3.3.4/compile_guide.html) 
+
+Note: Due to a bug in g++ related to std::filesystem([bug#737](https://sourceforge.net/p/mingw-w64/bugs/737/)) g++ version 9 or higher is required. It can be obtained with [msys](https://www.msys2.org/)
 ### Building The Project
 
 #### Git Clone
@@ -41,5 +42,4 @@ Build the project using CMake. This should work for all build systems.
 
 ## Running the project
 The output executable files are located at `/path/to/pacman/bin/`. CMake should also copy required assests(images, shaders and dll files) to the `bin` directory.
-For codeblocks, open the generated project file and change the project execution directory to `/path/to/pacman/bin/` instead of `/path/to/pacman/build/`.
 

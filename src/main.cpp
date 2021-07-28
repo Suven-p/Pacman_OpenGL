@@ -15,7 +15,7 @@ void GLAPIENTRY MessageCallback(GLenum source,
 
 int main(int argc, char **argv)
 {
-    freeglutData windowData;
+    windowData windowData;
     windowData.argc = &argc;
     windowData.argv = argv;
     windowData.width = 448;
@@ -50,11 +50,19 @@ void GLAPIENTRY MessageCallback(GLenum source,
                                 const GLchar *message,
                                 const void *userParam)
 {
-    std::cerr << "Debug::OpenGL::" << (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "GL DEBUG") << "\n"
-              << "Source: " << source << "\n"
-              << "Type: " << type << "\n"
-              << "Id: " << id << "\n"
-              << "Severity: " << severity << "\n"
-              << "Message: " << message << "\n\n"
-              << std::endl;
+    spdlog::info(
+        "OpenGL::{}\n"
+        "\tSource: {}\n"
+        "\tType: {}\n"
+        "\tId: {}\n"
+        "\tSeverity: {}\n"
+        "\tMessage: {}\n",
+        (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "GL DEBUG"),
+        source,
+        type,
+        id,
+        severity,
+        message
+
+    );
 }

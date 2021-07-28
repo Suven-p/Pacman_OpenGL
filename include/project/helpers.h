@@ -1,6 +1,7 @@
 #ifndef HELPERS_HPP_GUARD
 #define HELPERS_HPP_GUARD
 
+#include <string>
 #include <project/common.h>
 
 void draw_gridlines();
@@ -15,7 +16,7 @@ enum struct DIRECTION : int
 
 std::string toString(DIRECTION d);
 
-struct freeglutData
+struct windowData
 {
     int *argc;
     char **argv;
