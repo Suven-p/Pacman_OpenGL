@@ -5,6 +5,7 @@
 #include <iostream>
 #include <set>
 #include <iterator>
+#include <math.h>
 Pacman::Pacman()
 {
     glGenVertexArrays(1, &vao);
@@ -62,6 +63,7 @@ void Pacman::draw(std::string shader)
 
     glm::mat4 temp_model = glm::mat4(1.0f);
     temp_model = glm::translate(model, glm::vec3(position.first, position.second, 0.0f));
+    //translate to center of square, rotate and untranslate
     temp_model = glm::translate(temp_model, glm::vec3(0.5f, 0.5f, 0.0f));
     temp_model = glm::rotate(temp_model,glm::radians(int(currentDirection)*90.0f),glm::vec3(0.0,0.0,1.0));
     temp_model = glm::translate(temp_model, glm::vec3(-0.5f,-0.5f, 0.0f));
@@ -91,13 +93,22 @@ void Pacman::setDirection(DIRECTION newDirection)
     else
     {
         //prevent clipping
-        
         if(newDirection==DIRECTION::right || newDirection==DIRECTION::left)
         {
+            //for smoother direction change
+            if(abs(position.second-int(position.second)>0.15))
+            {
+                return;
+            }
             position.second = int(position.second);
         }
         else
         {
+            //for smoother direction change
+            if(abs(position.first-int(position.first)>0.15))
+            {
+                return;
+            }
             position.first = int(position.first);
         }
         currentDirection = newDirection;
@@ -203,7 +214,6 @@ void Pacman::getNewPosition()
             position.first = 0;
         }
     }
-    
     bool collision = isColliding(currentDirection);
     if(collision)
     {
