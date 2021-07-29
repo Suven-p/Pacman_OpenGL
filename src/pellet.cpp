@@ -11,6 +11,9 @@
 Pellet::Pellet()
 {
     mapData = mapDataColRow;
+    // X in mapData denotes uneaten Power Pellet
+    mapData[1][3] = 'X', mapData[26][3]= 'X';
+    mapData[1][23] = 'X', mapData[26][23] = 'X';
     score = 0;
 
     glGenVertexArrays(1, &blockVAO);
@@ -60,6 +63,8 @@ void Pellet::draw(std::string shaderName)
     shader.SetFloat("textureColorMix", 0.0f);
     auto texture = ResourceManager::GetTexture("pellet");
     texture.Bind(0);
+    auto texture2 = ResourceManager::GetTexture("power_pellet");
+    texture2.Bind(1);
 
     shader.SetInteger("texture1", 0, true);
 
@@ -78,12 +83,17 @@ void Pellet::draw(std::string shaderName)
             case 'G':
             case 'F':
                 break;
+            case 'X':
+                shader.SetInteger("texture1", 1, true);
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                break;
             case 'n':
             case 'P':
             case 'W':
                 break;
             case 'o':
             default:
+                shader.SetInteger("texture1", 0, true);
                 glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
             }
         }
@@ -105,6 +115,11 @@ void Pellet::changePelletStatus(std::pair<float, float> pacmanPosition)
 {
     int xCoordinate = int(pacmanPosition.first), yCoordinate = int(pacmanPosition.second);
     if(mapData[xCoordinate][yCoordinate] == 'o')
+    {
+        mapData[xCoordinate][yCoordinate] = 'F'; 
+        score++;
+    }
+    else if(mapData[xCoordinate][yCoordinate] == 'X')
     {
         mapData[xCoordinate][yCoordinate] = 'F'; 
         score++;
