@@ -62,17 +62,21 @@ void Game::render()
     deltaTime = std::min(currentTime - lastRedraw, 25.0);
     lastRedraw = currentTime;
 
-    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+    glClearColor(0.2f, 0.2f, 0.2f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    // IMPORTANT: order of draw calls is important
+    // especially when depth testing is disabled.
+    // Objects drawn later appear above objects drawn
+    // before.
     auto baseMapPtr = std::dynamic_pointer_cast<Map>(ResourceManager::GetSprite("baseMap"));
     baseMapPtr->draw("mainShader");
     baseMapPtr->drawGridLines("mainShader");
-    ResourceManager::GetSprite("blinky")->draw("mainShader");
-    ResourceManager::GetSprite("pinky")->draw("mainShader");
-    ResourceManager::GetSprite("inky")->draw("mainShader");
-    ResourceManager::GetSprite("clyde")->draw("mainShader");
     ResourceManager::GetSprite("pacman")->draw("mainShader");
+    ResourceManager::GetSprite("clyde")->draw("mainShader");
+    ResourceManager::GetSprite("inky")->draw("mainShader");
+    ResourceManager::GetSprite("pinky")->draw("mainShader");
+    ResourceManager::GetSprite("blinky")->draw("mainShader");
     baseMapPtr->drawObstacles("mainShader");
 }
 

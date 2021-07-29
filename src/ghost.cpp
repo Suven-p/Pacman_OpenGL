@@ -21,10 +21,10 @@ Ghost::Ghost(std::string name) : name(name)
     glGenBuffers(1, &ebo);
 
     float vertices[] = {
-        -0.5f, -0.5f, 0.3f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-        -0.5f, 1.5f, 0.3f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-        1.5f, 1.5f, 0.3f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-        1.5f, -0.5f, 0.3f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f};
+        -0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+        -0.5f, 01.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+        01.5f, 01.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+        01.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f};
 
     float texCoord[] = {
         0.0f, 1.0f,
@@ -72,10 +72,12 @@ void Ghost::draw(std::string shader)
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(0.0f, 3.0f, 0.0f));
     glm::mat4 view(1.0f);
-    glm::mat4 projection = glm::ortho(0.0f, 28.0f, 36.0f, 0.0f, 1.0f, -1.0f);
+    glm::mat4 projection = glm::ortho(0.0f, 28.0f, 36.0f, 0.0f, -1.0f, 1.0f);
     ResourceManager::GetShader(shader).SetMatrix4("view", view, true);
     ResourceManager::GetShader(shader).SetMatrix4("projection", projection, true);
 
+    // This separation of temp_model from model was done so all ghosts could be rendered
+    // in same call. This is not required as each ghost has its own object.
     glm::mat4 temp_model = glm::mat4(1.0f);
     temp_model = glm::translate(model, glm::vec3(position.first, position.second, 0.0f));
 
@@ -95,7 +97,7 @@ void Ghost::draw(std::string shader)
 void Ghost::drawEyes(std::string shader)
 {
     Texture2D texture;
-    switch(currentDirection)
+    switch (currentDirection)
     {
     case DIRECTION::up:
         texture = ResourceManager::GetTexture("eyesUp");
@@ -164,7 +166,7 @@ DIRECTION Ghost::setNextDirection()
             std::advance(it, index);
             nextDirection = *it;
         }
-        else 
+        else
         {
             if (currentMode == GhostMode::scatter)
             {
@@ -199,7 +201,7 @@ DIRECTION Ghost::setNextDirection()
                 {
                     auto blinkyPtr = ResourceManager::GetSprite("blinky");
                     auto blinkyPosition = blinkyPtr->getPosition();
-                    switch(pacmanDirection)
+                    switch (pacmanDirection)
                     {
                     case DIRECTION::up:
                         pacmanPosition.second -= 2;
@@ -216,11 +218,11 @@ DIRECTION Ghost::setNextDirection()
                     }
                     float xdist = pacmanPosition.first - blinkyPosition.first;
                     float ydist = pacmanPosition.second - blinkyPosition.second;
-                    targetTile = {blinkyPosition.first + 2*xdist, blinkyPosition.second + 2*ydist};
+                    targetTile = {blinkyPosition.first + 2 * xdist, blinkyPosition.second + 2 * ydist};
                 }
                 else if (name == "pinky")
                 {
-                    switch(pacmanDirection)
+                    switch (pacmanDirection)
                     {
                     case DIRECTION::up:
                         targetTile.second -= 3;
@@ -239,7 +241,7 @@ DIRECTION Ghost::setNextDirection()
                 else if (name == "clyde")
                 {
                     float dist2 = sqrt(pow((position.first - pacmanPosition.first), 2) + pow((position.second - pacmanPosition.second), 2));
-                    if (dist2 <= 8) 
+                    if (dist2 <= 8)
                     {
                         targetTile = {0, 32};
                     }
@@ -364,17 +366,17 @@ void Ghost::getNewPosition()
         logger->trace("Current position is: {} {}", position.first, position.second);
         logger->trace("Current direction is: {}", toString(currentDirection));
         logger->trace("Switching direction to {}", toString(nextDirection));
-        if(int(position.second)==14)
+        if (int(position.second) == 14)
         {
-            if(int(position.first)<=-2 && currentDirection==DIRECTION::left)
+            if (int(position.first) <= -2 && currentDirection == DIRECTION::left)
             {
                 position.first = 30;
             }
-            else if(position.first>30 && currentDirection==DIRECTION::right)
+            else if (position.first > 30 && currentDirection == DIRECTION::right)
             {
                 position.first = -2;
             }
-            else 
+            else
             {
                 currentDirection = nextDirection;
                 setNextDirection();

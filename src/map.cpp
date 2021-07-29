@@ -10,10 +10,10 @@ Map::Map() : gridSize({28, 36})
     glGenBuffers(1, &EBO);
     float vertices[] = {
         // positions              // colors               // texture coords
-        28.0f, 03.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, // top right
-        28.0f, 34.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom right
-        00.0f, 34.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, // bottom left
-        00.0f, 03.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f  // top left
+        28.0f, 03.0f, -0.9f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, // top right
+        28.0f, 34.0f, -0.9f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom right
+        00.0f, 34.0f, -0.9f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, // bottom left
+        00.0f, 03.0f, -0.9f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f  // top left
     };
     unsigned int indices[] = {
         // note that we start from 0!
@@ -41,10 +41,10 @@ Map::Map() : gridSize({28, 36})
     glGenBuffers(1, &blockEBO);
     float obstacleVertices[] = {
         // positions            // colors               // texture coords
-        1.0f, 0.0f, 0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // top right
-        1.0f, 1.0f, 0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom right
-        0.0f, 1.0f, 0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // bottom left
-        0.0f, 0.0f, 0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f  // top left
+        1.0f, 0.0f, -0.8f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, // top right
+        1.0f, 1.0f, -0.8f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, // bottom right
+        0.0f, 1.0f, -0.8f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left
+        0.0f, 0.0f, -0.8f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f  // top left
     };
     glBindVertexArray(blockVAO);
     glBindBuffer(GL_ARRAY_BUFFER, blockVBO);
@@ -68,7 +68,7 @@ void Map::draw(std::string shaderName)
 
     glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 view = glm::mat4(1.0f);
-    glm::mat4 projection = glm::ortho(0.0f, 28.0f, 36.0f, 0.0f, 1.0f, -1.0f);
+    glm::mat4 projection = glm::ortho(0.0f, 28.0f, 36.0f, 0.0f, -1.0f, 1.0f);
     shader.SetMatrix4("model", model);
     shader.SetMatrix4("view", view);
     shader.SetMatrix4("projection", projection);
@@ -108,44 +108,44 @@ void Map::initializeGrid()
     {
         vertices[count++] = i;
         vertices[count++] = 0.0f;
-        vertices[count++] = 0.2f;
+        vertices[count++] = 0.99f;
         vertices[count++] = 1.0f;
 
-        vertices[count++] = 1.0f;
-        vertices[count++] = 1.0f;
-        vertices[count++] = 0.0f;
+        vertices[count++] = 0.7f;
+        vertices[count++] = 0.3f;
+        vertices[count++] = 0.7f;
         vertices[count++] = 1.0f;
 
         vertices[count++] = i;
         vertices[count++] = 36.0f;
-        vertices[count++] = 0.2f;
+        vertices[count++] = 0.99f;
         vertices[count++] = 1.0f;
 
-        vertices[count++] = 1.0f;
-        vertices[count++] = 1.0f;
-        vertices[count++] = 0.0f;
+        vertices[count++] = 0.7f;
+        vertices[count++] = 0.3f;
+        vertices[count++] = 0.7f;
         vertices[count++] = 1.0f;
     }
     for (int i = 1; i <= gridSize.second; i++)
     {
         vertices[count++] = 0.0f;
         vertices[count++] = float(i);
-        vertices[count++] = 0.2f;
+        vertices[count++] = 0.99f;
         vertices[count++] = 1.0f;
 
-        vertices[count++] = 1.0f;
-        vertices[count++] = 1.0f;
-        vertices[count++] = 0.0f;
+        vertices[count++] = 0.7f;
+        vertices[count++] = 0.3f;
+        vertices[count++] = 0.7f;
         vertices[count++] = 1.0f;
 
         vertices[count++] = 28.0f;
         vertices[count++] = float(i);
-        vertices[count++] = 0.2f;
+        vertices[count++] = 0.99f;
         vertices[count++] = 1.0f;
 
-        vertices[count++] = 1.0f;
-        vertices[count++] = 1.0f;
-        vertices[count++] = 0.0f;
+        vertices[count++] = 0.7f;
+        vertices[count++] = 0.3f;
+        vertices[count++] = 0.7f;
         vertices[count++] = 1.0f;
     }
     glBindVertexArray(gridVAO);
@@ -166,7 +166,7 @@ void Map::drawObstacles(const std::string &shaderName) const
     glBindVertexArray(blockVAO);
 
     glm::mat4 view = glm::mat4(1.0f);
-    glm::mat4 projection = glm::ortho(0.0f, 28.0f, 36.0f, 0.0f, 1.0f, -1.0f);
+    glm::mat4 projection = glm::ortho(0.0f, 28.0f, 36.0f, 0.0f, -1.0f, 1.0f);
     shader.SetMatrix4("view", view);
     shader.SetMatrix4("projection", projection);
     shader.SetFloat("textureColorMix", 0.0f);

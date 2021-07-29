@@ -27,6 +27,7 @@ public:
      * @return WindowManager*
      */
     static WindowManager *getInstance();
+    GLFWwindow *getWindow();
     void createNewWindow(const std::string &windowName, const windowData &data);
     std::pair<double, double> getWindowSize();
     void setWindowSize(std::pair<double, double> newSize);

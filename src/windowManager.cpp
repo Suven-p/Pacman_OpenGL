@@ -63,6 +63,7 @@ void WindowManager::run()
 {
     while (!glfwWindowShouldClose(window))
     {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         Game::getInstance()->render();
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -103,4 +104,9 @@ void inputCallback(GLFWwindow *window, int key, int scancode, int action, int mo
         }
     }
     }
+}
+
+GLFWwindow *WindowManager::getWindow()
+{
+    return window;
 }

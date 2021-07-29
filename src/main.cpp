@@ -35,12 +35,54 @@ int main(int argc, char **argv)
 
     auto game_obj = Game::getInstance();
 
-    glEnable(GL_DEPTH);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
     glEnable(GL_DEBUG_OUTPUT);
     glDebugMessageCallback(MessageCallback, 0);
+    // Blending should be enabled for transparency/alpha channel to work,
+    // Depth test might not be required. If depth test is enabled, z-values
+    // for ghosts must be modified according to name. With depth test disabled,
+    // the order of draw calls in render function determines which sprites appears
+    // first.
+
+    // glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    spdlog::set_level(spdlog::level::debug);
+    int r, g, b, a, depth, stencil;
+    glGetFramebufferAttachmentParameteriv(
+        GL_FRAMEBUFFER,
+        GL_BACK,
+        GL_FRAMEBUFFER_ATTACHMENT_RED_SIZE,
+        &r);
+    glGetFramebufferAttachmentParameteriv(
+        GL_FRAMEBUFFER,
+        GL_BACK,
+        GL_FRAMEBUFFER_ATTACHMENT_GREEN_SIZE,
+        &g);
+    glGetFramebufferAttachmentParameteriv(
+        GL_FRAMEBUFFER,
+        GL_BACK,
+        GL_FRAMEBUFFER_ATTACHMENT_BLUE_SIZE,
+        &b);
+    glGetFramebufferAttachmentParameteriv(
+        GL_FRAMEBUFFER,
+        GL_BACK,
+        GL_FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE,
+        &a);
+    spdlog::info("Size of rgba channels: {} {} {} {}",
+                 r, g, b, a);
+    glGetFramebufferAttachmentParameteriv(
+        GL_FRAMEBUFFER,
+        GL_DEPTH,
+        GL_FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE,
+        &depth);
+    glGetFramebufferAttachmentParameteriv(
+        GL_DRAW_FRAMEBUFFER,
+        GL_STENCIL,
+        GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE,
+        &stencil);
+    spdlog::info("Size of depth, stencil channels: {} {}",
+                 depth, stencil);
+    spdlog::info("Refresh Rate: {}", glfwGetVideoMode(glfwGetPrimaryMonitor())->refreshRate);
 
     windowManagerPtr->run();
 }
