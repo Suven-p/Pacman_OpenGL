@@ -1,7 +1,10 @@
 #include <project/windowManager.h>
 #include <project/common.h>
 #include <project/game.h>
+#include <project/resourceManager.h>
 #include <spdlog/spdlog.h>
+
+#include <project/stb_image.h>
 
 WindowManager::WindowManager(){};
 WindowManager *WindowManager::instance = nullptr;
@@ -43,6 +46,28 @@ void WindowManager::createNewWindow(const std::string &windowName, const windowD
     glfwSetFramebufferSizeCallback(window, windowResizeCallback);
     glfwSetKeyCallback(window, inputCallback);
     glfwSwapInterval(1);
+
+    GLFWimage icons[1];
+    int nrChannels;
+    stbi_set_flip_vertically_on_load(false);
+    auto iconPath = ResourceManager::resolvePath("resources/pacman/1.png");
+    auto pixels = stbi_load(
+        iconPath.c_str(),
+        &(icons[0].width),
+        &(icons[0].height),
+        &nrChannels,
+        4);
+    if (!pixels)
+    {
+        spdlog::error("Could not load icon file!!!");
+    }
+    else
+    {
+        spdlog::info("Width: {} Height: {}", icons[0].width, icons[0].height);
+        icons[0].pixels = pixels;
+        glfwSetWindowIcon(window, 1, icons);
+        stbi_image_free(icons[0].pixels);
+    }
 }
 
 std::pair<double, double> WindowManager::getWindowSize()
