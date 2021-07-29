@@ -28,6 +28,7 @@ set(${PROJECT_NAME}_SOURCES
     src/texture.cpp
     src/windowManager.cpp
     src/pacman.cpp
+    src/pellet.cpp
 )
 file(GLOB_RECURSE ${PROJECT_NAME}_HEADERS
     include/*.h

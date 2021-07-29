@@ -5,6 +5,7 @@
 #include <project/map.h>
 #include <project/ghost.h>
 #include <project/pacman.h>
+#include <project/pellet.h>
 #include <spdlog/spdlog.h>
 
 Game::Game()
@@ -14,10 +15,13 @@ Game::Game()
     ResourceManager::LoadTexture("resources/blinky.png", true, "blinky");
     ResourceManager::LoadTexture("resources/inky.png", true, "inky");
     ResourceManager::LoadTexture("resources/pacman.png", true, "pacman");
+    ResourceManager::LoadTexture("resources/pellet.png", true, "pellet");
+    ResourceManager::LoadTexture("resources/power_pellet.png", true, "power_pellet");
     ResourceManager::LoadSprite("baseMap", std::make_shared<Map>());
     ResourceManager::LoadSprite("blinky", std::make_shared<Ghost>("blinky"));
     ResourceManager::LoadSprite("inky", std::make_shared<Ghost>("inky"));
     ResourceManager::LoadSprite("pacman", std::make_shared<Pacman>());
+    ResourceManager::LoadSprite("pellet", std::make_shared<Pellet>());
     ResourceManager::GetSprite("blinky")->setPosition(std::make_pair(10, 29));
     ResourceManager::GetSprite("inky")->setPosition(std::make_pair(2, 1));
     ResourceManager::GetSprite("pacman")->setPosition(std::make_pair(13.5, 23));
@@ -57,6 +61,7 @@ void Game::render()
     auto baseMapPtr = std::dynamic_pointer_cast<Map>(ResourceManager::GetSprite("baseMap"));
     baseMapPtr->draw("mainShader");
     baseMapPtr->drawGridLines("mainShader");
+    ResourceManager::GetSprite("pellet")->draw("mainShader");
     ResourceManager::GetSprite("blinky")->draw("mainShader");
     ResourceManager::GetSprite("inky")->draw("mainShader");
     ResourceManager::GetSprite("pacman")->draw("mainShader");
