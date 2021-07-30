@@ -1,9 +1,9 @@
 #include <project/resourceManager.h>
 #include <spdlog/spdlog.h>
 
-#include <sstream>
-#include <fstream>
 #include <filesystem>
+#include <fstream>
+#include <sstream>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <project/stb_image.h>
@@ -12,47 +12,47 @@ std::map<std::string, Texture2D> ResourceManager::Textures;
 std::map<std::string, Shader> ResourceManager::Shaders;
 std::map<std::string, std::shared_ptr<Sprite>> ResourceManager::Sprites;
 
-Shader ResourceManager::LoadShader(const char *vShaderFile, const char *fShaderFile, const char *gShaderFile, const std::string &name)
-{
+Shader ResourceManager::LoadShader(const char* vShaderFile,
+                                   const char* fShaderFile,
+                                   const char* gShaderFile,
+                                   const std::string& name) {
     Shaders[name] = loadShaderFromFile(vShaderFile, fShaderFile, gShaderFile);
     return Shaders[name];
 }
 
-Shader ResourceManager::GetShader(const std::string &name)
-{
+Shader ResourceManager::GetShader(const std::string& name) {
     return Shaders[name];
 }
 
-Texture2D ResourceManager::LoadTexture(const char *file, bool alpha, const std::string &name)
-{
+Texture2D ResourceManager::LoadTexture(const char* file,
+                                       bool alpha,
+                                       const std::string& name) {
     Textures[name] = loadTextureFromFile(file, alpha);
     return Textures[name];
 }
 
-Texture2D ResourceManager::GetTexture(const std::string &name)
-{
+Texture2D ResourceManager::GetTexture(const std::string& name) {
     return Textures[name];
 }
 
-std::shared_ptr<Sprite> ResourceManager::LoadSprite(const std::string &name, Sprite *sprite)
-{
+std::shared_ptr<Sprite> ResourceManager::LoadSprite(const std::string& name,
+                                                    Sprite* sprite) {
     Sprites[name] = std::shared_ptr<Sprite>(sprite);
     return Sprites[name];
 }
 
-std::shared_ptr<Sprite> ResourceManager::LoadSprite(const std::string &name, std::shared_ptr<Sprite> sprite)
-{
+std::shared_ptr<Sprite> ResourceManager::LoadSprite(
+    const std::string& name,
+    std::shared_ptr<Sprite> sprite) {
     Sprites[name] = sprite;
     return Sprites[name];
 }
 
-std::shared_ptr<Sprite> ResourceManager::GetSprite(const std::string name)
-{
+std::shared_ptr<Sprite> ResourceManager::GetSprite(const std::string name) {
     return Sprites[name];
 }
 
-void ResourceManager::Clear()
-{
+void ResourceManager::Clear() {
     // (properly) delete all shaders
     for (auto iter : Shaders)
         glDeleteProgram(iter.second.ID);
@@ -61,16 +61,16 @@ void ResourceManager::Clear()
         glDeleteTextures(1, &iter.second.ID);
 }
 
-Shader ResourceManager::loadShaderFromFile(const char *vShaderFile, const char *fShaderFile, const char *gShaderFile)
-{
+Shader ResourceManager::loadShaderFromFile(const char* vShaderFile,
+                                           const char* fShaderFile,
+                                           const char* gShaderFile) {
     auto vShaderFileResolved = resolvePath(vShaderFile);
     auto fShaderFileResolved = resolvePath(fShaderFile);
     // 1. retrieve the vertex/fragment source code from filePath
     std::string vertexCode;
     std::string fragmentCode;
     std::string geometryCode;
-    try
-    {
+    try {
         // open files
         std::ifstream vertexShaderFile(vShaderFileResolved.c_str());
         std::ifstream fragmentShaderFile(fShaderFileResolved.c_str());
@@ -85,8 +85,7 @@ Shader ResourceManager::loadShaderFromFile(const char *vShaderFile, const char *
         vertexCode = vShaderStream.str();
         fragmentCode = fShaderStream.str();
         // if geometry shader path is present, also load a geometry shader
-        if (gShaderFile != nullptr)
-        {
+        if (gShaderFile != nullptr) {
             auto gShaderFileResolved = resolvePath(gShaderFile);
             std::ifstream geometryShaderFile(gShaderFileResolved.c_str());
             std::stringstream gShaderStream;
@@ -94,9 +93,7 @@ Shader ResourceManager::loadShaderFromFile(const char *vShaderFile, const char *
             geometryShaderFile.close();
             geometryCode = gShaderStream.str();
         }
-    }
-    catch (std::exception e)
-    {
+    } catch (std::exception e) {
         spdlog::error("SHADER::Failed to read shader files.\n"
                       " Vertex Shader Path: {}\n"
                       " Fragment Shader Path: {}\n"
@@ -105,22 +102,22 @@ Shader ResourceManager::loadShaderFromFile(const char *vShaderFile, const char *
                       std::string(fShaderFile),
                       std::string(gShaderFile));
     }
-    const char *vShaderCode = vertexCode.c_str();
-    const char *fShaderCode = fragmentCode.c_str();
-    const char *gShaderCode = geometryCode.c_str();
+    const char* vShaderCode = vertexCode.c_str();
+    const char* fShaderCode = fragmentCode.c_str();
+    const char* gShaderCode = geometryCode.c_str();
     // 2. now create shader object from source code
     Shader shader;
-    shader.Compile(vShaderCode, fShaderCode, gShaderFile != nullptr ? gShaderCode : nullptr);
+    shader.Compile(vShaderCode,
+                   fShaderCode,
+                   gShaderFile != nullptr ? gShaderCode : nullptr);
     return shader;
 }
 
-Texture2D ResourceManager::loadTextureFromFile(const char *file, bool alpha)
-{
+Texture2D ResourceManager::loadTextureFromFile(const char* file, bool alpha) {
     auto fileLocation = resolvePath(file);
     // create texture object
     Texture2D texture;
-    if (alpha)
-    {
+    if (alpha) {
         texture.Internal_Format = GL_RGBA;
         texture.Image_Format = GL_RGBA;
     }
@@ -128,9 +125,9 @@ Texture2D ResourceManager::loadTextureFromFile(const char *file, bool alpha)
     int width, height, nrChannels;
 
     stbi_set_flip_vertically_on_load(true);
-    unsigned char *data = stbi_load(fileLocation.c_str(), &width, &height, &nrChannels, 0);
-    if (!data)
-    {
+    unsigned char* data =
+        stbi_load(fileLocation.c_str(), &width, &height, &nrChannels, 0);
+    if (!data) {
         spdlog::error("Failed to load texture file: {}", file);
     }
     // now generate texture
@@ -142,8 +139,7 @@ Texture2D ResourceManager::loadTextureFromFile(const char *file, bool alpha)
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 #include <windows.h>
-std::filesystem::path getExecutablePath()
-{
+std::filesystem::path getExecutablePath() {
     WCHAR buffer[MAX_PATH];
     GetModuleFileNameW(NULL, buffer, MAX_PATH);
     auto execPath = std::filesystem::path(buffer);
@@ -151,73 +147,60 @@ std::filesystem::path getExecutablePath()
     return reqPath;
 }
 #elif defined(__linux__)
-std::filesystem::path getExecutablePath()
-{
+std::filesystem::path getExecutablePath() {
     auto execPath = std::filesystem::read_symlink("/proc/self/exe");
     auto reqPath = execPath.parent_path();
     return reqPath;
 }
 #else
-std::filesystem::path getExecutablePath()
-{
+std::filesystem::path getExecutablePath() {
     return "";
 }
 #endif
 
-std::string ResourceManager::resolvePath(const std::string &toResolve)
-{
+std::string ResourceManager::resolvePath(const std::string& toResolve) {
     auto pathToResolve = std::filesystem::path(toResolve);
 
     auto executionPath = getExecutablePath();
-    if (std::filesystem::exists(executionPath))
-    {
+    if (std::filesystem::exists(executionPath)) {
         auto attemptPath = executionPath / pathToResolve;
-        if (std::filesystem::exists(attemptPath))
-        {
+        if (std::filesystem::exists(attemptPath)) {
             std::string fullPath = attemptPath.string();
             spdlog::debug("Resolved {} to {}", toResolve, fullPath);
             return fullPath;
-        }
-        else
-        {
+        } else {
             spdlog::debug("Received path to executable as: \"{}\""
                           "but could not find file \"{}\"",
-                          executionPath.string(), toResolve);
+                          executionPath.string(),
+                          toResolve);
         }
     }
 
     auto binaryPath = std::filesystem::path(BINARY_DIRECTORY);
-    if (std::filesystem::exists(binaryPath))
-    {
+    if (std::filesystem::exists(binaryPath)) {
         auto attemptPath = binaryPath / pathToResolve;
-        if (std::filesystem::exists(attemptPath))
-        {
+        if (std::filesystem::exists(attemptPath)) {
             std::string fullPath = attemptPath.string();
             spdlog::debug("Resolved {} to {}", toResolve, fullPath);
             return fullPath;
-        }
-        else
-        {
+        } else {
             spdlog::debug("Received path to binary directory as: \"{}\""
                           "but could not find file \"{}\"",
-                          BINARY_DIRECTORY, toResolve);
+                          BINARY_DIRECTORY,
+                          toResolve);
         }
-    }
-    else
-    {
-        spdlog::debug("Stored path to binary: \"{}\" is invalid.", BINARY_DIRECTORY);
+    } else {
+        spdlog::debug("Stored path to binary: \"{}\" is invalid.",
+                      BINARY_DIRECTORY);
     }
 
     auto currentPath = std::filesystem::current_path();
     auto attemptPath = currentPath / pathToResolve;
-    if (std::filesystem::exists(attemptPath))
-    {
+    if (std::filesystem::exists(attemptPath)) {
         std::string fullPath = attemptPath.string();
         spdlog::debug("Resolved {} to {}", toResolve, fullPath);
         return fullPath;
-    }
-    else
-    {
+    } else {
         spdlog::error("Could not find file: \"{}\"", toResolve);
     }
 
