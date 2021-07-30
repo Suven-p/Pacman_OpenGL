@@ -29,6 +29,7 @@ public:
     Ghost(std::string name);
     void draw(std::string shader);
     void draw(std::string shader, std::string name);
+    void drawEyes(std::string shader);
     GhostMode getMode();
     void setMode(GhostMode newMode);
     ~Ghost();
