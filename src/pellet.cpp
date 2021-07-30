@@ -15,6 +15,8 @@ Pellet::Pellet()
     mapData[1][3] = 'X', mapData[26][3]= 'X';
     mapData[1][23] = 'X', mapData[26][23] = 'X';
     score = 0;
+    pelletsEaten = 0;
+    timeTillCherryDisappears = 0;
 
     glGenVertexArrays(1, &blockVAO);
     glGenBuffers(1, &blockVBO);
@@ -65,7 +67,9 @@ void Pellet::draw(std::string shaderName)
     texture.Bind(0);
     auto texture2 = ResourceManager::GetTexture("power_pellet");
     texture2.Bind(1);
-
+    auto texture3 = ResourceManager::GetTexture("cherry");
+    texture3.Bind(2);
+    
     shader.SetInteger("texture1", 0, true);
 
     glm::mat4 model;
@@ -86,6 +90,13 @@ void Pellet::draw(std::string shaderName)
             case 'X':
                 shader.SetInteger("texture1", 1, true);
                 glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                break;
+            case 'C':
+                if(toDrawCherry())
+                {
+                    shader.SetInteger("texture1", 2, true);
+                    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                }
                 break;
             case 'n':
             case 'P':
@@ -117,14 +128,36 @@ void Pellet::changePelletStatus(std::pair<float, float> pacmanPosition)
     if(mapData[xCoordinate][yCoordinate] == 'o')
     {
         mapData[xCoordinate][yCoordinate] = 'F'; 
-        score++;
+        score += 10;
+        pelletsEaten++;
     }
     else if(mapData[xCoordinate][yCoordinate] == 'X')
     {
         mapData[xCoordinate][yCoordinate] = 'F'; 
-        score++;
+        score += 50;
+        pelletsEaten++;
     }
+    else if(mapData[xCoordinate][yCoordinate] == 'C')
+    {
+        mapData[xCoordinate][yCoordinate] = 'F'; 
+        score += 100;
+    }
+    if(pelletsEaten == 70 or pelletsEaten == 170){
+        // TODO : replace glfwGetTime
+        timeTillCherryDisappears = glfwGetTime() + 10;
+        mapData[14][17] = 'C';
+    }
+}
 
+bool Pellet::toDrawCherry()
+{
+    // TODO : replace glfwGetTime
+    if(glfwGetTime() > timeTillCherryDisappears){
+        mapData[14][17] = 'n';
+        return false;
+    }
+    else
+        return true;
 }
 
 int Pellet::getScore() 

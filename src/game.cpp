@@ -20,6 +20,7 @@ Game::Game() {
     ResourceManager::LoadTexture("resources/pacman.png", true, "pacman");
     ResourceManager::LoadTexture("resources/pellet.png", true, "pellet");
     ResourceManager::LoadTexture("resources/power_pellet.png", true, "power_pellet");
+    ResourceManager::LoadTexture("resources/cherry.png", true, "cherry");
     ResourceManager::LoadTexture(
         "resources/eyes/eyes_right.png", true, "eyesRight");
     ResourceManager::LoadTexture(
@@ -76,6 +77,7 @@ void Game::render() {
         std::dynamic_pointer_cast<Map>(ResourceManager::GetSprite("baseMap"));
     baseMapPtr->draw("mainShader");
     baseMapPtr->drawGridLines("mainShader");
+    ResourceManager::GetSprite("pellet")->draw("mainShader");
     ResourceManager::GetSprite("pacman")->draw("mainShader");
     ResourceManager::GetSprite("clyde")->draw("mainShader");
     ResourceManager::GetSprite("inky")->draw("mainShader");

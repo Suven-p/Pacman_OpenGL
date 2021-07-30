@@ -6,7 +6,8 @@
 class Pellet: public Sprite
 {
     GLuint blockVAO, blockVBO, blockEBO;
-    int score;
+    int score, pelletsEaten;
+    float timeTillCherryDisappears;
 public:
 
     std::vector<std::vector<char>> mapData;
@@ -15,6 +16,7 @@ public:
     void draw(std::string shaderName);
     void drawCherry(std::string shaderName);
     void changePelletStatus(std::pair<float, float> pacmanPosition);
+    bool toDrawCherry();
     int getScore();
 
     ~Pellet();
