@@ -30,10 +30,10 @@ Game::Game() {
     ResourceManager::LoadSprite("clyde", std::make_shared<Ghost>("clyde"));
     ResourceManager::LoadSprite("pacman", std::make_shared<Pacman>());
     ResourceManager::LoadSprite("pellet", std::make_shared<Pellet>());
-    ResourceManager::GetSprite("blinky")->setPosition(std::make_pair(10, 29));
-    ResourceManager::GetSprite("pinky")->setPosition(std::make_pair(10, 29));
-    ResourceManager::GetSprite("clyde")->setPosition(std::make_pair(10, 29));
-    ResourceManager::GetSprite("inky")->setPosition(std::make_pair(2, 1));
+    ResourceManager::GetSprite("blinky")->setPosition(std::make_pair(1, 1));
+    ResourceManager::GetSprite("pinky")->setPosition(std::make_pair(23, 1));
+    ResourceManager::GetSprite("clyde")->setPosition(std::make_pair(1, 29));
+    ResourceManager::GetSprite("inky")->setPosition(std::make_pair(23, 29));
     ResourceManager::GetSprite("pacman")->setPosition(std::make_pair(13.5, 23));
 }
 

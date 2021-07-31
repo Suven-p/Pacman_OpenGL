@@ -9,7 +9,8 @@ enum struct GhostMode
 {
     chase,
     scatter,
-    frightened
+    frightened,
+    dead
 };
 
 class Ghost : public Sprite {
@@ -20,9 +21,11 @@ class Ghost : public Sprite {
     DIRECTION nextDirection;
     DIRECTION setNextDirection();
     void getNewPosition();
+    void MoveOutofBox();
     std::set<DIRECTION> possibleDirections();
     GhostMode currentMode;
     std::shared_ptr<spdlog::logger> logger;
+    double speedMultiplier;
 
    public:
     Ghost(const std::string& name);
@@ -31,5 +34,7 @@ class Ghost : public Sprite {
     void drawEyes(const std::string& shader);
     GhostMode getMode();
     void setMode(GhostMode newMode);
+    float getMultiplier();
+    void setMultiplier(double newSpeed);
     ~Ghost();
 };

@@ -13,7 +13,7 @@ using namespace std;
 
 std::random_device rd;   // Will be used to obtain a seed for the random number engine
 std::mt19937 gen(rd());  // Standard mersenne_twister_engine seeded with rd()
-
+//TODO frightened texture change, speed vary, dead mode, blinky cruise elroy,
 Ghost::Ghost(const std::string& name) : name(name) {
     glGenVertexArrays(1, &vao);
     glGenBuffers(2, vbo);
@@ -44,7 +44,9 @@ Ghost::Ghost(const std::string& name) : name(name) {
 
     currentDirection = DIRECTION::right;
     nextDirection = DIRECTION::right;
-    currentMode = GhostMode::chase;
+    currentMode = GhostMode::dead;
+
+    setMultiplier(0.75);
 
     std::string loggerName = std::string("ghostLogger::") + name;
     logger = spdlog::basic_logger_mt(loggerName, "logs/ghostLog.txt");
@@ -54,7 +56,17 @@ Ghost::Ghost(const std::string& name) : name(name) {
 Ghost::~Ghost() = default;
 
 void Ghost::draw(std::string shader) {
-    getNewPosition();
+    bool ghost_in_box = (
+        position.first >= 11 &&
+        position.first <= 16 &&
+        position.second >= 12 &&
+        position.second <= 15
+    );
+    if (ghost_in_box && currentMode != GhostMode::dead) {
+        MoveOutofBox();
+    } else {
+        getNewPosition();
+    }
     ResourceManager::GetShader(shader).Use();
     glBindVertexArray(vao);
     glm::mat4 model = glm::mat4(1.0F);
@@ -72,11 +84,13 @@ void Ghost::draw(std::string shader) {
 
     ResourceManager::GetShader(shader).SetMatrix4("model", temp_model, true);
 
-    auto texture = ResourceManager::GetTexture(name);
-    texture.Bind(0);
-    ResourceManager::GetShader(shader).SetInteger("texture1", 0, true);
-    ResourceManager::GetShader(shader).SetFloat("textureColorMix", 0.0F);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)nullptr);
+    if(currentMode != GhostMode::dead) {
+        auto texture = ResourceManager::GetTexture(name);
+        texture.Bind(0);
+        ResourceManager::GetShader(shader).SetInteger("texture1", 0, true);
+        ResourceManager::GetShader(shader).SetFloat("textureColorMix", 0.0F);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)nullptr);
+    }
 
     drawEyes(shader);
 
@@ -133,7 +147,14 @@ DIRECTION Ghost::setNextDirection() {
         }
     }
     auto baseMapPtr = std::dynamic_pointer_cast<Map>(ResourceManager::GetSprite("baseMap"));
-    auto possible = baseMapPtr->possibleDirections(nextTile);
+    std::set<char> obstacles_dead {MAP_WALL};
+    std::set<DIRECTION> possible;
+
+    if (currentMode == GhostMode::dead)
+        {possible = baseMapPtr->possibleDirections(nextTile, obstacles_dead);
+    }
+    else
+        {possible = baseMapPtr->possibleDirections(nextTile);}
     possible.erase(oppositeDirection);
     logger->trace("Next tile is: {}, {}", nextTile.first, nextTile.second);
 
@@ -207,6 +228,16 @@ DIRECTION Ghost::setNextDirection() {
                 }
                 // else target already set to pacman position
             }
+        } else if (currentMode == GhostMode::dead) {
+            if (name == "blinky") {
+                targetTile = {13, 14};
+            } else if (name == "inky") {
+                targetTile = {12, 14};
+            } else if (name == "pinky") {
+                targetTile = {13, 14};
+            } else if (name == "clyde") {
+                targetTile = {15, 14};
+            }
         }
         logger->trace("Target Tile is: {} {}", targetTile.first, targetTile.second);
         float minValue = 1e9;
@@ -254,7 +285,7 @@ DIRECTION Ghost::setNextDirection() {
 }
 
 void Ghost::getNewPosition() {
-    float diffPixels = Game::getInstance()->getSpeed() * Game::getInstance()->getTime() * 0.75;
+    float diffPixels = Game::getInstance()->getSpeed() * Game::getInstance()->getTime() * speedMultiplier;
     auto oldPosition = position;
     bool reachedNewTile = false;
     switch (currentDirection) {
@@ -318,6 +349,10 @@ void Ghost::getNewPosition() {
             currentDirection = nextDirection;
             setNextDirection();
         }
+        if (currentMode == GhostMode::dead && position == targetTile)
+        {
+            setMode(GhostMode::chase);
+        }
     };
 }
 
@@ -327,4 +362,28 @@ GhostMode Ghost::getMode() {
 
 void Ghost::setMode(GhostMode newMode) {
     currentMode = newMode;
+}
+
+float Ghost::getMultiplier() {
+    return speedMultiplier;
+}
+
+void Ghost::setMultiplier(double newSpeed) {
+    speedMultiplier = newSpeed;
+}
+
+void Ghost::MoveOutofBox() {
+    float diffPixels = Game::getInstance()->getSpeed() * Game::getInstance()->getTime() * speedMultiplier;
+    auto oldPosition = position;
+    if (position.first <= 13.3) {
+        position.first += diffPixels;
+    }
+    else if (position.first >= 13.7) {
+        position.first -= diffPixels;
+    }
+    else {
+        position.first = 13.5;
+        position.second -= diffPixels;
+    }
+
 }

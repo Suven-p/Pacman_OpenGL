@@ -48,7 +48,8 @@ class Map : public Sprite {
      */
     void drawObstacles(const std::string& shader) const;
     bool checkObstacle(const std::pair<float, float>& toCheck) const;
-    std::set<DIRECTION> possibleDirections(const std::pair<float, float>& toCheck) const;
+    char getBlockType(const std::pair<float, float>& toCheck) const;
+    std::set<DIRECTION> possibleDirections(const std::pair<float, float>& toCheck, const std::set<char>& obstacles = {MAP_WALL, MAP_GATE}) const;
 };
 
 #endif
