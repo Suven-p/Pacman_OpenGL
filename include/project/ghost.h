@@ -25,10 +25,10 @@ class Ghost : public Sprite {
     std::shared_ptr<spdlog::logger> logger;
 
    public:
-    Ghost(std::string name);
+    Ghost(const std::string& name);
     void draw(std::string shader);
     void draw(std::string shader, std::string name);
-    void drawEyes(std::string shader);
+    void drawEyes(const std::string& shader);
     GhostMode getMode();
     void setMode(GhostMode newMode);
     ~Ghost();

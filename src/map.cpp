@@ -83,7 +83,7 @@ void Map::draw(std::string shaderName) {
     glBindVertexArray(0);
 }
 
-void Map::draw(std::string shaderName, bool drawGrid) {
+void Map::draw(const std::string& shaderName, bool drawGrid) {
     draw(shaderName);
     if (drawGrid) {
         drawGridLines(shaderName);

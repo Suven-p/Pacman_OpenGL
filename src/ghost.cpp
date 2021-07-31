@@ -14,7 +14,7 @@ using namespace std;
 std::random_device rd;   // Will be used to obtain a seed for the random number engine
 std::mt19937 gen(rd());  // Standard mersenne_twister_engine seeded with rd()
 
-Ghost::Ghost(std::string name) : name(name) {
+Ghost::Ghost(const std::string& name) : name(name) {
     glGenVertexArrays(1, &vao);
     glGenBuffers(2, vbo);
     glGenBuffers(1, &ebo);
@@ -83,7 +83,7 @@ void Ghost::draw(std::string shader) {
     glBindVertexArray(0);
 }
 
-void Ghost::drawEyes(std::string shader) {
+void Ghost::drawEyes(const std::string& shader) {
     Texture2D texture;
     switch (currentDirection) {
         case DIRECTION::up:

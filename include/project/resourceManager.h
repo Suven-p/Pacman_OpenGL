@@ -86,7 +86,7 @@ class ResourceManager {
      * @param name Index for the stored sprite.
      * @return std::shared_ptr<Sprite>
      */
-    static std::shared_ptr<Sprite> GetSprite(const std::string name);
+    static std::shared_ptr<Sprite> GetSprite(const std::string& name);
 
     /**
      * @brief Clear all stored textures and shaders.

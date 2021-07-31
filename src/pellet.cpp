@@ -110,7 +110,7 @@ void Pellet::draw(std::string shaderName) {
     glBindVertexArray(0);
 }
 
-void Pellet::drawCherry(std::string shaderName) {
+void Pellet::drawCherry(const std::string& shaderName) {
     return;
 }
 

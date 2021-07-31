@@ -32,7 +32,7 @@ class Map : public Sprite {
      *
      * @param shader Index of shader to use. Shader must be stored in ResourceManager.
      */
-    void draw(std::string shader, bool drawGrid);
+    void draw(const std::string& shader, bool drawGrid);
     void draw(std::string shader);
     /**
      * @brief Draw grid lines on top of map.

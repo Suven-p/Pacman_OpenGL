@@ -13,7 +13,7 @@ class Pellet : public Sprite {
 
     Pellet();
     void draw(std::string shaderName);
-    void drawCherry(std::string shaderName);
+    void drawCherry(const std::string& shaderName);
     void changePelletStatus(std::pair<float, float> pacmanPosition);
     bool toDrawCherry();
     int getScore();

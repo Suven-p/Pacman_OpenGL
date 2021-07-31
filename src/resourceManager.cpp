@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <fstream>
 #include <sstream>
+#include <utility>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <project/stb_image.h>
@@ -40,20 +41,20 @@ std::shared_ptr<Sprite> ResourceManager::LoadSprite(const std::string& name, Spr
 
 std::shared_ptr<Sprite> ResourceManager::LoadSprite(const std::string& name,
                                                     std::shared_ptr<Sprite> sprite) {
-    Sprites[name] = sprite;
+    Sprites[name] = std::move(sprite);
     return Sprites[name];
 }
 
-std::shared_ptr<Sprite> ResourceManager::GetSprite(const std::string name) {
+std::shared_ptr<Sprite> ResourceManager::GetSprite(const std::string& name) {
     return Sprites[name];
 }
 
 void ResourceManager::Clear() {
     // (properly) delete all shaders
-    for (auto iter : Shaders)
+    for (const auto& iter : Shaders)
         glDeleteProgram(iter.second.ID);
     // (properly) delete all textures
-    for (auto iter : Textures)
+    for (const auto& iter : Textures)
         glDeleteTextures(1, &iter.second.ID);
 }
 

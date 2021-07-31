@@ -27,7 +27,7 @@ class Shader {
     void SetMatrix4(const char* name, const glm::mat4& matrix, bool useShader = false);
 
    private:
-    void checkCompileErrors(unsigned int object, std::string type);
+    void checkCompileErrors(unsigned int object, const std::string& type);
 };
 
 #endif
