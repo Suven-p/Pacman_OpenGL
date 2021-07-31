@@ -1,10 +1,14 @@
+#include <fstream>
+
 #include <project/main.h>
 #include <spdlog/spdlog.h>
+#include <nlohhmann/json.hpp>
 #ifdef SPDLOG_HEADER_ONLY
 #warning USING HEADER ONLY SPDLOG LIBRARY
 #endif
 
 using namespace std;
+using json = nlohmann::json;
 
 void reshape(int width, int height);
 void render();
@@ -17,6 +21,14 @@ void GLAPIENTRY MessageCallback(GLenum source,
                                 const void* userParam);
 
 int main(int argc, char** argv) {
+    std::ifstream i("resources/config.json");
+    json j;
+    i >> j;
+    auto temp1 = j["windowSize"]["height"].get<int>();
+    spdlog::info("Window width: {}\nWindow Height: {}",
+                 j["windowSize"]["width"].dump(),
+                 j["windowSize"]["height"].get<int>());
+
     windowData windowData;
     windowData.argc = &argc;
     windowData.argv = argv;
