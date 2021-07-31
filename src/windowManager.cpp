@@ -9,11 +9,7 @@
 WindowManager::WindowManager(){};
 WindowManager* WindowManager::instance = nullptr;
 void windowResizeCallback(GLFWwindow* window, int width, int height);
-void inputCallback(GLFWwindow* window,
-                   int key,
-                   int scancode,
-                   int action,
-                   int mods);
+void inputCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 WindowManager* WindowManager::getInstance() {
     if (!instance) {
@@ -22,8 +18,7 @@ WindowManager* WindowManager::getInstance() {
     return instance;
 }
 
-void WindowManager::createNewWindow(const std::string& windowName,
-                                    const windowData& data) {
+void WindowManager::createNewWindow(const std::string& windowName, const windowData& data) {
     if (!glfwInit()) {
         spdlog::error("Could not initialize glfw library!");
         return;
@@ -36,8 +31,7 @@ void WindowManager::createNewWindow(const std::string& windowName,
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-    window = glfwCreateWindow(
-        data.width, data.height, windowName.c_str(), NULL, NULL);
+    window = glfwCreateWindow(data.width, data.height, windowName.c_str(), NULL, NULL);
     if (!window) {
         glfwTerminate();
         spdlog::error("Could not initialize glfw window!");
@@ -52,11 +46,8 @@ void WindowManager::createNewWindow(const std::string& windowName,
     int nrChannels;
     stbi_set_flip_vertically_on_load(false);
     auto iconPath = ResourceManager::resolvePath("resources/pacman/1.png");
-    auto pixels = stbi_load(iconPath.c_str(),
-                            &(icons[0].width),
-                            &(icons[0].height),
-                            &nrChannels,
-                            4);
+    auto pixels =
+        stbi_load(iconPath.c_str(), &(icons[0].width), &(icons[0].height), &nrChannels, 4);
     if (!pixels) {
         spdlog::error("Could not load icon file!!!");
     } else {
@@ -93,11 +84,7 @@ void WindowManager::windowResizeCallback(GLFWwindow* window, int w, int h) {
     glViewport(0, 0, w, h);
 }
 
-void inputCallback(GLFWwindow* window,
-                   int key,
-                   int scancode,
-                   int action,
-                   int mods) {
+void inputCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     switch (action) {
         case GLFW_PRESS: {
             if (key < 256) {

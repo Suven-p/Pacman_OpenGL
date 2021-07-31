@@ -1,15 +1,14 @@
 #pragma once
-#include<project/sprite.h>
-#include<project/common.h>
-#include<memory>
-class Pacman: public Sprite
-{
+#include <project/common.h>
+#include <project/sprite.h>
+#include <memory>
+class Pacman : public Sprite {
     DIRECTION currentDirection, nextDirection;
-    std::pair<float,float> oldPosition;
-    GLuint vao,vbo[2],ebo;
+    std::pair<float, float> oldPosition;
+    GLuint vao, vbo[2], ebo;
     float multiplier;
-public:
 
+   public:
     Pacman();
     void draw(std::string shaderName);
     DIRECTION getDirection();

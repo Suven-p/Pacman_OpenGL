@@ -9,10 +9,8 @@
 #include <memory>
 
 Game::Game() {
-    ResourceManager::LoadShader(
-        "shaders/shader.vs", "shaders/shader.fs", nullptr, "mainShader");
-    ResourceManager::LoadTexture(
-        "resources/map/pacman_map.png", true, "baseMap");
+    ResourceManager::LoadShader("shaders/shader.vs", "shaders/shader.fs", nullptr, "mainShader");
+    ResourceManager::LoadTexture("resources/map/pacman_map.png", true, "baseMap");
     ResourceManager::LoadTexture("resources/blinky.png", true, "blinky");
     ResourceManager::LoadTexture("resources/pinky.png", true, "pinky");
     ResourceManager::LoadTexture("resources/inky.png", true, "inky");
@@ -21,13 +19,10 @@ Game::Game() {
     ResourceManager::LoadTexture("resources/pellet.png", true, "pellet");
     ResourceManager::LoadTexture("resources/power_pellet.png", true, "power_pellet");
     ResourceManager::LoadTexture("resources/cherry.png", true, "cherry");
-    ResourceManager::LoadTexture(
-        "resources/eyes/eyes_right.png", true, "eyesRight");
-    ResourceManager::LoadTexture(
-        "resources/eyes/eyes_left.png", true, "eyesLeft");
+    ResourceManager::LoadTexture("resources/eyes/eyes_right.png", true, "eyesRight");
+    ResourceManager::LoadTexture("resources/eyes/eyes_left.png", true, "eyesLeft");
     ResourceManager::LoadTexture("resources/eyes/eyes_up.png", true, "eyesUp");
-    ResourceManager::LoadTexture(
-        "resources/eyes/eyes_down.png", true, "eyesDown");
+    ResourceManager::LoadTexture("resources/eyes/eyes_down.png", true, "eyesDown");
     ResourceManager::LoadSprite("baseMap", std::make_shared<Map>());
     ResourceManager::LoadSprite("blinky", std::make_shared<Ghost>("blinky"));
     ResourceManager::LoadSprite("inky", std::make_shared<Ghost>("inky"));
@@ -47,11 +42,10 @@ Game* Game::instance = nullptr;
 std::vector<bool> Game::key_states(256, false);
 double Game::lastRedraw = 0;
 double Game::deltaTime = 0;
-std::unordered_map<int, int> Game::special_key_map = {
-    {GLFW_KEY_DOWN, int(DIRECTION::down)},
-    {GLFW_KEY_UP, int(DIRECTION::up)},
-    {GLFW_KEY_LEFT, int(DIRECTION::left)},
-    {GLFW_KEY_RIGHT, int(DIRECTION::right)}};
+std::unordered_map<int, int> Game::special_key_map = {{GLFW_KEY_DOWN, int(DIRECTION::down)},
+                                                      {GLFW_KEY_UP, int(DIRECTION::up)},
+                                                      {GLFW_KEY_LEFT, int(DIRECTION::left)},
+                                                      {GLFW_KEY_RIGHT, int(DIRECTION::right)}};
 std::vector<bool> Game::special_key_states(Game::special_key_map.size(), false);
 
 Game* Game::getInstance() {
@@ -73,8 +67,7 @@ void Game::render() {
     // especially when depth testing is disabled.
     // Objects drawn later appear above objects drawn
     // before.
-    auto baseMapPtr =
-        std::dynamic_pointer_cast<Map>(ResourceManager::GetSprite("baseMap"));
+    auto baseMapPtr = std::dynamic_pointer_cast<Map>(ResourceManager::GetSprite("baseMap"));
     baseMapPtr->draw("mainShader");
     baseMapPtr->drawGridLines("mainShader");
     ResourceManager::GetSprite("pellet")->draw("mainShader");
@@ -99,8 +92,7 @@ void Game::special_key_down(int key, int x, int y) {
         Game::special_key_states[Game::special_key_map[key]] = true;
         getPacmanPtr()->setNextDirection(DIRECTION(Game::special_key_map[key]));
     }
-    spdlog::trace("Switching direction to {}",
-                  toString(DIRECTION(Game::special_key_map[key])));
+    spdlog::trace("Switching direction to {}", toString(DIRECTION(Game::special_key_map[key])));
 }
 
 void Game::special_key_up(int key, int x, int y) {

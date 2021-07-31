@@ -2,8 +2,8 @@
 
 #include <project/common.h>
 #include <project/sprite.h>
-#include <set>
 #include <spdlog/sinks/basic_file_sink.h>
+#include <set>
 
 enum struct GhostMode
 {
@@ -12,8 +12,7 @@ enum struct GhostMode
     frightened
 };
 
-class Ghost : public Sprite
-{
+class Ghost : public Sprite {
     GLuint vao, vbo[2], ebo;
     std::string name;
     std::pair<float, float> targetTile;
@@ -25,7 +24,7 @@ class Ghost : public Sprite
     GhostMode currentMode;
     std::shared_ptr<spdlog::logger> logger;
 
-public:
+   public:
     Ghost(std::string name);
     void draw(std::string shader);
     void draw(std::string shader, std::string name);

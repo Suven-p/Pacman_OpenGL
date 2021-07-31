@@ -24,9 +24,7 @@ Shader ResourceManager::GetShader(const std::string& name) {
     return Shaders[name];
 }
 
-Texture2D ResourceManager::LoadTexture(const char* file,
-                                       bool alpha,
-                                       const std::string& name) {
+Texture2D ResourceManager::LoadTexture(const char* file, bool alpha, const std::string& name) {
     Textures[name] = loadTextureFromFile(file, alpha);
     return Textures[name];
 }
@@ -35,15 +33,13 @@ Texture2D ResourceManager::GetTexture(const std::string& name) {
     return Textures[name];
 }
 
-std::shared_ptr<Sprite> ResourceManager::LoadSprite(const std::string& name,
-                                                    Sprite* sprite) {
+std::shared_ptr<Sprite> ResourceManager::LoadSprite(const std::string& name, Sprite* sprite) {
     Sprites[name] = std::shared_ptr<Sprite>(sprite);
     return Sprites[name];
 }
 
-std::shared_ptr<Sprite> ResourceManager::LoadSprite(
-    const std::string& name,
-    std::shared_ptr<Sprite> sprite) {
+std::shared_ptr<Sprite> ResourceManager::LoadSprite(const std::string& name,
+                                                    std::shared_ptr<Sprite> sprite) {
     Sprites[name] = sprite;
     return Sprites[name];
 }
@@ -107,9 +103,7 @@ Shader ResourceManager::loadShaderFromFile(const char* vShaderFile,
     const char* gShaderCode = geometryCode.c_str();
     // 2. now create shader object from source code
     Shader shader;
-    shader.Compile(vShaderCode,
-                   fShaderCode,
-                   gShaderFile != nullptr ? gShaderCode : nullptr);
+    shader.Compile(vShaderCode, fShaderCode, gShaderFile != nullptr ? gShaderCode : nullptr);
     return shader;
 }
 
@@ -125,8 +119,7 @@ Texture2D ResourceManager::loadTextureFromFile(const char* file, bool alpha) {
     int width, height, nrChannels;
 
     stbi_set_flip_vertically_on_load(true);
-    unsigned char* data =
-        stbi_load(fileLocation.c_str(), &width, &height, &nrChannels, 0);
+    unsigned char* data = stbi_load(fileLocation.c_str(), &width, &height, &nrChannels, 0);
     if (!data) {
         spdlog::error("Failed to load texture file: {}", file);
     }
@@ -190,8 +183,7 @@ std::string ResourceManager::resolvePath(const std::string& toResolve) {
                           toResolve);
         }
     } else {
-        spdlog::debug("Stored path to binary: \"{}\" is invalid.",
-                      BINARY_DIRECTORY);
+        spdlog::debug("Stored path to binary: \"{}\" is invalid.", BINARY_DIRECTORY);
     }
 
     auto currentPath = std::filesystem::current_path();

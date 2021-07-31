@@ -58,13 +58,9 @@ int main(int argc, char** argv) {
     glGetFramebufferAttachmentParameteriv(
         GL_FRAMEBUFFER, GL_DEPTH, GL_FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE, &depth);
     glGetFramebufferAttachmentParameteriv(
-        GL_DRAW_FRAMEBUFFER,
-        GL_STENCIL,
-        GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE,
-        &stencil);
+        GL_DRAW_FRAMEBUFFER, GL_STENCIL, GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE, &stencil);
     spdlog::info("Size of depth, stencil channels: {} {}", depth, stencil);
-    spdlog::info("Refresh Rate: {}",
-                 glfwGetVideoMode(glfwGetPrimaryMonitor())->refreshRate);
+    spdlog::info("Refresh Rate: {}", glfwGetVideoMode(glfwGetPrimaryMonitor())->refreshRate);
 
     windowManagerPtr->run();
 }

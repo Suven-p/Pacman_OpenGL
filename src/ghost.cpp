@@ -11,8 +11,7 @@
 
 using namespace std;
 
-std::random_device
-    rd;  // Will be used to obtain a seed for the random number engine
+std::random_device rd;   // Will be used to obtain a seed for the random number engine
 std::mt19937 gen(rd());  // Standard mersenne_twister_engine seeded with rd()
 
 Ghost::Ghost(std::string name) : name(name) {
@@ -20,10 +19,9 @@ Ghost::Ghost(std::string name) : name(name) {
     glGenBuffers(2, vbo);
     glGenBuffers(1, &ebo);
 
-    float vertices[] = {-0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-                        -0.5f, 01.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-                        1.5f,  01.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-                        1.5f,  -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f};
+    float vertices[] = {-0.5f, -0.5f, 0.5f, 1.0f,  0.0f, 0.0f, 0.0f,  1.0f, -0.5f, 01.5f, 0.5f,
+                        1.0f,  0.0f,  0.0f, 0.0f,  1.0f, 1.5f, 01.5f, 0.5f, 1.0f,  0.0f,  0.0f,
+                        0.0f,  1.0f,  1.5f, -0.5f, 0.5f, 1.0f, 0.0f,  0.0f, 0.0f,  1.0f};
 
     float texCoord[] = {0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f};
 
@@ -33,23 +31,15 @@ Ghost::Ghost(std::string name) : name(name) {
     glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(
-        GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    glVertexAttribPointer(
-        0, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glVertexAttribPointer(1,
-                          4,
-                          GL_FLOAT,
-                          GL_FALSE,
-                          8 * sizeof(float),
-                          (void*)(4 * sizeof(float)));
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(4 * sizeof(float)));
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(texCoord), texCoord, GL_STATIC_DRAW);
-    glVertexAttribPointer(
-        2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)(0));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)(0));
     glEnableVertexAttribArray(2);
 
     currentDirection = DIRECTION::right;
@@ -72,15 +62,13 @@ void Ghost::draw(std::string shader) {
     glm::mat4 view(1.0f);
     glm::mat4 projection = glm::ortho(0.0f, 28.0f, 36.0f, 0.0f, -1.0f, 1.0f);
     ResourceManager::GetShader(shader).SetMatrix4("view", view, true);
-    ResourceManager::GetShader(shader).SetMatrix4(
-        "projection", projection, true);
+    ResourceManager::GetShader(shader).SetMatrix4("projection", projection, true);
 
     // This separation of temp_model from model was done so all ghosts could be
     // rendered in same call. This is not required as each ghost has its own
     // object.
     glm::mat4 temp_model = glm::mat4(1.0f);
-    temp_model =
-        glm::translate(model, glm::vec3(position.first, position.second, 0.0f));
+    temp_model = glm::translate(model, glm::vec3(position.first, position.second, 0.0f));
 
     ResourceManager::GetShader(shader).SetMatrix4("model", temp_model, true);
 
@@ -144,8 +132,7 @@ DIRECTION Ghost::setNextDirection() {
             break;
         }
     }
-    auto baseMapPtr =
-        std::dynamic_pointer_cast<Map>(ResourceManager::GetSprite("baseMap"));
+    auto baseMapPtr = std::dynamic_pointer_cast<Map>(ResourceManager::GetSprite("baseMap"));
     auto possible = baseMapPtr->possibleDirections(nextTile);
     possible.erase(oppositeDirection);
     logger->trace("Next tile is: {}, {}", nextTile.first, nextTile.second);
@@ -212,17 +199,15 @@ DIRECTION Ghost::setNextDirection() {
                             break;
                     }
                 } else if (name == "clyde") {
-                    float dist2 =
-                        sqrt(pow((position.first - pacmanPosition.first), 2) +
-                             pow((position.second - pacmanPosition.second), 2));
+                    float dist2 = sqrt(pow((position.first - pacmanPosition.first), 2) +
+                                       pow((position.second - pacmanPosition.second), 2));
                     if (dist2 <= 8) {
                         targetTile = {0, 32};
                     }
                     // else target already set to pacman position
                 }
             }
-            logger->trace(
-                "Target Tile is: {} {}", targetTile.first, targetTile.second);
+            logger->trace("Target Tile is: {} {}", targetTile.first, targetTile.second);
             float minValue = 1e9;
             DIRECTION bestDirection;
             std::map<DIRECTION, int> priorityOrder = {{DIRECTION::up, 4},
@@ -250,39 +235,29 @@ DIRECTION Ghost::setNextDirection() {
                         break;
                     }
                 }
-                float distance =
-                    sqrt(pow((targetTile.first - newPosition.first), 2) +
-                         pow((targetTile.second - newPosition.second), 2));
-                logger->trace("New position is {} {}",
-                              newPosition.first,
-                              newPosition.second);
-                logger->trace(
-                    "Distance in direction {} is {}", toString(c), distance);
+                float distance = sqrt(pow((targetTile.first - newPosition.first), 2) +
+                                      pow((targetTile.second - newPosition.second), 2));
+                logger->trace("New position is {} {}", newPosition.first, newPosition.second);
+                logger->trace("Distance in direction {} is {}", toString(c), distance);
                 if (distance < minValue) {
-                    logger->trace("Updating direction to {} based on value.",
-                                  toString(c));
+                    logger->trace("Updating direction to {} based on value.", toString(c));
                     minValue = distance;
                     bestDirection = c;
                 } else if (distance == minValue) {
-                    logger->trace("Updating direction to {} based on priority.",
-                                  toString(c));
+                    logger->trace("Updating direction to {} based on priority.", toString(c));
                     bestDirection =
-                        priorityOrder[c] > priorityOrder[bestDirection]
-                            ? c
-                            : bestDirection;
+                        priorityOrder[c] > priorityOrder[bestDirection] ? c : bestDirection;
                 }
             }
             nextDirection = bestDirection;
-            logger->trace("Best direction is set to be: {}",
-                          toString(bestDirection));
+            logger->trace("Best direction is set to be: {}", toString(bestDirection));
         }
     }
     return nextDirection;
 }
 
 void Ghost::getNewPosition() {
-    float diffPixels =
-        Game::getInstance()->getSpeed() * Game::getInstance()->getTime() * 0.75;
+    float diffPixels = Game::getInstance()->getSpeed() * Game::getInstance()->getTime() * 0.75;
     auto oldPosition = position;
     bool reachedNewTile = false;
     switch (currentDirection) {
@@ -291,8 +266,7 @@ void Ghost::getNewPosition() {
             if (oldPosition.first > std::ceil(position.first) and
                 position.first <= std::ceil(position.first)) {
                 reachedNewTile = true;
-                if (nextDirection == DIRECTION::up ||
-                    nextDirection == DIRECTION::down) {
+                if (nextDirection == DIRECTION::up || nextDirection == DIRECTION::down) {
                     position.first = std::ceil(position.first);
                 }
             }
@@ -303,8 +277,7 @@ void Ghost::getNewPosition() {
             if (oldPosition.second > std::ceil(position.second) and
                 position.second <= std::ceil(position.second)) {
                 reachedNewTile = true;
-                if (nextDirection == DIRECTION::left ||
-                    nextDirection == DIRECTION::right) {
+                if (nextDirection == DIRECTION::left || nextDirection == DIRECTION::right) {
                     position.second = std::ceil(position.second);
                 }
             }
@@ -314,8 +287,7 @@ void Ghost::getNewPosition() {
             position.first += diffPixels;
             if ((int(position.first) - int(oldPosition.first)) == 1) {
                 reachedNewTile = true;
-                if (nextDirection == DIRECTION::up ||
-                    nextDirection == DIRECTION::down) {
+                if (nextDirection == DIRECTION::up || nextDirection == DIRECTION::down) {
                     position.first = int(position.first);
                 }
             }
@@ -325,8 +297,7 @@ void Ghost::getNewPosition() {
             position.second += diffPixels;
             if ((int(position.second) - int(oldPosition.second)) == 1) {
                 reachedNewTile = true;
-                if (nextDirection == DIRECTION::left ||
-                    nextDirection == DIRECTION::right) {
+                if (nextDirection == DIRECTION::left || nextDirection == DIRECTION::right) {
                     position.second = int(position.second);
                 }
             }
@@ -334,16 +305,13 @@ void Ghost::getNewPosition() {
         }
     }
     if (reachedNewTile) {
-        logger->trace(
-            "Current position is: {} {}", position.first, position.second);
+        logger->trace("Current position is: {} {}", position.first, position.second);
         logger->trace("Current direction is: {}", toString(currentDirection));
         logger->trace("Switching direction to {}", toString(nextDirection));
         if (int(position.second) == 14) {
-            if (int(position.first) <= -2 &&
-                currentDirection == DIRECTION::left) {
+            if (int(position.first) <= -2 && currentDirection == DIRECTION::left) {
                 position.first = 30;
-            } else if (position.first > 30 &&
-                       currentDirection == DIRECTION::right) {
+            } else if (position.first > 30 && currentDirection == DIRECTION::right) {
                 position.first = -2;
             } else {
                 currentDirection = nextDirection;

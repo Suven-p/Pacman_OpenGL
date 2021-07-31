@@ -1,20 +1,19 @@
 #ifndef GAME_HPP_GUARD
 #define GAME_HPP_GUARD
 
-#include <vector>
-#include <unordered_map>
 #include <project/common.h>
 #include <project/map.h>
+#include <unordered_map>
+#include <vector>
 
 /**
  * @brief Main class to co-oridinate the different components.
  * Initializes all the shaders, textures, and sprites.
  * Provides render function to draw all game objects.
  */
-class Game
-{
+class Game {
     Game();
-    static Game *instance;
+    static Game* instance;
     static std::vector<bool> key_states;
     static std::unordered_map<int, int> special_key_map;
     static std::vector<bool> special_key_states;
@@ -22,17 +21,17 @@ class Game
     static double lastRedraw;
     static double deltaTime;
 
-public:
+   public:
     /**
-    * @brief Get the current instance.
-    * Get the current instance if it exists and generate one if it doesn't exist.
-    * This is used to enforce singleton pattern.
-    * @return Game*
-    */
-    static Game *getInstance();
+     * @brief Get the current instance.
+     * Get the current instance if it exists and generate one if it doesn't exist.
+     * This is used to enforce singleton pattern.
+     * @return Game*
+     */
+    static Game* getInstance();
 
     /** @brief Draw function to be called for every render.
-    */
+     */
     void render();
 
     /**

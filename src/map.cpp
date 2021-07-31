@@ -9,14 +9,10 @@ Map::Map() : gridSize({28, 36}) {
     glGenBuffers(1, &EBO);
     float vertices[] = {
         // positions              // colors               // texture coords
-        28.0f, 03.0f, -0.9f, 1.0f, 0.0f,
-        0.0f,  0.0f,  0.0f,  1.0f, 1.0f,  // top right
-        28.0f, 34.0f, -0.9f, 1.0f, 0.0f,
-        0.0f,  0.0f,  0.0f,  1.0f, 0.0f,  // bottom right
-        00.0f, 34.0f, -0.9f, 1.0f, 0.0f,
-        0.0f,  0.0f,  0.0f,  0.0f, 0.0f,  // bottom left
-        00.0f, 03.0f, -0.9f, 1.0f, 0.0f,
-        0.0f,  0.0f,  0.0f,  0.0f, 1.0f  // top left
+        28.0f, 03.0f, -0.9f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,  // top right
+        28.0f, 34.0f, -0.9f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,  // bottom right
+        00.0f, 34.0f, -0.9f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,  // bottom left
+        00.0f, 03.0f, -0.9f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f   // top left
     };
     unsigned int indices[] = {
         // note that we start from 0!
@@ -32,22 +28,10 @@ Map::Map() : gridSize({28, 36}) {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(
-        GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    glVertexAttribPointer(
-        0, 4, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)0);
-    glVertexAttribPointer(1,
-                          4,
-                          GL_FLOAT,
-                          GL_FALSE,
-                          10 * sizeof(float),
-                          (void*)(4 * sizeof(float)));
-    glVertexAttribPointer(2,
-                          2,
-                          GL_FLOAT,
-                          GL_FALSE,
-                          10 * sizeof(float),
-                          (void*)(8 * sizeof(float)));
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)0);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(4 * sizeof(float)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(8 * sizeof(float)));
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
@@ -60,38 +44,19 @@ Map::Map() : gridSize({28, 36}) {
     glGenBuffers(1, &blockEBO);
     float obstacleVertices[] = {
         // positions            // colors               // texture coords
-        1.0f, 0.0f, -0.8f, 1.0f, 0.0f,
-        0.0f, 0.0f, 1.0f,  1.0f, 1.0f,  // top right
-        1.0f, 1.0f, -0.8f, 1.0f, 0.0f,
-        0.0f, 0.0f, 1.0f,  1.0f, 0.0f,  // bottom right
-        0.0f, 1.0f, -0.8f, 1.0f, 0.0f,
-        0.0f, 0.0f, 1.0f,  0.0f, 0.0f,  // bottom left
-        0.0f, 0.0f, -0.8f, 1.0f, 0.0f,
-        0.0f, 0.0f, 1.0f,  0.0f, 1.0f  // top left
+        1.0f, 0.0f, -0.8f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,  // top right
+        1.0f, 1.0f, -0.8f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,  // bottom right
+        0.0f, 1.0f, -0.8f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,  // bottom left
+        0.0f, 0.0f, -0.8f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f   // top left
     };
     glBindVertexArray(blockVAO);
     glBindBuffer(GL_ARRAY_BUFFER, blockVBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, blockEBO);
-    glBufferData(GL_ARRAY_BUFFER,
-                 sizeof(obstacleVertices),
-                 obstacleVertices,
-                 GL_STATIC_DRAW);
-    glBufferData(
-        GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    glVertexAttribPointer(
-        0, 4, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)0);
-    glVertexAttribPointer(1,
-                          4,
-                          GL_FLOAT,
-                          GL_FALSE,
-                          10 * sizeof(float),
-                          (void*)(4 * sizeof(float)));
-    glVertexAttribPointer(2,
-                          2,
-                          GL_FLOAT,
-                          GL_FALSE,
-                          10 * sizeof(float),
-                          (void*)(8 * sizeof(float)));
+    glBufferData(GL_ARRAY_BUFFER, sizeof(obstacleVertices), obstacleVertices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)0);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(4 * sizeof(float)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(8 * sizeof(float)));
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
@@ -185,10 +150,8 @@ void Map::initializeGrid() {
                  (gridSize.first + gridSize.second) * 16 * sizeof(float),
                  vertices,
                  GL_STATIC_DRAW);
-    glVertexAttribPointer(
-        0, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glVertexAttribPointer(
-        1, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)4);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)4);
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     delete[] vertices;
@@ -244,8 +207,7 @@ bool Map::checkObstacle(const std::pair<float, float>& toCheck) const {
     return (block == MAP_WALL || block == MAP_GATE);
 }
 
-std::set<DIRECTION> Map::possibleDirections(
-    const std::pair<float, float>& toCheck) const {
+std::set<DIRECTION> Map::possibleDirections(const std::pair<float, float>& toCheck) const {
     std::set<DIRECTION> possible = {
         DIRECTION::up, DIRECTION::down, DIRECTION::left, DIRECTION::right};
 
@@ -254,8 +216,7 @@ std::set<DIRECTION> Map::possibleDirections(
         bool deleted = false;
         switch (c) {
             case DIRECTION::up: {
-                std::pair<float, float> newPosition = {toCheck.first,
-                                                       toCheck.second - 1};
+                std::pair<float, float> newPosition = {toCheck.first, toCheck.second - 1};
                 if (checkObstacle(newPosition)) {
                     it = possible.erase(it);
                     deleted = true;
@@ -263,8 +224,7 @@ std::set<DIRECTION> Map::possibleDirections(
                 break;
             }
             case DIRECTION::down: {
-                std::pair<float, float> newPosition = {toCheck.first,
-                                                       toCheck.second + 1};
+                std::pair<float, float> newPosition = {toCheck.first, toCheck.second + 1};
                 if (checkObstacle(newPosition)) {
                     it = possible.erase(it);
                     deleted = true;
@@ -272,8 +232,7 @@ std::set<DIRECTION> Map::possibleDirections(
                 break;
             }
             case DIRECTION::left: {
-                std::pair<float, float> newPosition = {toCheck.first - 1,
-                                                       toCheck.second};
+                std::pair<float, float> newPosition = {toCheck.first - 1, toCheck.second};
                 if (checkObstacle(newPosition)) {
                     it = possible.erase(it);
                     deleted = true;
@@ -281,8 +240,7 @@ std::set<DIRECTION> Map::possibleDirections(
                 break;
             }
             case DIRECTION::right: {
-                std::pair<float, float> newPosition = {toCheck.first + 1,
-                                                       toCheck.second};
+                std::pair<float, float> newPosition = {toCheck.first + 1, toCheck.second};
                 if (checkObstacle(newPosition)) {
                     it = possible.erase(it);
                     deleted = true;
