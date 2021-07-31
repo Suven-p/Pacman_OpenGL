@@ -15,4 +15,4 @@ void Sprite::setTexture(std::string newTexture) {
 std::string Sprite::getTexture() const {
     return texture;
 }
-Sprite::~Sprite() {}
+Sprite::~Sprite() = default;

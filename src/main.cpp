@@ -34,7 +34,7 @@ int main(int argc, char** argv) {
     auto game_obj = Game::getInstance();
 
     glEnable(GL_DEBUG_OUTPUT);
-    glDebugMessageCallback(MessageCallback, 0);
+    glDebugMessageCallback(MessageCallback, nullptr);
     // Blending should be enabled for transparency/alpha channel to work,
     // Depth test might not be required. If depth test is enabled, z-values
     // for ghosts must be modified according to name. With depth test disabled,

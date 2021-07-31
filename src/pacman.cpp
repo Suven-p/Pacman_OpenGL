@@ -1,8 +1,8 @@
-#include <math.h>
 #include <project/common.h>
 #include <project/game.h>
 #include <project/pacman.h>
 #include <project/resourceManager.h>
+#include <cmath>
 #include <iostream>
 #include <iterator>
 #include <set>
@@ -24,14 +24,14 @@ Pacman::Pacman() {
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)nullptr);
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(4 * sizeof(float)));
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(texCoord), texCoord, GL_STATIC_DRAW);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)(0));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)nullptr);
     glEnableVertexAttribArray(2);
 
     currentDirection = DIRECTION::right;
@@ -63,7 +63,7 @@ void Pacman::draw(std::string shader) {
     texture.Bind(0);
     ResourceManager::GetShader(shader).SetInteger("texture1", 0, true);
     ResourceManager::GetShader(shader).SetFloat("textureColorMix", 0.0f);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)nullptr);
 
     glBindVertexArray(0);
 }
@@ -107,8 +107,8 @@ bool Pacman::isColliding(DIRECTION aDirection) {
     auto possible = baseMapPtr->possibleDirections(std::pair<int, int>(oldPosition));
     bool collision = true;
 
-    for (auto itr = possible.begin(); itr != possible.end(); ++itr) {
-        if (*itr == aDirection) {
+    for (auto itr : possible) {
+        if (itr == aDirection) {
             collision = false;
         }
     }

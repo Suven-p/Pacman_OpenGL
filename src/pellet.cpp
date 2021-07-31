@@ -1,9 +1,9 @@
-#include <math.h>
 #include <project/common.h>
 #include <project/game.h>
 #include <project/pacman.h>
 #include <project/pellet.h>
 #include <project/resourceManager.h>
+#include <cmath>
 #include <iostream>
 #include <iterator>
 #include <set>
@@ -43,7 +43,7 @@ Pellet::Pellet() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, blockEBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(obstacleVertices), obstacleVertices, GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)nullptr);
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(4 * sizeof(float)));
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(8 * sizeof(float)));
     glEnableVertexAttribArray(0);
@@ -88,12 +88,12 @@ void Pellet::draw(std::string shaderName) {
                     break;
                 case 'X':
                     shader.SetInteger("texture1", 1, true);
-                    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
                     break;
                 case 'C':
                     if (toDrawCherry()) {
                         shader.SetInteger("texture1", 2, true);
-                        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
                     }
                     break;
                 case 'n':
@@ -103,7 +103,7 @@ void Pellet::draw(std::string shaderName) {
                 case 'o':
                 default:
                     shader.SetInteger("texture1", 0, true);
-                    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
             }
         }
     }
@@ -152,4 +152,4 @@ int Pellet::getScore() {
     return score;
 }
 
-Pellet::~Pellet() {}
+Pellet::~Pellet() = default;

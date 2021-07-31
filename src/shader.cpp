@@ -12,18 +12,18 @@ void Shader::Compile(const char* vertexSource,
     unsigned int sVertex, sFragment, gShader;
     // vertex Shader
     sVertex = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(sVertex, 1, &vertexSource, NULL);
+    glShaderSource(sVertex, 1, &vertexSource, nullptr);
     glCompileShader(sVertex);
     checkCompileErrors(sVertex, "VERTEX");
     // fragment Shader
     sFragment = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(sFragment, 1, &fragmentSource, NULL);
+    glShaderSource(sFragment, 1, &fragmentSource, nullptr);
     glCompileShader(sFragment);
     checkCompileErrors(sFragment, "FRAGMENT");
     // if geometry shader source code is given, also compile geometry shader
     if (geometrySource != nullptr) {
         gShader = glCreateShader(GL_GEOMETRY_SHADER);
-        glShaderSource(gShader, 1, &geometrySource, NULL);
+        glShaderSource(gShader, 1, &geometrySource, nullptr);
         glCompileShader(gShader);
         checkCompileErrors(gShader, "GEOMETRY");
     }
@@ -95,13 +95,13 @@ void Shader::checkCompileErrors(unsigned int object, std::string type) {
     if (type != "PROGRAM") {
         glGetShaderiv(object, GL_COMPILE_STATUS, &success);
         if (!success) {
-            glGetShaderInfoLog(object, 1024, NULL, infoLog);
+            glGetShaderInfoLog(object, 1024, nullptr, infoLog);
             spdlog::error("Shader::Compile-time error\n\tType: {}\n\tInfo: {}", type, infoLog);
         }
     } else {
         glGetProgramiv(object, GL_LINK_STATUS, &success);
         if (!success) {
-            glGetProgramInfoLog(object, 1024, NULL, infoLog);
+            glGetProgramInfoLog(object, 1024, nullptr, infoLog);
             spdlog::error("Shader::Link-time error\n\tType: {}\n\tInfo: {}", type, infoLog);
         }
     }

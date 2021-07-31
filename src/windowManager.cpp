@@ -6,7 +6,7 @@
 
 #include <project/stb_image.h>
 
-WindowManager::WindowManager(){};
+WindowManager::WindowManager()= default;;
 WindowManager* WindowManager::instance = nullptr;
 void windowResizeCallback(GLFWwindow* window, int width, int height);
 void inputCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -31,7 +31,7 @@ void WindowManager::createNewWindow(const std::string& windowName, const windowD
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-    window = glfwCreateWindow(data.width, data.height, windowName.c_str(), NULL, NULL);
+    window = glfwCreateWindow(data.width, data.height, windowName.c_str(), nullptr, nullptr);
     if (!window) {
         glfwTerminate();
         spdlog::error("Could not initialize glfw window!");
