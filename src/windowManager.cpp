@@ -6,7 +6,7 @@
 
 #include <project/stb_image.h>
 
-WindowManager::WindowManager()= default;;
+WindowManager::WindowManager() = default;
 WindowManager* WindowManager::instance = nullptr;
 void windowResizeCallback(GLFWwindow* window, int width, int height);
 void inputCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
