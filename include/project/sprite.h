@@ -1,23 +1,22 @@
 #pragma once
 
-#include <string>
-#include <utility>
 #include <project/common.h>
 #include <project/texture.h>
 #include <glm/glm.hpp>
+#include <string>
+#include <utility>
 
 /**
  * @brief A abstract class for game objects
  * An abstract base class so that all game objects can be stored in ResourceMap
  * without std::variant. All derived class must use public inheritance.
  */
-class Sprite
-{
-protected:
+class Sprite {
+   protected:
     std::pair<float, float> position;
     std::string texture;
 
-public:
+   public:
     Sprite();
     void setPosition(std::pair<float, float> newPosition);
     std::pair<float, float> getPosition() const;

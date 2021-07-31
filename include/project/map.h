@@ -3,18 +3,17 @@
 #ifndef MAP_HPP_GUARD
 #define MAP_HPP_GUARD
 
-#include <vector>
-#include <set>
 #include <project/common.h>
-#include <project/sprite.h>
 #include <project/mapData.h>
+#include <project/sprite.h>
+#include <set>
+#include <vector>
 
 /**
  * @brief Class to handle basic transparent map without any characters.
  *
  */
-class Map : public Sprite
-{
+class Map : public Sprite {
     std::pair<int, int> gridSize;
     std::vector<std::vector<int>> gridData;
     GLuint VAO, VBO, EBO;
@@ -22,7 +21,7 @@ class Map : public Sprite
     GLuint blockVAO, blockVBO, blockEBO;
     void initializeGrid();
 
-public:
+   public:
     /**
      * @brief Construct a new Map object.
      * Generates and configures the vao required for render.
@@ -33,7 +32,7 @@ public:
      *
      * @param shader Index of shader to use. Shader must be stored in ResourceManager.
      */
-    void draw(std::string shader, bool drawGrid);
+    void draw(const std::string& shader, bool drawGrid);
     void draw(std::string shader);
     /**
      * @brief Draw grid lines on top of map.
@@ -41,14 +40,14 @@ public:
      *
      * @param shader Index of shader to use. Shader must be stored in ResourceManager.
      */
-    void drawGridLines(const std::string &shader) const;
+    void drawGridLines(const std::string& shader) const;
     /**
      * @brief Show obstacles as colored blocks.
      * This is used to demonstrate and verify position of obstacles according to stored map data.
      *
      */
-    void drawObstacles(const std::string &shader) const;
-    bool checkObstacle(const std::pair<float, float> &toCheck) const;
+    void drawObstacles(const std::string& shader) const;
+    bool checkObstacle(const std::pair<float, float>& toCheck) const;
     std::set<DIRECTION> possibleDirections(const std::pair<float, float>& toCheck) const;
 };
 

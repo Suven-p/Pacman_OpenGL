@@ -22,8 +22,8 @@ int main(int argc, char** argv) {
     windowData.argv = argv;
     windowData.width = 448;
     windowData.height = 576;
-    windowData.refreshInterval = 1000.0f / 60.0f;
-    auto windowManagerPtr = WindowManager::getInstance();
+    windowData.refreshInterval = 1000.0F / 60.0F;
+    auto* windowManagerPtr = WindowManager::getInstance();
     windowManagerPtr->createNewWindow(PROJECT_NAME, windowData);
     spdlog::set_level(spdlog::level::debug);
 
@@ -31,10 +31,12 @@ int main(int argc, char** argv) {
         spdlog::error("Failed to initialize GLAD");
     }
 
-    auto game_obj = Game::getInstance();
+    auto game_obj = Game::getInstance();  // NOLINT: required to initialize game class
+
+    spdlog::get("ResourceManager")->set_level(spdlog::level::err);
 
     glEnable(GL_DEBUG_OUTPUT);
-    glDebugMessageCallback(MessageCallback, 0);
+    glDebugMessageCallback(MessageCallback, nullptr);
     // Blending should be enabled for transparency/alpha channel to work,
     // Depth test might not be required. If depth test is enabled, z-values
     // for ghosts must be modified according to name. With depth test disabled,
@@ -44,27 +46,6 @@ int main(int argc, char** argv) {
     // glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    spdlog::set_level(spdlog::level::debug);
-    int r, g, b, a, depth, stencil;
-    glGetFramebufferAttachmentParameteriv(
-        GL_FRAMEBUFFER, GL_BACK, GL_FRAMEBUFFER_ATTACHMENT_RED_SIZE, &r);
-    glGetFramebufferAttachmentParameteriv(
-        GL_FRAMEBUFFER, GL_BACK, GL_FRAMEBUFFER_ATTACHMENT_GREEN_SIZE, &g);
-    glGetFramebufferAttachmentParameteriv(
-        GL_FRAMEBUFFER, GL_BACK, GL_FRAMEBUFFER_ATTACHMENT_BLUE_SIZE, &b);
-    glGetFramebufferAttachmentParameteriv(
-        GL_FRAMEBUFFER, GL_BACK, GL_FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE, &a);
-    spdlog::info("Size of rgba channels: {} {} {} {}", r, g, b, a);
-    glGetFramebufferAttachmentParameteriv(
-        GL_FRAMEBUFFER, GL_DEPTH, GL_FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE, &depth);
-    glGetFramebufferAttachmentParameteriv(
-        GL_DRAW_FRAMEBUFFER,
-        GL_STENCIL,
-        GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE,
-        &stencil);
-    spdlog::info("Size of depth, stencil channels: {} {}", depth, stencil);
-    spdlog::info("Refresh Rate: {}",
-                 glfwGetVideoMode(glfwGetPrimaryMonitor())->refreshRate);
 
     windowManagerPtr->run();
 }

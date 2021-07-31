@@ -3,13 +3,13 @@
 
 #include <map>
 #include <string>
+#include <memory>
 
-#include <glad/glad.h>
-
-#include <project/texture.h>
+#include <project/common.h>
 #include <project/shader.h>
 #include <project/sprite.h>
-#include <memory>
+#include <project/texture.h>
+#include <spdlog/spdlog.h>
 
 /**
  * @brief Manage all game resources.
@@ -17,9 +17,8 @@
  * Stored objects can be accessed from any class or function since the methods
  * are static.
  */
-class ResourceManager
-{
-public:
+class ResourceManager {
+   public:
     static std::map<std::string, Shader> Shaders;
     static std::map<std::string, Texture2D> Textures;
     static std::map<std::string, std::shared_ptr<Sprite>> Sprites;
@@ -33,7 +32,10 @@ public:
      * @param name Index for the stored shader.
      * @return Shader
      */
-    static Shader LoadShader(const char *vShaderFile, const char *fShaderFile, const char *gShaderFile, const std::string &name);
+    static Shader LoadShader(const char* vShaderFile,
+                             const char* fShaderFile,
+                             const char* gShaderFile,
+                             const std::string& name);
 
     /**
      * @brief Get the Shader object.
@@ -41,7 +43,7 @@ public:
      * @param name Index for the shader to get.
      * @return Shader
      */
-    static Shader GetShader(const std::string &name);
+    static Shader GetShader(const std::string& name);
 
     /**
      * @brief Generate and configure a texture.
@@ -51,7 +53,7 @@ public:
      * @param name Index for the generated texture.
      * @return Texture2D
      */
-    static Texture2D LoadTexture(const char *file, bool alpha, const std::string &name);
+    static Texture2D LoadTexture(const char* file, bool alpha, const std::string& name);
 
     /**
      * @brief Get the Texture object.
@@ -59,7 +61,7 @@ public:
      * @param name Index for the texture to get.
      * @return Texture2D
      */
-    static Texture2D GetTexture(const std::string &name);
+    static Texture2D GetTexture(const std::string& name);
 
     /**
      * @brief Store a pointer to Sprite.
@@ -68,7 +70,7 @@ public:
      * @param sprite Pointer to the generated sprite.
      * @return std::shared_ptr<Sprite>
      */
-    static std::shared_ptr<Sprite> LoadSprite(const std::string &name, Sprite *sprite);
+    static std::shared_ptr<Sprite> LoadSprite(const std::string& name, Sprite* sprite);
     /**
      * @brief Store a pointer to Sprite.
      *
@@ -76,26 +78,30 @@ public:
      * @param sprite shared_ptr to the generated sprite.
      * @return std::shared_ptr<Sprite>
      */
-    static std::shared_ptr<Sprite> LoadSprite(const std::string &name, std::shared_ptr<Sprite> sprite);
+    static std::shared_ptr<Sprite> LoadSprite(const std::string& name,
+                                              std::shared_ptr<Sprite> sprite);
     /**
      * @brief Get the Sprite object.
      *
      * @param name Index for the stored sprite.
      * @return std::shared_ptr<Sprite>
      */
-    static std::shared_ptr<Sprite> GetSprite(const std::string name);
+    static std::shared_ptr<Sprite> GetSprite(const std::string& name);
 
     /**
      * @brief Clear all stored textures and shaders.
      *
      */
     static void Clear();
-    static std::string resolvePath(const std::string &toResolve);
+    static std::string resolvePath(const std::string& toResolve);
 
-private:
+   private:
     ResourceManager() {}
-    static Shader loadShaderFromFile(const char *vShaderFile, const char *fShaderFile, const char *gShaderFile = nullptr);
-    static Texture2D loadTextureFromFile(const char *file, bool alpha);
+    static std::shared_ptr<spdlog::logger> logger;
+    static Shader loadShaderFromFile(const char* vShaderFile,
+                                     const char* fShaderFile,
+                                     const char* gShaderFile = nullptr);
+    static Texture2D loadTextureFromFile(const char* file, bool alpha);
 };
 
 #endif

@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.20)
 
 project(Pacman VERSION 1.0 LANGUAGES CXX C)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 configure_file(
     ${CMAKE_SOURCE_DIR}/include/project/CMakeConfig.h.in
     ${CMAKE_SOURCE_DIR}/include/project/CMakeConfig.h
@@ -22,27 +24,28 @@ set(${PROJECT_NAME}_SOURCES
     src/helpers.cpp
     src/main.cpp
     src/map.cpp
+    src/pacman.cpp
+    src/pellet.cpp
     src/resourceManager.cpp
     src/shader.cpp
     src/sprite.cpp
     src/texture.cpp
     src/windowManager.cpp
-    src/pacman.cpp
-    src/pellet.cpp
 )
 file(GLOB_RECURSE ${PROJECT_NAME}_HEADERS
     include/*.h
     include/*.hpp
-    glfw/include/*.h
+    external/include/*.h
+    external/include/*.hpp
 )
 
 set(SPDLOG_ENABLE_PCH ON CACHE BOOL "Build static or shared library using precompiled header to speed up compilation time")
-add_subdirectory(spdlog)
+add_subdirectory(${CMAKE_SOURCE_DIR}/external/spdlog)
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-add_subdirectory(${CMAKE_SOURCE_DIR}/glfw)
+add_subdirectory(${CMAKE_SOURCE_DIR}/external/glfw)
 
 add_executable(${PROJECT_NAME}
     ${${PROJECT_NAME}_SOURCES}
@@ -66,7 +69,7 @@ set_target_properties(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME} PUBLIC
     ${CMAKE_SOURCE_DIR}/include
     ${OPENGL_INCLUDE_DIR}
-    ${CMAKE_SOURCE_DIR}/glfw/include
+    ${CMAKE_SOURCE_DIR}/external/include
 )
 target_link_libraries(${PROJECT_NAME} PUBLIC
     ${EXTRA_LIBS}
