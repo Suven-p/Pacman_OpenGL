@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.20)
 
 project(Pacman VERSION 1.0 LANGUAGES CXX C)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 configure_file(
     ${CMAKE_SOURCE_DIR}/include/project/CMakeConfig.h.in
     ${CMAKE_SOURCE_DIR}/include/project/CMakeConfig.h
