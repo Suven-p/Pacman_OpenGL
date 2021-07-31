@@ -1,4 +1,5 @@
 #include <project/resourceManager.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
 #include <filesystem>
@@ -12,6 +13,8 @@
 std::map<std::string, Texture2D> ResourceManager::Textures;
 std::map<std::string, Shader> ResourceManager::Shaders;
 std::map<std::string, std::shared_ptr<Sprite>> ResourceManager::Sprites;
+std::shared_ptr<spdlog::logger> ResourceManager::logger =
+    spdlog::stdout_color_mt("ResourceManager");
 
 Shader ResourceManager::LoadShader(const char* vShaderFile,
                                    const char* fShaderFile,
@@ -91,7 +94,7 @@ Shader ResourceManager::loadShaderFromFile(const char* vShaderFile,
             geometryCode = gShaderStream.str();
         }
     } catch (std::exception e) {
-        spdlog::error("SHADER::Failed to read shader files.\n"
+        logger->error("SHADER::Failed to read shader files.\n"
                       " Vertex Shader Path: {}\n"
                       " Fragment Shader Path: {}\n"
                       " Geometric Shadder Path: {}\n",
@@ -122,7 +125,7 @@ Texture2D ResourceManager::loadTextureFromFile(const char* file, bool alpha) {
     stbi_set_flip_vertically_on_load(true);
     unsigned char* data = stbi_load(fileLocation.c_str(), &width, &height, &nrChannels, 0);
     if (!data) {
-        spdlog::error("Failed to load texture file: {}", file);
+        logger->error("Failed to load texture file: {}", file);
     }
     // now generate texture
     texture.Generate(width, height, data);  // NOLINT: values initialized by stbi_load
@@ -155,46 +158,51 @@ std::filesystem::path getExecutablePath() {
 std::string ResourceManager::resolvePath(const std::string& toResolve) {
     auto pathToResolve = std::filesystem::path(toResolve);
 
+    // Try executablePath first
+    // TODO: Use whereami library for cross platform detection
     auto executionPath = getExecutablePath();
     if (std::filesystem::exists(executionPath)) {
         auto attemptPath = executionPath / pathToResolve;
         if (std::filesystem::exists(attemptPath)) {
             std::string fullPath = attemptPath.string();
-            spdlog::debug("Resolved {} to {}", toResolve, fullPath);
+            logger->trace("Resolved {} to {}", toResolve, fullPath);
             return fullPath;
         } else {
-            spdlog::debug("Received path to executable as: \"{}\""
+            logger->debug("Received path to executable as: \"{}\""
                           "but could not find file \"{}\"",
                           executionPath.string(),
                           toResolve);
         }
     }
 
+    // Next try output directory stored by cmake during build
     auto binaryPath = std::filesystem::path(BINARY_DIRECTORY);
     if (std::filesystem::exists(binaryPath)) {
         auto attemptPath = binaryPath / pathToResolve;
         if (std::filesystem::exists(attemptPath)) {
             std::string fullPath = attemptPath.string();
-            spdlog::debug("Resolved {} to {}", toResolve, fullPath);
+            logger->trace("Resolved {} to {}", toResolve, fullPath);
             return fullPath;
         } else {
-            spdlog::debug("Received path to binary directory as: \"{}\""
+            logger->debug("Received path to binary directory as: \"{}\""
                           "but could not find file \"{}\"",
                           BINARY_DIRECTORY,
                           toResolve);
         }
     } else {
-        spdlog::debug("Stored path to binary: \"{}\" is invalid.", BINARY_DIRECTORY);
+        logger->info("Stored path to binary: \"{}\" is invalid.", BINARY_DIRECTORY);
     }
 
+    // On windows this path is location of exe when program is run by clicking exe
+    // When running from terminal it is directory from which command is run
     auto currentPath = std::filesystem::current_path();
     auto attemptPath = currentPath / pathToResolve;
     if (std::filesystem::exists(attemptPath)) {
         std::string fullPath = attemptPath.string();
-        spdlog::debug("Resolved {} to {}", toResolve, fullPath);
+        logger->trace("Resolved {} to {}", toResolve, fullPath);
         return fullPath;
     } else {
-        spdlog::error("Could not find file: \"{}\"", toResolve);
+        logger->error("Could not find file: \"{}\"", toResolve);
     }
 
     return "";

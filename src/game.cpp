@@ -92,7 +92,6 @@ void Game::special_key_down(int key, int x, int y) {
         Game::special_key_states[Game::special_key_map[key]] = true;
         getPacmanPtr()->setNextDirection(DIRECTION(Game::special_key_map[key]));
     }
-    spdlog::trace("Switching direction to {}", toString(DIRECTION(Game::special_key_map[key])));
 }
 
 void Game::special_key_up(int key, int x, int y) {

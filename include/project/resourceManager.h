@@ -3,13 +3,13 @@
 
 #include <map>
 #include <string>
+#include <memory>
 
-#include <glad/glad.h>
-
+#include <project/common.h>
 #include <project/shader.h>
 #include <project/sprite.h>
 #include <project/texture.h>
-#include <memory>
+#include <spdlog/spdlog.h>
 
 /**
  * @brief Manage all game resources.
@@ -97,6 +97,7 @@ class ResourceManager {
 
    private:
     ResourceManager() {}
+    static std::shared_ptr<spdlog::logger> logger;
     static Shader loadShaderFromFile(const char* vShaderFile,
                                      const char* fShaderFile,
                                      const char* gShaderFile = nullptr);
