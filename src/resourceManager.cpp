@@ -16,7 +16,7 @@ Shader ResourceManager::LoadShader(const char* vShaderFile,
                                    const char* fShaderFile,
                                    const char* gShaderFile,
                                    const std::string& name) {
-    Shaders[name] = loadShaderFromFile(vShaderFile, fShaderFile, gShaderFile);
+    Shaders[name] = ResourceManager::loadShaderFromFile(vShaderFile, fShaderFile, gShaderFile);
     return Shaders[name];
 }
 
@@ -25,7 +25,7 @@ Shader ResourceManager::GetShader(const std::string& name) {
 }
 
 Texture2D ResourceManager::LoadTexture(const char* file, bool alpha, const std::string& name) {
-    Textures[name] = loadTextureFromFile(file, alpha);
+    Textures[name] = ResourceManager::loadTextureFromFile(file, alpha);
     return Textures[name];
 }
 
@@ -124,7 +124,7 @@ Texture2D ResourceManager::loadTextureFromFile(const char* file, bool alpha) {
         spdlog::error("Failed to load texture file: {}", file);
     }
     // now generate texture
-    texture.Generate(width, height, data);
+    texture.Generate(width, height, data);  // NOLINT: values initialized by stbi_load
     // and finally free image data
     stbi_image_free(data);
     return texture;

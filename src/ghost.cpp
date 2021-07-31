@@ -209,7 +209,8 @@ DIRECTION Ghost::setNextDirection() {
             }
             logger->trace("Target Tile is: {} {}", targetTile.first, targetTile.second);
             float minValue = 1e9;
-            DIRECTION bestDirection;
+            // Note: The current pacman map is guaranteed to have at least one possible direction
+            DIRECTION bestDirection = *possible.begin();
             std::map<DIRECTION, int> priorityOrder = {{DIRECTION::up, 4},
                                                       {DIRECTION::left, 3},
                                                       {DIRECTION::down, 2},

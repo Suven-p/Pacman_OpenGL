@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
         spdlog::error("Failed to initialize GLAD");
     }
 
-    auto game_obj = Game::getInstance();
+    auto game_obj = Game::getInstance();  // NOLINT: required to initialize game class
 
     glEnable(GL_DEBUG_OUTPUT);
     glDebugMessageCallback(MessageCallback, nullptr);
