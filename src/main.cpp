@@ -22,8 +22,8 @@ int main(int argc, char** argv) {
     windowData.argv = argv;
     windowData.width = 448;
     windowData.height = 576;
-    windowData.refreshInterval = 1000.0f / 60.0f;
-    auto windowManagerPtr = WindowManager::getInstance();
+    windowData.refreshInterval = 1000.0F / 60.0F;
+    auto* windowManagerPtr = WindowManager::getInstance();
     windowManagerPtr->createNewWindow(PROJECT_NAME, windowData);
     spdlog::set_level(spdlog::level::debug);
 

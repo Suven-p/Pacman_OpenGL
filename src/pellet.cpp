@@ -22,10 +22,10 @@ Pellet::Pellet() {
     glGenBuffers(1, &blockEBO);
     float obstacleVertices[] = {
         // positions            // colors               // texture coords
-        1.0f, 0.0f, 0.05f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,  // top right
-        1.0f, 1.0f, 0.05f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,  // bottom right
-        0.0f, 1.0f, 0.05f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,  // bottom left
-        0.0f, 0.0f, 0.05f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f   // top left
+        1.0F, 0.0F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 1.0F, 1.0F,  // top right
+        1.0F, 1.0F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 1.0F, 0.0F,  // bottom right
+        0.0F, 1.0F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F,  // bottom left
+        0.0F, 0.0F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F, 1.0F   // top left
     };
 
     unsigned int indices[] = {
@@ -60,11 +60,11 @@ void Pellet::draw(std::string shaderName) {
     auto pacmanPosition = getPacmanPtr()->getPosition();
     changePelletStatus(pacmanPosition);
 
-    glm::mat4 view = glm::mat4(1.0f);
-    glm::mat4 projection = glm::ortho(0.0f, 28.0f, 36.0f, 0.0f, 1.0f, -1.0f);
+    glm::mat4 view = glm::mat4(1.0F);
+    glm::mat4 projection = glm::ortho(0.0F, 28.0F, 36.0F, 0.0F, 1.0F, -1.0F);
     shader.SetMatrix4("view", view);
     shader.SetMatrix4("projection", projection);
-    shader.SetFloat("textureColorMix", 0.0f);
+    shader.SetFloat("textureColorMix", 0.0F);
     auto texture = ResourceManager::GetTexture("pellet");
     texture.Bind(0);
     auto texture2 = ResourceManager::GetTexture("power_pellet");
@@ -78,9 +78,9 @@ void Pellet::draw(std::string shaderName) {
 
     for (int i = 0; i < mapData.size(); i++) {
         for (int j = 0; j < mapData[i].size(); j++) {
-            model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(0.0f, 3.0f, 0.0f));
-            model = glm::translate(model, glm::vec3(float(i), float(j), 0.0f));
+            model = glm::mat4(1.0F);
+            model = glm::translate(model, glm::vec3(0.0F, 3.0F, 0.0F));
+            model = glm::translate(model, glm::vec3(float(i), float(j), 0.0F));
             shader.SetMatrix4("model", model);
             switch (mapData[i][j]) {
                 case 'G':

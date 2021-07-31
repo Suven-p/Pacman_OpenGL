@@ -19,11 +19,11 @@ Ghost::Ghost(const std::string& name) : name(name) {
     glGenBuffers(2, vbo);
     glGenBuffers(1, &ebo);
 
-    float vertices[] = {-0.5f, -0.5f, 0.5f, 1.0f,  0.0f, 0.0f, 0.0f,  1.0f, -0.5f, 01.5f, 0.5f,
-                        1.0f,  0.0f,  0.0f, 0.0f,  1.0f, 1.5f, 01.5f, 0.5f, 1.0f,  0.0f,  0.0f,
-                        0.0f,  1.0f,  1.5f, -0.5f, 0.5f, 1.0f, 0.0f,  0.0f, 0.0f,  1.0f};
+    float vertices[] = {-0.5F, -0.5F, 0.5F, 1.0F,  0.0F, 0.0F, 0.0F,  1.0F, -0.5F, 01.5F, 0.5F,
+                        1.0F,  0.0F,  0.0F, 0.0F,  1.0F, 1.5F, 01.5F, 0.5F, 1.0F,  0.0F,  0.0F,
+                        0.0F,  1.0F,  1.5F, -0.5F, 0.5F, 1.0F, 0.0F,  0.0F, 0.0F,  1.0F};
 
-    float texCoord[] = {0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f};
+    float texCoord[] = {0.0F, 1.0F, 0.0F, 0.0F, 1.0F, 0.0F, 1.0F, 1.0F};
 
     GLuint indices[] = {0, 1, 2, 0, 2, 3};
 
@@ -57,25 +57,25 @@ void Ghost::draw(std::string shader) {
     getNewPosition();
     ResourceManager::GetShader(shader).Use();
     glBindVertexArray(vao);
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, 3.0f, 0.0f));
-    glm::mat4 view(1.0f);
-    glm::mat4 projection = glm::ortho(0.0f, 28.0f, 36.0f, 0.0f, -1.0f, 1.0f);
+    glm::mat4 model = glm::mat4(1.0F);
+    model = glm::translate(model, glm::vec3(0.0F, 3.0F, 0.0F));
+    glm::mat4 view(1.0F);
+    glm::mat4 projection = glm::ortho(0.0F, 28.0F, 36.0F, 0.0F, -1.0F, 1.0F);
     ResourceManager::GetShader(shader).SetMatrix4("view", view, true);
     ResourceManager::GetShader(shader).SetMatrix4("projection", projection, true);
 
     // This separation of temp_model from model was done so all ghosts could be
     // rendered in same call. This is not required as each ghost has its own
     // object.
-    glm::mat4 temp_model = glm::mat4(1.0f);
-    temp_model = glm::translate(model, glm::vec3(position.first, position.second, 0.0f));
+    glm::mat4 temp_model = glm::mat4(1.0F);
+    temp_model = glm::translate(model, glm::vec3(position.first, position.second, 0.0F));
 
     ResourceManager::GetShader(shader).SetMatrix4("model", temp_model, true);
 
     auto texture = ResourceManager::GetTexture(name);
     texture.Bind(0);
     ResourceManager::GetShader(shader).SetInteger("texture1", 0, true);
-    ResourceManager::GetShader(shader).SetFloat("textureColorMix", 0.0f);
+    ResourceManager::GetShader(shader).SetFloat("textureColorMix", 0.0F);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)nullptr);
 
     drawEyes(shader);
@@ -102,7 +102,7 @@ void Ghost::drawEyes(const std::string& shader) {
 
     texture.Bind(0);
     ResourceManager::GetShader(shader).SetInteger("texture1", 0, true);
-    ResourceManager::GetShader(shader).SetFloat("textureColorMix", 0.0f);
+    ResourceManager::GetShader(shader).SetFloat("textureColorMix", 0.0F);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)nullptr);
 }
 
@@ -137,121 +137,118 @@ DIRECTION Ghost::setNextDirection() {
     possible.erase(oppositeDirection);
     logger->trace("Next tile is: {}, {}", nextTile.first, nextTile.second);
 
-    if (possible.size()) {
-        if (currentMode == GhostMode::frightened) {
-            std::uniform_int_distribution<> distrib(0, possible.size() - 1);
-            auto it = possible.begin();
-            auto index = distrib(gen);
-            std::advance(it, index);
-            nextDirection = *it;
-        } else {
-            if (currentMode == GhostMode::scatter) {
-                if (name == "blinky") {
-                    targetTile = {25, -3};
-                } else if (name == "inky") {
-                    targetTile = {27, 32};
-                } else if (name == "pinky") {
-                    targetTile = {2, -3};
-                } else if (name == "clyde") {
+    if (possible.empty()) {
+        return nextDirection;
+    }
+    if (currentMode == GhostMode::frightened) {
+        std::uniform_int_distribution<> distrib(0, possible.size() - 1);
+        auto it = possible.begin();
+        auto index = distrib(gen);
+        std::advance(it, index);
+        nextDirection = *it;
+    } else {
+        if (currentMode == GhostMode::scatter) {
+            if (name == "blinky") {
+                targetTile = {25, -3};
+            } else if (name == "inky") {
+                targetTile = {27, 32};
+            } else if (name == "pinky") {
+                targetTile = {2, -3};
+            } else if (name == "clyde") {
+                targetTile = {0, 32};
+            }
+        } else if (currentMode == GhostMode::chase) {
+            auto pacmanPtr = getPacmanPtr();
+            DIRECTION pacmanDirection = pacmanPtr->getDirection();
+            auto pacmanPosition = pacmanPtr->getPosition();
+            targetTile = pacmanPosition;
+            if (name == "blinky") {
+                // target already set to pacman postion
+            } else if (name == "inky") {
+                auto blinkyPtr = ResourceManager::GetSprite("blinky");
+                auto blinkyPosition = blinkyPtr->getPosition();
+                switch (pacmanDirection) {
+                    case DIRECTION::up:
+                        pacmanPosition.second -= 2;
+                        break;
+                    case DIRECTION::down:
+                        pacmanPosition.second += 2;
+                        break;
+                    case DIRECTION::left:
+                        pacmanPosition.first -= 2;
+                        break;
+                    case DIRECTION::right:
+                        pacmanPosition.first += 2;
+                        break;
+                }
+                float xdist = pacmanPosition.first - blinkyPosition.first;
+                float ydist = pacmanPosition.second - blinkyPosition.second;
+                targetTile = {blinkyPosition.first + 2 * xdist, blinkyPosition.second + 2 * ydist};
+            } else if (name == "pinky") {
+                switch (pacmanDirection) {
+                    case DIRECTION::up:
+                        targetTile.second -= 3;
+                        break;
+                    case DIRECTION::down:
+                        targetTile.second += 3;
+                        break;
+                    case DIRECTION::left:
+                        targetTile.first -= 3;
+                        break;
+                    case DIRECTION::right:
+                        targetTile.first += 3;
+                        break;
+                }
+            } else if (name == "clyde") {
+                float dist2 = sqrt(pow((position.first - pacmanPosition.first), 2) +
+                                   pow((position.second - pacmanPosition.second), 2));
+                if (dist2 <= 8) {
                     targetTile = {0, 32};
                 }
-            } else if (currentMode == GhostMode::chase) {
-                auto pacmanPtr = getPacmanPtr();
-                DIRECTION pacmanDirection = pacmanPtr->getDirection();
-                auto pacmanPosition = pacmanPtr->getPosition();
-                targetTile = pacmanPosition;
-                if (name == "blinky") {
-                    // target already set to pacman postion
-                } else if (name == "inky") {
-                    auto blinkyPtr = ResourceManager::GetSprite("blinky");
-                    auto blinkyPosition = blinkyPtr->getPosition();
-                    switch (pacmanDirection) {
-                        case DIRECTION::up:
-                            pacmanPosition.second -= 2;
-                            break;
-                        case DIRECTION::down:
-                            pacmanPosition.second += 2;
-                            break;
-                        case DIRECTION::left:
-                            pacmanPosition.first -= 2;
-                            break;
-                        case DIRECTION::right:
-                            pacmanPosition.first += 2;
-                            break;
-                    }
-                    float xdist = pacmanPosition.first - blinkyPosition.first;
-                    float ydist = pacmanPosition.second - blinkyPosition.second;
-                    targetTile = {blinkyPosition.first + 2 * xdist,
-                                  blinkyPosition.second + 2 * ydist};
-                } else if (name == "pinky") {
-                    switch (pacmanDirection) {
-                        case DIRECTION::up:
-                            targetTile.second -= 3;
-                            break;
-                        case DIRECTION::down:
-                            targetTile.second += 3;
-                            break;
-                        case DIRECTION::left:
-                            targetTile.first -= 3;
-                            break;
-                        case DIRECTION::right:
-                            targetTile.first += 3;
-                            break;
-                    }
-                } else if (name == "clyde") {
-                    float dist2 = sqrt(pow((position.first - pacmanPosition.first), 2) +
-                                       pow((position.second - pacmanPosition.second), 2));
-                    if (dist2 <= 8) {
-                        targetTile = {0, 32};
-                    }
-                    // else target already set to pacman position
-                }
+                // else target already set to pacman position
             }
-            logger->trace("Target Tile is: {} {}", targetTile.first, targetTile.second);
-            float minValue = 1e9;
-            // Note: The current pacman map is guaranteed to have at least one possible direction
-            DIRECTION bestDirection = *possible.begin();
-            std::map<DIRECTION, int> priorityOrder = {{DIRECTION::up, 4},
-                                                      {DIRECTION::left, 3},
-                                                      {DIRECTION::down, 2},
-                                                      {DIRECTION::right, 1}};
-            for (auto c : possible) {
-                std::pair<float, float> newPosition;
-                switch (c) {
-                    case DIRECTION::up: {
-                        newPosition = {nextTile.first, nextTile.second - 1};
-                        break;
-                    }
-                    case DIRECTION::down: {
-                        newPosition = {nextTile.first, nextTile.second + 1};
-                        break;
-                    }
-                    case DIRECTION::left: {
-                        newPosition = {nextTile.first - 1, nextTile.second};
-                        break;
-                    }
-                    case DIRECTION::right: {
-                        newPosition = {nextTile.first + 1, nextTile.second};
-                        break;
-                    }
-                }
-                float distance = sqrt(pow((targetTile.first - newPosition.first), 2) +
-                                      pow((targetTile.second - newPosition.second), 2));
-                logger->trace("New position is {} {}", newPosition.first, newPosition.second);
-                logger->trace("Distance in direction {} is {}", toString(c), distance);
-                if (distance < minValue) {
-                    logger->trace("Updating direction to {} based on value.", toString(c));
-                    minValue = distance;
-                    bestDirection = c;
-                } else if (distance == minValue) {
-                    logger->trace("Updating direction to {} based on priority.", toString(c));
-                    bestDirection =
-                        priorityOrder[c] > priorityOrder[bestDirection] ? c : bestDirection;
-                }
-            }
-            nextDirection = bestDirection;
-            logger->trace("Best direction is set to be: {}", toString(bestDirection));
         }
+        logger->trace("Target Tile is: {} {}", targetTile.first, targetTile.second);
+        float minValue = 1e9;
+        // Note: The current pacman map is guaranteed to have at least one possible direction
+        DIRECTION bestDirection = *possible.begin();
+        std::map<DIRECTION, int> priorityOrder = {
+            {DIRECTION::up, 4}, {DIRECTION::left, 3}, {DIRECTION::down, 2}, {DIRECTION::right, 1}};
+        for (auto c : possible) {
+            std::pair<float, float> newPosition;
+            switch (c) {
+                case DIRECTION::up: {
+                    newPosition = {nextTile.first, nextTile.second - 1};
+                    break;
+                }
+                case DIRECTION::down: {
+                    newPosition = {nextTile.first, nextTile.second + 1};
+                    break;
+                }
+                case DIRECTION::left: {
+                    newPosition = {nextTile.first - 1, nextTile.second};
+                    break;
+                }
+                case DIRECTION::right: {
+                    newPosition = {nextTile.first + 1, nextTile.second};
+                    break;
+                }
+            }
+            float distance = sqrt(pow((targetTile.first - newPosition.first), 2) +
+                                  pow((targetTile.second - newPosition.second), 2));
+            logger->trace("New position is {} {}", newPosition.first, newPosition.second);
+            logger->trace("Distance in direction {} is {}", toString(c), distance);
+            if (distance < minValue) {
+                logger->trace("Updating direction to {} based on value.", toString(c));
+                minValue = distance;
+                bestDirection = c;
+            } else if (distance == minValue) {
+                logger->trace("Updating direction to {} based on priority.", toString(c));
+                bestDirection = priorityOrder[c] > priorityOrder[bestDirection] ? c : bestDirection;
+            }
+        }
+        nextDirection = bestDirection;
+        logger->trace("Best direction is set to be: {}", toString(bestDirection));
     }
     return nextDirection;
 }

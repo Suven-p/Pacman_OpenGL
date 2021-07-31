@@ -88,17 +88,17 @@ void inputCallback(GLFWwindow* window, int key, int scancode, int action, int mo
     switch (action) {
         case GLFW_PRESS: {
             if (key < 256) {
-                Game::getInstance()->key_down(key, 0, 0);
+                Game::key_down(key, 0, 0);
             } else {
-                Game::getInstance()->special_key_down(key, 0, 0);
+                Game::special_key_down(key, 0, 0);
             }
             break;
         }
         case GLFW_RELEASE: {
             if (key < 256) {
-                Game::getInstance()->key_up(key, 0, 0);
+                Game::key_up(key, 0, 0);
             } else {
-                Game::getInstance()->special_key_up(key, 0, 0);
+                Game::special_key_up(key, 0, 0);
             }
         }
     }

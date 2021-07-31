@@ -3,7 +3,7 @@
 #include <utility>
 
 Sprite::Sprite() {
-    position = std::make_pair(-1.0f, -1.0f);
+    position = std::make_pair(-1.0F, -1.0F);
 }
 void Sprite::setPosition(std::pair<float, float> newPosition) {
     position = newPosition;

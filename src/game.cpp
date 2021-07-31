@@ -49,7 +49,7 @@ std::unordered_map<int, int> Game::special_key_map = {{GLFW_KEY_DOWN, int(DIRECT
 std::vector<bool> Game::special_key_states(Game::special_key_map.size(), false);
 
 Game* Game::getInstance() {
-    if (!instance) {
+    if (instance == nullptr) {
         instance = new Game();
     }
     return instance;
@@ -60,7 +60,7 @@ void Game::render() {
     deltaTime = std::min(currentTime - lastRedraw, 25.0);
     lastRedraw = currentTime;
 
-    glClearColor(0.2f, 0.2f, 0.2f, 0.0f);
+    glClearColor(0.2F, 0.2F, 0.2F, 0.0F);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // IMPORTANT: order of draw calls is important
