@@ -1,9 +1,13 @@
 #pragma once
 
 #include <chrono>
+#include <map>
+#include <memory>
+#include <string>
 
 class Timer {
-   public:
+   private:
+    static std::map<std::string, Timer*> _allTimers;
     decltype(std::chrono::high_resolution_clock::now()) _startTimePoint;
     decltype(std::chrono::high_resolution_clock::now()) _pauseTimePoint;
     decltype(std::chrono::high_resolution_clock::now()) _stopTimePoint;
@@ -13,8 +17,9 @@ class Timer {
     bool _isStopped;
 
    public:
-    Timer(bool start = true);
+    Timer(std::string name = "", bool start = true);
     ~Timer() = default;
+    static Timer* getTimer(std::string name);
     void start();
     void pause();
     void resume();

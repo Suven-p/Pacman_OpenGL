@@ -1,12 +1,27 @@
+#include <spdlog/spdlog.h>
 #include <project/timer.hpp>
 
 using namespace std::chrono;
 
-Timer::Timer(bool autostart) :
+std::map<std::string, Timer*> Timer::_allTimers;
+
+Timer::Timer(std::string name, bool autostart) :
     _totalPausedTime(0), _isStarted(false), _isPaused(false), _isStopped(false) {
     if (autostart) {
         start();
     }
+    if (!name.empty()) {
+        auto it = _allTimers.find(name);
+        if (it != _allTimers.end() && it->second != nullptr) {
+            spdlog::error("Conflicting timer names.");
+        } else {
+            _allTimers[name] = this;
+        }
+    }
+}
+
+Timer* Timer::getTimer(std::string name) {
+    return Timer::_allTimers[name];
 }
 
 void Timer::start() {
