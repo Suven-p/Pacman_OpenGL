@@ -195,7 +195,8 @@ void Map::drawObstacles(const std::string& shaderName) const {
     glBindVertexArray(0);
 }
 
-bool Map::checkObstacle(const std::pair<float, float>& toCheck) const {
+bool Map::checkObstacle(const std::pair<float, float>& toCheck,
+                        const std::set<char>& obstacles) const {
     std::pair<int, int> position({toCheck.first, toCheck.second});
     if (position.first < 0 || position.first >= mapDataColRow.size()) {
         return true;
@@ -204,32 +205,56 @@ bool Map::checkObstacle(const std::pair<float, float>& toCheck) const {
         return true;
     }
     auto block = mapDataColRow[position.first][position.second];
-    return (block == MAP_WALL || block == MAP_GATE);
+    return (obstacles.count(block) > 0);
 }
 
-char Map::getBlockType(const std::pair<float, float>& toCheck) const {
-    std::pair<int, int> position({toCheck.first, toCheck.second});
-    if (position.first < 0 || position.first >= mapDataColRow.size()) {
-        return true;
+char Map::getBlockType(const std::pair<int, int>& toCheck) const {
+    if (toCheck.first < 0 || toCheck.first >= mapDataColRow.size()) {
+        return MAP_OUTOFBOUNDS;
     }
-    if (position.second < 0 || position.second >= mapDataColRow[0].size()) {
-        return true;
+    if (toCheck.second < 0 || toCheck.second >= mapDataColRow[0].size()) {
+        return MAP_OUTOFBOUNDS;
     }
-    auto block = mapDataColRow[position.first][position.second];
+    auto block = mapDataColRow[toCheck.first][toCheck.second];
     return block;
 }
 
-std::set<DIRECTION> Map::possibleDirections(const std::pair<float, float>& toCheck, const std::set<char>& obstacles) const {
+std::set<DIRECTION> Map::possibleDirections(const std::pair<float, float>& toCheck,
+                                            const std::set<char>& obstacles) const {
     std::set<DIRECTION> possible = {
         DIRECTION::up, DIRECTION::down, DIRECTION::left, DIRECTION::right};
-
+    bool validCoord = true;
+    if (toCheck.second < 0 || toCheck.second > 30) {
+        validCoord = false;
+    }
+    if (toCheck.first < 0) {
+        if (abs(toCheck.second - 14) < 0.3) {
+            return {DIRECTION::left};
+        } else {
+            validCoord == false;
+        }
+    }
+    if (toCheck.first > 27) {
+        if (abs(toCheck.second - 14) < 0.3) {
+            return {DIRECTION::right};
+        } else {
+            validCoord == false;
+        }
+    }
+    if (!validCoord) {
+        spdlog::error("Map::Something went wrong."
+                      "Position change requested for invalid coordinates: {}, {}",
+                      toCheck.first,
+                      toCheck.second);
+        return {};
+    }
     for (auto it = possible.begin(); it != possible.end();) {
         auto c = *it;
         bool deleted = false;
         switch (c) {
             case DIRECTION::up: {
                 std::pair<float, float> newPosition = {toCheck.first, toCheck.second - 1};
-                if (obstacles.count(getBlockType(newPosition)) > 0) {
+                if (checkObstacle(newPosition, obstacles)) {
                     it = possible.erase(it);
                     deleted = true;
                 }
@@ -237,7 +262,7 @@ std::set<DIRECTION> Map::possibleDirections(const std::pair<float, float>& toChe
             }
             case DIRECTION::down: {
                 std::pair<float, float> newPosition = {toCheck.first, toCheck.second + 1};
-                if (obstacles.count(getBlockType(newPosition)) > 0) {
+                if (checkObstacle(newPosition, obstacles)) {
                     it = possible.erase(it);
                     deleted = true;
                 }
@@ -245,7 +270,7 @@ std::set<DIRECTION> Map::possibleDirections(const std::pair<float, float>& toChe
             }
             case DIRECTION::left: {
                 std::pair<float, float> newPosition = {toCheck.first - 1, toCheck.second};
-                if (obstacles.count(getBlockType(newPosition)) > 0) {
+                if (checkObstacle(newPosition, obstacles)) {
                     it = possible.erase(it);
                     deleted = true;
                 }
@@ -253,7 +278,7 @@ std::set<DIRECTION> Map::possibleDirections(const std::pair<float, float>& toChe
             }
             case DIRECTION::right: {
                 std::pair<float, float> newPosition = {toCheck.first + 1, toCheck.second};
-                if (obstacles.count(getBlockType(newPosition)) > 0) {
+                if (checkObstacle(newPosition, obstacles)) {
                     it = possible.erase(it);
                     deleted = true;
                 }

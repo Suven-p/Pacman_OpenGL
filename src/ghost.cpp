@@ -13,7 +13,7 @@ using namespace std;
 
 std::random_device rd;   // Will be used to obtain a seed for the random number engine
 std::mt19937 gen(rd());  // Standard mersenne_twister_engine seeded with rd()
-//TODO frightened texture change, speed vary, dead mode, blinky cruise elroy,
+// TODO frightened texture change, speed vary, dead mode, blinky cruise elroy,
 Ghost::Ghost(const std::string& name) : name(name) {
     glGenVertexArrays(1, &vao);
     glGenBuffers(2, vbo);
@@ -56,12 +56,8 @@ Ghost::Ghost(const std::string& name) : name(name) {
 Ghost::~Ghost() = default;
 
 void Ghost::draw(std::string shader) {
-    bool ghost_in_box = (
-        position.first >= 11 &&
-        position.first <= 16 &&
-        position.second >= 12 &&
-        position.second <= 15
-    );
+    bool ghost_in_box = (position.first >= 11 && position.first <= 16 && position.second >= 12 &&
+                         position.second <= 15);
     if (ghost_in_box && currentMode != GhostMode::dead) {
         MoveOutofBox();
     } else {
@@ -84,7 +80,7 @@ void Ghost::draw(std::string shader) {
 
     ResourceManager::GetShader(shader).SetMatrix4("model", temp_model, true);
 
-    if(currentMode != GhostMode::dead) {
+    if (currentMode != GhostMode::dead) {
         auto texture = ResourceManager::GetTexture(name);
         texture.Bind(0);
         ResourceManager::GetShader(shader).SetInteger("texture1", 0, true);
@@ -147,14 +143,14 @@ DIRECTION Ghost::setNextDirection() {
         }
     }
     auto baseMapPtr = std::dynamic_pointer_cast<Map>(ResourceManager::GetSprite("baseMap"));
-    std::set<char> obstacles_dead {MAP_WALL};
+    std::set<char> obstacles_dead{MAP_WALL};
     std::set<DIRECTION> possible;
 
-    if (currentMode == GhostMode::dead)
-        {possible = baseMapPtr->possibleDirections(nextTile, obstacles_dead);
+    if (currentMode == GhostMode::dead) {
+        possible = baseMapPtr->possibleDirections(nextTile, obstacles_dead);
+    } else {
+        possible = baseMapPtr->possibleDirections(nextTile);
     }
-    else
-        {possible = baseMapPtr->possibleDirections(nextTile);}
     possible.erase(oppositeDirection);
     logger->trace("Next tile is: {}, {}", nextTile.first, nextTile.second);
 
@@ -285,7 +281,8 @@ DIRECTION Ghost::setNextDirection() {
 }
 
 void Ghost::getNewPosition() {
-    float diffPixels = Game::getInstance()->getSpeed() * Game::getInstance()->getTime() * speedMultiplier;
+    float diffPixels =
+        Game::getInstance()->getSpeed() * Game::getInstance()->getTime() * speedMultiplier;
     auto oldPosition = position;
     bool reachedNewTile = false;
     switch (currentDirection) {
@@ -333,6 +330,9 @@ void Ghost::getNewPosition() {
         }
     }
     if (reachedNewTile) {
+        if (name == "inky" && position.first >= 27) {
+            auto temp = 6578;
+        }
         logger->trace("Current position is: {} {}", position.first, position.second);
         logger->trace("Current direction is: {}", toString(currentDirection));
         logger->trace("Switching direction to {}", toString(nextDirection));
@@ -349,8 +349,7 @@ void Ghost::getNewPosition() {
             currentDirection = nextDirection;
             setNextDirection();
         }
-        if (currentMode == GhostMode::dead && position == targetTile)
-        {
+        if (currentMode == GhostMode::dead && position == targetTile) {
             setMode(GhostMode::chase);
         }
     };
@@ -373,17 +372,15 @@ void Ghost::setMultiplier(double newSpeed) {
 }
 
 void Ghost::MoveOutofBox() {
-    float diffPixels = Game::getInstance()->getSpeed() * Game::getInstance()->getTime() * speedMultiplier;
+    float diffPixels =
+        Game::getInstance()->getSpeed() * Game::getInstance()->getTime() * speedMultiplier;
     auto oldPosition = position;
     if (position.first <= 13.3) {
         position.first += diffPixels;
-    }
-    else if (position.first >= 13.7) {
+    } else if (position.first >= 13.7) {
         position.first -= diffPixels;
-    }
-    else {
+    } else {
         position.first = 13.5;
         position.second -= diffPixels;
     }
-
 }

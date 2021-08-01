@@ -7,6 +7,7 @@
 #define MAP_NO_FOOD 'n'
 #define MAP_GATE 'G'
 #define MAP_PASSTHROUGH 'P'
+#define MAP_OUTOFBOUNDS 'B'
 
 const std::vector<std::vector<char>> mapDataRowCol = {
     {'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W',
