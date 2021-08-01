@@ -2,6 +2,7 @@
 #include <project/timer.hpp>
 
 using namespace std::chrono;
+using resolution = std::chrono::milliseconds;
 
 std::map<std::string, Timer*> Timer::_allTimers;
 
@@ -43,7 +44,7 @@ void Timer::resume() {
     if (!_isStarted || !_isPaused)
         return;
     auto currentTime = Timer::getCurrentTimePoint();
-    auto pausedTime = duration_cast<milliseconds>(currentTime - _pauseTimePoint).count();
+    auto pausedTime = duration_cast<resolution>(currentTime - _pauseTimePoint).count();
     _totalPausedTime += pausedTime;
     _isPaused = false;
 }
@@ -60,10 +61,10 @@ int64_t Timer::timeElapsed() const {
     auto currentTime = Timer::getCurrentTimePoint();
     auto pausedTime = _totalPausedTime;
     if (_isPaused) {
-        auto temp = duration_cast<milliseconds>(currentTime - _pauseTimePoint);
+        auto temp = duration_cast<resolution>(currentTime - _pauseTimePoint);
         pausedTime += temp.count();
     }
-    auto ans = duration_cast<milliseconds>(currentTime - _startTimePoint).count();
+    auto ans = duration_cast<resolution>(currentTime - _startTimePoint).count();
     ans -= pausedTime;
     return ans;
 }
