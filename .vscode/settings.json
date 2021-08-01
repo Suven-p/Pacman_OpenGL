@@ -97,5 +97,10 @@
             "source": "Git Bash"
         }
     },
-    "terminal.integrated.defaultProfile.windows": "PowerShell"
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
+    "C_Cpp.default.includePath": [
+        "include",
+        "external/include"
+    ],
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
 }
