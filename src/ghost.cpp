@@ -330,9 +330,6 @@ void Ghost::getNewPosition() {
         }
     }
     if (reachedNewTile) {
-        if (name == "inky" && position.first >= 27) {
-            auto temp = 6578;
-        }
         logger->trace("Current position is: {} {}", position.first, position.second);
         logger->trace("Current direction is: {}", toString(currentDirection));
         logger->trace("Switching direction to {}", toString(nextDirection));
