@@ -29,6 +29,7 @@ set(${PROJECT_NAME}_SOURCES
     src/shader.cpp
     src/sprite.cpp
     src/texture.cpp
+    src/timer.cpp
     src/windowManager.cpp
 )
 file(GLOB_RECURSE ${PROJECT_NAME}_HEADERS
