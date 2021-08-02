@@ -30,36 +30,30 @@ Game::Game() {
     ResourceManager::LoadSprite("clyde", std::make_shared<Ghost>("clyde"));
     ResourceManager::LoadSprite("pacman", std::make_shared<Pacman>());
     ResourceManager::LoadSprite("pellet", std::make_shared<Pellet>());
-    ResourceManager::GetSprite("blinky")->setPosition(std::make_pair(1, 1));
-    ResourceManager::GetSprite("pinky")->setPosition(std::make_pair(23, 1));
-    ResourceManager::GetSprite("clyde")->setPosition(std::make_pair(1, 29));
-    ResourceManager::GetSprite("inky")->setPosition(std::make_pair(23, 29));
+
     ResourceManager::GetSprite("pacman")->setPosition(std::make_pair(13.5, 23));
 }
 
-double Game::baseSpeed = 0.01;
-Game* Game::instance = nullptr;
+std::shared_ptr<Game> Game::instance = nullptr;
 std::vector<bool> Game::key_states(256, false);
+double Game::baseSpeed = 0.01;
+Timer Game::redrawTimer = Timer();
 double Game::lastRedraw = 0;
-double Game::deltaTime = 0;
+
 std::unordered_map<int, int> Game::special_key_map = {{GLFW_KEY_DOWN, int(DIRECTION::down)},
                                                       {GLFW_KEY_UP, int(DIRECTION::up)},
                                                       {GLFW_KEY_LEFT, int(DIRECTION::left)},
                                                       {GLFW_KEY_RIGHT, int(DIRECTION::right)}};
 std::vector<bool> Game::special_key_states(Game::special_key_map.size(), false);
 
-Game* Game::getInstance() {
+std::shared_ptr<Game> Game::getInstance() {
     if (instance == nullptr) {
-        instance = new Game();
+        instance = std::shared_ptr<Game>(new Game());
     }
     return instance;
 }
 
 void Game::render() {
-    double currentTime = (glfwGetTime() * 1000.0);
-    deltaTime = std::min(currentTime - lastRedraw, 25.0);
-    lastRedraw = currentTime;
-
     glClearColor(0.2F, 0.2F, 0.2F, 0.0F);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -77,6 +71,8 @@ void Game::render() {
     ResourceManager::GetSprite("pinky")->draw("mainShader");
     ResourceManager::GetSprite("blinky")->draw("mainShader");
     baseMapPtr->drawObstacles("mainShader");
+
+    lastRedraw = redrawTimer.timeElapsed();
 }
 
 void Game::key_down(unsigned char key, int x, int y) {
@@ -88,14 +84,14 @@ void Game::key_up(unsigned char key, int x, int y) {
 }
 
 void Game::special_key_down(int key, int x, int y) {
-    if (Game::special_key_map.count(key)) {
+    if (Game::special_key_map.count(key) > 0) {
         Game::special_key_states[Game::special_key_map[key]] = true;
         getPacmanPtr()->setNextDirection(DIRECTION(Game::special_key_map[key]));
     }
 }
 
 void Game::special_key_up(int key, int x, int y) {
-    if (Game::special_key_map.count(key)) {
+    if (Game::special_key_map.count(key) > 0) {
         Game::special_key_states[Game::special_key_map[key]] = false;
     }
 }
@@ -109,5 +105,5 @@ void Game::setSpeed(double newSpeed) {
 }
 
 double Game::getTime() {
-    return Game::deltaTime;
+    return std::min(redrawTimer.timeElapsed() - lastRedraw, 25.0);
 }

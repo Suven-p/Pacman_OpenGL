@@ -3,7 +3,9 @@
 #include <project/common.h>
 #include <project/sprite.h>
 #include <spdlog/sinks/basic_file_sink.h>
+#include <map>
 #include <set>
+#include <utility>
 
 enum struct GhostMode
 {
@@ -17,11 +19,16 @@ class Ghost : public Sprite {
     GLuint vao{}, vbo[2]{}, ebo{};
     std::string name;
     std::pair<float, float> targetTile;
+    static const std::map<std::string, std::pair<float, float>> positionInPen;
+    static const std::map<std::string, std::pair<float, float>> initialPosition;
     DIRECTION currentDirection;
     DIRECTION nextDirection;
     DIRECTION setNextDirection();
+    void recalculatePosition();
     void getNewPosition();
     void MoveOutofBox();
+    void selectTargetTile();
+    DIRECTION selectBestDirection(std::pair<float, float> from, std::pair<float, float> to);
     std::set<DIRECTION> possibleDirections();
     GhostMode currentMode;
     std::shared_ptr<spdlog::logger> logger;
@@ -32,9 +39,9 @@ class Ghost : public Sprite {
     Ghost(const std::string& name);
     void draw(std::string shader) override;
     void drawEyes(const std::string& shader) const;
-    GhostMode getMode();
+    [[nodiscard]] GhostMode getMode() const;
     void setMode(GhostMode newMode);
     [[nodiscard]] float getMultiplier() const;
     void setMultiplier(double newSpeed);
-    ~Ghost() = default;
+    ~Ghost() override = default;
 };

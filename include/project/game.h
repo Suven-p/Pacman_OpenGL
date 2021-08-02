@@ -3,6 +3,8 @@
 
 #include <project/common.h>
 #include <project/map.h>
+#include <memory>
+#include <project/timer.hpp>
 #include <unordered_map>
 #include <vector>
 
@@ -13,13 +15,13 @@
  */
 class Game {
     Game();
-    static Game* instance;
+    static std::shared_ptr<Game> instance;
     static std::vector<bool> key_states;
     static std::unordered_map<int, int> special_key_map;
     static std::vector<bool> special_key_states;
     static double baseSpeed;
+    static Timer redrawTimer;
     static double lastRedraw;
-    static double deltaTime;
 
    public:
     /**
@@ -28,11 +30,11 @@ class Game {
      * This is used to enforce singleton pattern.
      * @return Game*
      */
-    static Game* getInstance();
+    static std::shared_ptr<Game> getInstance();
 
     /** @brief Draw function to be called for every render.
      */
-    void render();
+    static void render();
 
     /**
      * @brief Callback function for key pressed.

@@ -24,9 +24,9 @@ class Timer {
     void pause();
     void resume();
     int64_t stop();
-    int64_t timeElapsed() const;
-    bool isStarted() const;
-    bool isPaused() const;
-    bool isStopped() const;
+    [[nodiscard]] int64_t timeElapsed() const;
+    [[nodiscard]] bool isStarted() const;
+    [[nodiscard]] bool isPaused() const;
+    [[nodiscard]] bool isStopped() const;
     static auto getCurrentTimePoint() -> decltype(std::chrono::high_resolution_clock::now());
 };
