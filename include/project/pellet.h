@@ -8,6 +8,9 @@ class Pellet : public Sprite {
     int score, pelletsEaten;
     float timeTillCherryDisappears;
     float timeTillFrightenedModeStops;
+    float timeTillScatterMode;
+    float timeTillChaseMode;
+    int chaseIteration;
 
     // Mode 1 - Scatter; Mode 2 - Chase; Mode 3 - Frightened
     int mode;

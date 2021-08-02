@@ -17,6 +17,9 @@ Pellet::Pellet() {
     pelletsEaten = 0;
     timeTillCherryDisappears = 0;
     timeTillFrightenedModeStops = 0;
+    timeTillScatterMode = glfwGetTime() + 7;
+    timeTillChaseMode = timeTillScatterMode + 20;
+    chaseIteration = 0;
     mode = 1;
 
     glGenVertexArrays(1, &blockVAO);
@@ -134,6 +137,9 @@ void Pellet::changePelletStatus(std::pair<float, float> pacmanPosition) {
         pelletsEaten++;
         // TODO : replace glfwGetTime()
         timeTillFrightenedModeStops = glfwGetTime() + 6;
+
+        timeTillScatterMode += timeTillFrightenedModeStops;
+        timeTillChaseMode += timeTillFrightenedModeStops;
     } 
     else if (mapData[xCoordinate][yCoordinate] == 'C') {
         mapData[xCoordinate][yCoordinate] = 'F';
@@ -166,13 +172,44 @@ int Pellet::getPelletsEaten() {
 
 void Pellet::setMode()
 {
+    // Check for Frightened mode
     if(glfwGetTime() < timeTillFrightenedModeStops) {
         mode = 3;
+        return;
     }
-    // if(glfwGetTime() > 85){
-    //     mode = 2;
-    // }
 
+    // If there have been 4 or more chases then there is no more future scatter mode 
+    if(chaseIteration >= 4) {
+        mode = 2;
+        return;
+    }
+    
+    if(timeTillScatterMode < timeTillChaseMode) {
+
+        // If scatter mode has just passed
+        if(glfwGetTime() > timeTillScatterMode) {
+            timeTillScatterMode = timeTillChaseMode + 7;
+            mode = 2;
+            chaseIteration++;
+        }
+        else {
+            mode = 1;
+        }
+
+    }
+    
+    if(timeTillChaseMode < timeTillScatterMode) {
+
+        // If chase mode has just just passed
+        if(glfwGetTime() > timeTillChaseMode and chaseIteration < 4) {
+            timeTillChaseMode = timeTillScatterMode + 20;
+            mode = 1;
+        }
+        else {
+            mode = 2;
+        }
+        
+    }
 }
 
 Pellet::~Pellet() = default;
