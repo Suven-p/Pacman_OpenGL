@@ -25,6 +25,7 @@ set(${PROJECT_NAME}_SOURCES
     src/map.cpp
     src/pacman.cpp
     src/pellet.cpp
+    src/base.cpp
     src/resourceManager.cpp
     src/shader.cpp
     src/sprite.cpp

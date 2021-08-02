@@ -4,6 +4,7 @@
 #include <project/map.h>
 #include <project/pacman.h>
 #include <project/pellet.h>
+#include <project/base.h>
 #include <project/resourceManager.h>
 #include <spdlog/spdlog.h>
 #include <memory>
@@ -30,6 +31,7 @@ Game::Game() {
     ResourceManager::LoadSprite("clyde", std::make_shared<Ghost>("clyde"));
     ResourceManager::LoadSprite("pacman", std::make_shared<Pacman>());
     ResourceManager::LoadSprite("pellet", std::make_shared<Pellet>());
+    ResourceManager::LoadSprite("base", std::make_shared<Base>());
     ResourceManager::GetSprite("blinky")->setPosition(std::make_pair(1, 1));
     ResourceManager::GetSprite("pinky")->setPosition(std::make_pair(23, 1));
     ResourceManager::GetSprite("clyde")->setPosition(std::make_pair(1, 29));
@@ -70,6 +72,7 @@ void Game::render() {
     auto baseMapPtr = std::dynamic_pointer_cast<Map>(ResourceManager::GetSprite("baseMap"));
     baseMapPtr->draw("mainShader");
     baseMapPtr->drawGridLines("mainShader");
+    ResourceManager::GetSprite("base")->draw("mainShader");
     ResourceManager::GetSprite("pellet")->draw("mainShader");
     ResourceManager::GetSprite("pacman")->draw("mainShader");
     ResourceManager::GetSprite("clyde")->draw("mainShader");

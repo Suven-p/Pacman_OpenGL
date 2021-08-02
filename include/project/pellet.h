@@ -26,6 +26,9 @@ class Pellet : public Sprite {
     int getPelletsEaten();
     void setMode();
 
+    // Returns true if all(244) pellets are eaten  
+    bool allPelletsEaten();
+
     ~Pellet();
 };
 std::shared_ptr<Pellet> getPelletPtr();

@@ -212,4 +212,11 @@ void Pellet::setMode()
     }
 }
 
+bool Pellet::allPelletsEaten(){
+    if(pelletsEaten == 244)
+        return true;
+    else
+        return false;
+}
+
 Pellet::~Pellet() = default;
