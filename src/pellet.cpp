@@ -16,16 +16,18 @@ Pellet::Pellet() {
     score = 0;
     pelletsEaten = 0;
     timeTillCherryDisappears = 0;
+    timeTillFrightenedModeStops = 0;
+    mode = 1;
 
     glGenVertexArrays(1, &blockVAO);
     glGenBuffers(1, &blockVBO);
     glGenBuffers(1, &blockEBO);
     float obstacleVertices[] = {
         // positions            // colors               // texture coords
-        1.0F, 0.0F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 1.0F, 1.0F,  // top right
-        1.0F, 1.0F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 1.0F, 0.0F,  // bottom right
-        0.0F, 1.0F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F,  // bottom left
-        0.0F, 0.0F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F, 1.0F   // top left
+        1.5F, -0.5F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 1.0F, 1.0F,  // top right
+        1.5F, 1.5F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 1.0F, 0.0F,  // bottom right
+        -0.5F, 1.5F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F,  // bottom left
+        -0.5F, -0.5F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F, 1.0F   // top left
     };
 
     unsigned int indices[] = {
@@ -59,6 +61,7 @@ void Pellet::draw(std::string shaderName) {
 
     auto pacmanPosition = getPacmanPtr()->getPosition();
     changePelletStatus(pacmanPosition);
+    setMode();
 
     glm::mat4 view = glm::mat4(1.0F);
     glm::mat4 projection = glm::ortho(0.0F, 28.0F, 36.0F, 0.0F, 1.0F, -1.0F);
@@ -124,11 +127,15 @@ void Pellet::changePelletStatus(std::pair<float, float> pacmanPosition) {
         mapData[xCoordinate][yCoordinate] = 'F';
         score += 10;
         pelletsEaten++;
-    } else if (mapData[xCoordinate][yCoordinate] == 'X') {
+    } 
+    else if (mapData[xCoordinate][yCoordinate] == 'X') {
         mapData[xCoordinate][yCoordinate] = 'F';
         score += 50;
         pelletsEaten++;
-    } else if (mapData[xCoordinate][yCoordinate] == 'C') {
+        // TODO : replace glfwGetTime()
+        timeTillFrightenedModeStops = glfwGetTime() + 6;
+    } 
+    else if (mapData[xCoordinate][yCoordinate] == 'C') {
         mapData[xCoordinate][yCoordinate] = 'F';
         score += 100;
     }
@@ -144,12 +151,28 @@ bool Pellet::toDrawCherry() {
     if (glfwGetTime() > timeTillCherryDisappears) {
         mapData[14][17] = 'n';
         return false;
-    } else
+    } 
+    else
         return true;
 }
 
 int Pellet::getScore() {
     return score;
+}
+
+int Pellet::getPelletsEaten() {
+    return pelletsEaten;
+}
+
+void Pellet::setMode()
+{
+    if(glfwGetTime() < timeTillFrightenedModeStops) {
+        mode = 3;
+    }
+    // if(glfwGetTime() > 85){
+    //     mode = 2;
+    // }
+
 }
 
 Pellet::~Pellet() = default;
