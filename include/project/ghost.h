@@ -14,7 +14,7 @@ enum struct GhostMode
 };
 
 class Ghost : public Sprite {
-    GLuint vao, vbo[2], ebo;
+    GLuint vao{}, vbo[2]{}, ebo{};
     std::string name;
     std::pair<float, float> targetTile;
     DIRECTION currentDirection;
@@ -25,16 +25,16 @@ class Ghost : public Sprite {
     std::set<DIRECTION> possibleDirections();
     GhostMode currentMode;
     std::shared_ptr<spdlog::logger> logger;
-    double speedMultiplier;
+    double speedMultiplier{};
 
    public:
+    Ghost() = delete;
     Ghost(const std::string& name);
-    void draw(std::string shader);
-    void draw(std::string shader, std::string name);
-    void drawEyes(const std::string& shader);
+    void draw(std::string shader) override;
+    void drawEyes(const std::string& shader) const;
     GhostMode getMode();
     void setMode(GhostMode newMode);
-    float getMultiplier();
+    [[nodiscard]] float getMultiplier() const;
     void setMultiplier(double newSpeed);
-    ~Ghost();
+    ~Ghost() = default;
 };

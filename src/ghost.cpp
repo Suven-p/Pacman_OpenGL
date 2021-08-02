@@ -19,13 +19,26 @@ Ghost::Ghost(const std::string& name) : name(name) {
     glGenBuffers(2, vbo);
     glGenBuffers(1, &ebo);
 
-    float vertices[] = {-0.5F, -0.5F, 0.5F, 1.0F,  0.0F, 0.0F, 0.0F,  1.0F, -0.5F, 01.5F, 0.5F,
-                        1.0F,  0.0F,  0.0F, 0.0F,  1.0F, 1.5F, 01.5F, 0.5F, 1.0F,  0.0F,  0.0F,
-                        0.0F,  1.0F,  1.5F, -0.5F, 0.5F, 1.0F, 0.0F,  0.0F, 0.0F,  1.0F};
+    // clang-format off
+    float vertices[] = {
+        -0.5F, -0.5F, 0.5F, 1.0F, 0.0F, 0.0F, 0.0F,  1.0F,
+        -0.5F, 01.5F, 0.5F, 1.0F, 0.0F, 0.0F, 0.0F,  1.0F,
+        01.5F, 01.5F, 0.5F, 1.0F, 0.0F, 0.0F, 0.0F,  1.0F,
+        01.5F, -0.5F, 0.5F, 1.0F, 0.0F, 0.0F, 0.0F,  1.0F
+    };
 
-    float texCoord[] = {0.0F, 1.0F, 0.0F, 0.0F, 1.0F, 0.0F, 1.0F, 1.0F};
+    float texCoord[] = {
+        0.0F, 1.0F,
+        0.0F, 0.0F,
+        1.0F, 0.0F,
+        1.0F, 1.0F
+    };
 
-    GLuint indices[] = {0, 1, 2, 0, 2, 3};
+    GLuint indices[] = {
+        0, 1, 2,
+        0, 2, 3
+    };
+    // clang-format on
 
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
@@ -52,8 +65,6 @@ Ghost::Ghost(const std::string& name) : name(name) {
     logger = spdlog::basic_logger_mt(loggerName, "logs/ghostLog.txt");
     logger->set_level(spdlog::level::trace);
 }
-
-Ghost::~Ghost() = default;
 
 void Ghost::draw(std::string shader) {
     bool ghost_in_box = (position.first >= 11 && position.first <= 16 && position.second >= 12 &&
@@ -93,7 +104,7 @@ void Ghost::draw(std::string shader) {
     glBindVertexArray(0);
 }
 
-void Ghost::drawEyes(const std::string& shader) {
+void Ghost::drawEyes(const std::string& shader) const {
     Texture2D texture;
     switch (currentDirection) {
         case DIRECTION::up:
@@ -360,7 +371,7 @@ void Ghost::setMode(GhostMode newMode) {
     currentMode = newMode;
 }
 
-float Ghost::getMultiplier() {
+float Ghost::getMultiplier() const {
     return speedMultiplier;
 }
 

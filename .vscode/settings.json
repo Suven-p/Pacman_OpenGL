@@ -102,5 +102,6 @@
         "include",
         "external/include"
     ],
-    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "clang-tidy.buildPath": "build"
 }
