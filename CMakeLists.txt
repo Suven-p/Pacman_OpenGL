@@ -20,7 +20,6 @@ file(
 set(${PROJECT_NAME}_SOURCES
     src/game.cpp
     src/ghost.cpp
-    src/glad.c
     src/helpers.cpp
     src/main.cpp
     src/map.cpp
@@ -30,6 +29,7 @@ set(${PROJECT_NAME}_SOURCES
     src/shader.cpp
     src/sprite.cpp
     src/texture.cpp
+    src/timer.cpp
     src/windowManager.cpp
 )
 file(GLOB_RECURSE ${PROJECT_NAME}_HEADERS
@@ -46,6 +46,8 @@ set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/glfw)
+
+add_subdirectory(${CMAKE_SOURCE_DIR}/external/glad)
 
 add_executable(${PROJECT_NAME}
     ${${PROJECT_NAME}_SOURCES}
@@ -78,6 +80,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     PRIVATE
     glfw
     spdlog::spdlog
+    glad
 )
 
 add_custom_command(

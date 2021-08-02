@@ -4,7 +4,7 @@
 #include <project/windowManager.h>
 #include <spdlog/spdlog.h>
 
-#include <project/stb_image.h>
+#include <stb_image/stb_image.h>
 
 WindowManager::WindowManager() = default;
 WindowManager* WindowManager::instance = nullptr;
