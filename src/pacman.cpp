@@ -171,10 +171,12 @@ void Pacman::getNewPosition() {
     }
     // std::cout<<position.first<<","<<position.second<<"\t"<<oldPosition.first<<","<<oldPosition.second<<std::endl;
     if (int(position.second) == 14) {
-        if (int(position.first) <= 0 && currentDirection == DIRECTION::left) {
-            position.first = 28;
-        } else if (position.first > 27 && currentDirection == DIRECTION::right) {
-            position.first = -1;
+        if (int(position.first) <= -2 && currentDirection == DIRECTION::left) {
+            position.first = 29;
+            return;
+        } else if (position.first >= 29 && currentDirection == DIRECTION::right) {
+            position.first = -2;
+            return;
         }
     }
     bool collision = isColliding(currentDirection);

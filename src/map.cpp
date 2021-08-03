@@ -150,7 +150,7 @@ bool Map::checkObstacle(const std::pair<float, float>& toCheck,
     return (obstacles.count(block) > 0);
 }
 
-char Map::getBlockType(const std::pair<int, int>& toCheck) const {
+char Map::getBlockType(const std::pair<int, int>& toCheck) {
     if (toCheck.first < 0 || toCheck.first >= mapDataColRow.size()) {
         return MAP_OUTOFBOUNDS;
     }
@@ -169,16 +169,16 @@ std::set<DIRECTION> Map::possibleDirections(const std::pair<float, float>& toChe
     if (toCheck.second < 0 || toCheck.second > 30) {
         validCoord = false;
     }
-    if (toCheck.first < 0) {
+    if (toCheck.first < 1) {
         if (abs(toCheck.second - 14) < 0.3) {
-            return {DIRECTION::left};
+            return {DIRECTION::left, DIRECTION::right};
         } else {
             validCoord == false;
         }
     }
-    if (toCheck.first > 27) {
+    if (toCheck.first > 26) {
         if (abs(toCheck.second - 14) < 0.3) {
-            return {DIRECTION::right};
+            return {DIRECTION::right, DIRECTION::left};
         } else {
             validCoord == false;
         }
