@@ -3,7 +3,7 @@
 #include <project/resourceManager.h>
 #include <utility>
 
-Map::Map() : gridSize({28, 36}) {
+Map::Map() : gridSize({28, 36}), VAO(0), VBO(0), EBO(0), gridVAO(0), gridVBO(0) {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -39,27 +39,6 @@ Map::Map() : gridSize({28, 36}) {
 
     initializeGrid();
 
-    glGenVertexArrays(1, &blockVAO);
-    glGenBuffers(1, &blockVBO);
-    glGenBuffers(1, &blockEBO);
-    float obstacleVertices[] = {
-        // positions            // colors               // texture coords
-        1.0F, 0.0F, -0.8F, 1.0F, 0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F,  // top right
-        1.0F, 1.0F, -0.8F, 1.0F, 0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.0F,  // bottom right
-        0.0F, 1.0F, -0.8F, 1.0F, 0.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F,  // bottom left
-        0.0F, 0.0F, -0.8F, 1.0F, 0.0F, 0.0F, 0.0F, 1.0F, 0.0F, 1.0F   // top left
-    };
-    glBindVertexArray(blockVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, blockVBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, blockEBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(obstacleVertices), obstacleVertices, GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)nullptr);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(4 * sizeof(float)));
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(8 * sizeof(float)));
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
     glBindVertexArray(0);
 }
 
@@ -155,43 +134,6 @@ void Map::initializeGrid() {
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     delete[] vertices;
-    glBindVertexArray(0);
-}
-
-void Map::drawObstacles(const std::string& shaderName) const {
-    auto shader = ResourceManager::GetShader(shaderName);
-    shader.Use();
-    glBindVertexArray(blockVAO);
-
-    glm::mat4 view = glm::mat4(1.0F);
-    glm::mat4 projection = glm::ortho(0.0F, 28.0F, 36.0F, 0.0F, -1.0F, 1.0F);
-    shader.SetMatrix4("view", view);
-    shader.SetMatrix4("projection", projection);
-    shader.SetFloat("textureColorMix", 0.0F);
-    auto texture = ResourceManager::GetTexture("blinky");
-    texture.Bind(0);
-    shader.SetInteger("texture1", 0, true);
-
-    glm::mat4 model;
-    auto mapData = mapDataColRow;
-    for (int i = 0; i < mapData.size(); i++) {
-        for (int j = 0; j < mapData[i].size(); j++) {
-            model = glm::mat4(1.0F);
-            model = glm::translate(model, glm::vec3(0.0F, 3.0F, 0.0F));
-            model = glm::translate(model, glm::vec3(float(i), float(j), 0.0F));
-            shader.SetMatrix4("model", model);
-            switch (mapData[i][j]) {
-                case 'G':
-                case 'o':
-                case 'n':
-                case 'P':
-                case 'W':
-                    break;
-                default:
-                    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-            }
-        }
-    }
     glBindVertexArray(0);
 }
 
