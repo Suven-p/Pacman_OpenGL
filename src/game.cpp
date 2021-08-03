@@ -16,6 +16,7 @@ Game::Game() {
     ResourceManager::LoadTexture("resources/pinky.png", true, "pinky");
     ResourceManager::LoadTexture("resources/inky.png", true, "inky");
     ResourceManager::LoadTexture("resources/clyde.png", true, "clyde");
+    ResourceManager::LoadTexture("resources/frightened.png", true, "frightened");
     ResourceManager::LoadTexture("resources/pacman.png", true, "pacman");
     ResourceManager::LoadTexture("resources/pellet.png", true, "pellet");
     ResourceManager::LoadTexture("resources/power_pellet.png", true, "power_pellet");
@@ -55,6 +56,7 @@ std::shared_ptr<Game> Game::getInstance() {
 }
 
 void Game::render() {
+
     glClearColor(0.2F, 0.2F, 0.2F, 0.0F);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

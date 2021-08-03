@@ -2,6 +2,7 @@
 
 #include <project/common.h>
 #include <project/sprite.h>
+#include <project/timer.hpp>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <map>
 #include <set>
@@ -21,6 +22,8 @@ class Ghost : public Sprite {
     std::pair<float, float> targetTile;
     static const std::map<std::string, std::pair<float, float>> positionInPen;
     static const std::map<std::string, std::pair<float, float>> initialPosition;
+    static const std::map<std::string, int> timeToLeave;
+    bool outOfPen;
     DIRECTION currentDirection;
     DIRECTION nextDirection;
     DIRECTION setNextDirection();
@@ -30,11 +33,14 @@ class Ghost : public Sprite {
     void MoveOutofPen();
     void selectTargetTile();
     void handleSpecialZone();
+    void calculateMultiplier();
+    void initialMovement();
     DIRECTION selectBestDirection(std::pair<float, float> from, std::pair<float, float> to);
     std::set<DIRECTION> possibleDirections();
     GhostMode currentMode;
     std::shared_ptr<spdlog::logger> logger;
     double speedMultiplier{};
+    Timer ghostTimer;
 
    public:
     Ghost() = delete;

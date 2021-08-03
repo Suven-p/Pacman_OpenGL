@@ -9,6 +9,7 @@
 #include <project/shader.h>
 #include <project/sprite.h>
 #include <project/texture.h>
+#include <project/gameState.hpp>
 #include <spdlog/spdlog.h>
 
 /**

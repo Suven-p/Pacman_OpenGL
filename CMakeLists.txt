@@ -19,6 +19,7 @@ file(
 
 set(${PROJECT_NAME}_SOURCES
     src/game.cpp
+    src/gameState.cpp
     src/ghost.cpp
     src/helpers.cpp
     src/main.cpp
