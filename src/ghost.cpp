@@ -212,6 +212,8 @@ void Ghost::deadModeMovement(bool ghostInPen) {
     // TODO: Maybe move into monster pen?
     if (ghostInPen && currentMode != GhostMode::dead) {
         MoveOutofPen();
+    } else {
+        basicMovement();
     }
 }
 
