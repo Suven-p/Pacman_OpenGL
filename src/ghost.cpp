@@ -136,10 +136,10 @@ void Ghost::drawEyes(const std::string& shader) const {
 }
 
 void Ghost::recalculatePosition() {
-    bool ghost_in_box = (position.first >= 11 && position.first <= 16 && position.second >= 12 &&
-                         position.second <= 15);
-    if (ghost_in_box && currentMode != GhostMode::dead) {
-        MoveOutofBox();
+    bool ghostInPen = (position.first >= 11 && position.first <= 16 && position.second >= 12 &&
+                       position.second <= 15);
+    if (ghostInPen || currentMode != GhostMode::dead) {
+        deadModeMovement(ghostInPen);
     } else {
         basicMovement();
     }
@@ -206,6 +206,13 @@ void Ghost::basicMovement() {
     handleSpecialZone();
     currentDirection = nextDirection;
     setNextDirection();
+}
+
+void Ghost::deadModeMovement(bool ghostInPen) {
+    // TODO: Maybe move into monster pen?
+    if (ghostInPen && currentMode != GhostMode::dead) {
+        MoveOutofPen();
+    }
 }
 
 void Ghost::handleSpecialZone() {
@@ -377,7 +384,7 @@ void Ghost::setMultiplier(double newSpeed) {
     speedMultiplier = newSpeed;
 }
 
-void Ghost::MoveOutofBox() {
+void Ghost::MoveOutofPen() {
     float diffPixels = Game::getSpeed() * Game::getTime() * speedMultiplier;
     auto oldPosition = position;
     if (position.first <= 13.3) {

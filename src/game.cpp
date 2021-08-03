@@ -70,7 +70,6 @@ void Game::render() {
     ResourceManager::GetSprite("inky")->draw("mainShader");
     ResourceManager::GetSprite("pinky")->draw("mainShader");
     ResourceManager::GetSprite("blinky")->draw("mainShader");
-    baseMapPtr->drawObstacles("mainShader");
 
     lastRedraw = redrawTimer.timeElapsed();
 }

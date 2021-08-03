@@ -96,7 +96,7 @@ class ResourceManager {
     static std::string resolvePath(const std::string& toResolve);
 
    private:
-    ResourceManager() {}
+    ResourceManager() = default;
     static std::shared_ptr<spdlog::logger> logger;
     static Shader loadShaderFromFile(const char* vShaderFile,
                                      const char* fShaderFile,
