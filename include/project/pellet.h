@@ -7,7 +7,13 @@ class Pellet : public Sprite {
     GLuint blockVAO, blockVBO, blockEBO;
     int score, pelletsEaten;
     float timeTillCherryDisappears;
+    float timeTillFrightenedModeStops;
+    float timeTillScatterMode;
+    float timeTillChaseMode;
+    int chaseIteration;
 
+    // Mode 1 - Scatter; Mode 2 - Chase; Mode 3 - Frightened
+    int mode;
    public:
     std::vector<std::vector<char>> mapData;
 
@@ -17,6 +23,11 @@ class Pellet : public Sprite {
     void changePelletStatus(std::pair<float, float> pacmanPosition);
     bool toDrawCherry();
     int getScore();
+    int getPelletsEaten();
+    void setMode();
+
+    // Returns true if all(244) pellets are eaten  
+    bool allPelletsEaten();
 
     ~Pellet();
 };

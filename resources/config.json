@@ -1,0 +1,9 @@
+{
+    "windowSize": {
+        "width": 448,
+        "height": 576
+    },
+    "level" : [ {
+        "cherryValue" : 100
+    } ]
+}
