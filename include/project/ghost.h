@@ -25,9 +25,10 @@ class Ghost : public Sprite {
     DIRECTION nextDirection;
     DIRECTION setNextDirection();
     void recalculatePosition();
-    void getNewPosition();
+    void basicMovement();
     void MoveOutofBox();
     void selectTargetTile();
+    void handleSpecialZone();
     DIRECTION selectBestDirection(std::pair<float, float> from, std::pair<float, float> to);
     std::set<DIRECTION> possibleDirections();
     GhostMode currentMode;

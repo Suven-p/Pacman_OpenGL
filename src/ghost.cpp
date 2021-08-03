@@ -141,7 +141,80 @@ void Ghost::recalculatePosition() {
     if (ghost_in_box && currentMode != GhostMode::dead) {
         MoveOutofBox();
     } else {
-        getNewPosition();
+        basicMovement();
+    }
+}
+
+void Ghost::basicMovement() {
+    float diffPixels = Game::getSpeed() * Game::getTime() * speedMultiplier;
+    auto oldPosition = position;
+    position = addPosition(position, diffPixels, currentDirection);
+    // reachedNewTile is true iff ghost completely overlaps with new tile
+    bool reachedNewTile = false;
+    switch (currentDirection) {
+        case DIRECTION::left: {
+            if (oldPosition.first > std::ceil(position.first) and
+                position.first <= std::ceil(position.first)) {
+                reachedNewTile = true;
+                if (nextDirection == DIRECTION::up || nextDirection == DIRECTION::down) {
+                    position.first = std::ceil(position.first);
+                }
+            }
+            break;
+        }
+        case DIRECTION::up: {
+            if (oldPosition.second > std::ceil(position.second) and
+                position.second <= std::ceil(position.second)) {
+                reachedNewTile = true;
+                if (nextDirection == DIRECTION::left || nextDirection == DIRECTION::right) {
+                    position.second = std::ceil(position.second);
+                }
+            }
+            break;
+        }
+        case DIRECTION::right: {
+            if ((int(position.first) - int(oldPosition.first)) == 1) {
+                reachedNewTile = true;
+                if (nextDirection == DIRECTION::up || nextDirection == DIRECTION::down) {
+                    position.first = int(position.first);
+                }
+            }
+            break;
+        }
+        case DIRECTION::down: {
+            if ((int(position.second) - int(oldPosition.second)) == 1) {
+                reachedNewTile = true;
+                if (nextDirection == DIRECTION::left || nextDirection == DIRECTION::right) {
+                    position.second = int(position.second);
+                }
+            }
+            break;
+        }
+    }
+    if (!reachedNewTile) {
+        return;
+    }
+
+    logger->trace("Current position is: {} {}", position.first, position.second);
+    logger->trace("Current direction is: {}", toString(currentDirection));
+    logger->trace("Switching direction to {}", toString(nextDirection));
+
+    if (currentMode == GhostMode::dead && position == targetTile) {
+        setMode(GhostMode::chase);
+    }
+    // Adjustment for tunnel passthrough
+    handleSpecialZone();
+    currentDirection = nextDirection;
+    setNextDirection();
+}
+
+void Ghost::handleSpecialZone() {
+    if (position.second == 14) {
+        if (position.first <= -2) {
+            position.first = 30;
+        } else if (position.first > 30) {
+            position.first = -2;
+        }
     }
 }
 
@@ -286,82 +359,6 @@ DIRECTION Ghost::selectBestDirection(pair<float, float> fromPosition,
         }
     }
     return bestDirection;
-}
-
-void Ghost::getNewPosition() {
-    float diffPixels = Game::getSpeed() * Game::getTime() * speedMultiplier;
-    auto oldPosition = position;
-    // reachedNewTile is true iff ghost completely overlaps with new tile
-    bool reachedNewTile = false;
-    switch (currentDirection) {
-        case DIRECTION::left: {
-            position.first -= diffPixels;
-            if (oldPosition.first > std::ceil(position.first) and
-                position.first <= std::ceil(position.first)) {
-                reachedNewTile = true;
-                if (nextDirection == DIRECTION::up || nextDirection == DIRECTION::down) {
-                    position.first = std::ceil(position.first);
-                }
-            }
-            break;
-        }
-        case DIRECTION::up: {
-            position.second -= diffPixels;
-            if (oldPosition.second > std::ceil(position.second) and
-                position.second <= std::ceil(position.second)) {
-                reachedNewTile = true;
-                if (nextDirection == DIRECTION::left || nextDirection == DIRECTION::right) {
-                    position.second = std::ceil(position.second);
-                }
-            }
-            break;
-        }
-        case DIRECTION::right: {
-            position.first += diffPixels;
-            if ((int(position.first) - int(oldPosition.first)) == 1) {
-                reachedNewTile = true;
-                if (nextDirection == DIRECTION::up || nextDirection == DIRECTION::down) {
-                    position.first = int(position.first);
-                }
-            }
-            break;
-        }
-        case DIRECTION::down: {
-            position.second += diffPixels;
-            if ((int(position.second) - int(oldPosition.second)) == 1) {
-                reachedNewTile = true;
-                if (nextDirection == DIRECTION::left || nextDirection == DIRECTION::right) {
-                    position.second = int(position.second);
-                }
-            }
-            break;
-        }
-    }
-    if (!reachedNewTile) {
-        return;
-    }
-
-    logger->trace("Current position is: {} {}", position.first, position.second);
-    logger->trace("Current direction is: {}", toString(currentDirection));
-    logger->trace("Switching direction to {}", toString(nextDirection));
-
-    if (currentMode == GhostMode::dead && position == targetTile) {
-        setMode(GhostMode::chase);
-    }
-    // Adjustment for tunnel passthrough
-    if (position.second == 14) {
-        if (position.first <= -2) {
-            position.first = 30;
-        } else if (position.first > 30) {
-            position.first = -2;
-        } else {
-            currentDirection = nextDirection;
-            setNextDirection();
-        }
-    } else {
-        currentDirection = nextDirection;
-        setNextDirection();
-    }
 }
 
 GhostMode Ghost::getMode() const {
