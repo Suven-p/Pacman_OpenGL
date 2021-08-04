@@ -32,6 +32,7 @@ set(${PROJECT_NAME}_SOURCES
     src/texture.cpp
     src/timer.cpp
     src/windowManager.cpp
+    src/text_renderer.cpp
 )
 file(GLOB_RECURSE ${PROJECT_NAME}_HEADERS
     include/*.h
@@ -49,6 +50,7 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/glfw)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/glad)
+add_subdirectory(${CMAKE_SOURCE_DIR}/external/freetype)
 
 add_executable(${PROJECT_NAME}
     ${${PROJECT_NAME}_SOURCES}
@@ -82,6 +84,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     glfw
     spdlog::spdlog
     glad
+    freetype
 )
 
 add_custom_command(

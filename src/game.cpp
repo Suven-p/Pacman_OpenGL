@@ -6,11 +6,13 @@
 #include <project/pellet.h>
 #include <project/base.h>
 #include <project/resourceManager.h>
+#include <project/text_renderer.h>
 #include <spdlog/spdlog.h>
 #include <memory>
 
 Game::Game() {
     ResourceManager::LoadShader("shaders/shader.vs", "shaders/shader.fs", nullptr, "mainShader");
+    ResourceManager::LoadShader("shaders/text.vs", "shaders/text.fs", nullptr, "textShader");
     ResourceManager::LoadTexture("resources/map/pacman_map.png", true, "baseMap");
     ResourceManager::LoadTexture("resources/blinky.png", true, "blinky");
     ResourceManager::LoadTexture("resources/pinky.png", true, "pinky");

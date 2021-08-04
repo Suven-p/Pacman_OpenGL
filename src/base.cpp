@@ -4,6 +4,7 @@
 #include <project/pellet.h>
 #include <project/base.h>
 #include <project/resourceManager.h>
+#include <project/text_renderer.h>
 #include <vector>
 
 Base::Base() {
@@ -13,6 +14,10 @@ Base::Base() {
         2,      // Position of first pacman displayed if remaining life >= 2
         4       // Position of second pacman displayed if remaining life == 3
     };
+
+    // TODO : Add height and weight with variables in TextRenderer
+    Text = new TextRenderer(448, 576);
+    Text->Load(ResourceManager::resolvePath("resources/fonts/ARIAL.TTF").c_str(), 24);
 
     glGenVertexArrays(1, &blockVAO);
     glGenBuffers(1, &blockVBO);
@@ -50,6 +55,10 @@ Base::Base() {
 }
 
 void Base::draw(std::string shaderName) {
+    int currentScore = getPelletPtr()->getScore();
+    std::string textToRender = "Score : " + std::to_string(currentScore); 
+    Text->RenderText(textToRender, 15.0f, 15.0f, 1.0f);
+
     auto shader = ResourceManager::GetShader(shaderName);
     shader.Use();
     glBindVertexArray(blockVAO);
