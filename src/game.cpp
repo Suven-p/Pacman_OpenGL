@@ -6,6 +6,7 @@
 #include <project/pacman.h>
 #include <project/pellet.h>
 #include <project/resourceManager.h>
+#include <project/text_renderer.h>
 #include <spdlog/spdlog.h>
 #include <memory>
 
@@ -22,6 +23,7 @@ std::vector<bool> Game::special_key_states(Game::special_key_map.size(), false);
 
 Game::Game() {
     ResourceManager::LoadShader("shaders/shader.vs", "shaders/shader.fs", nullptr, "mainShader");
+    ResourceManager::LoadShader("shaders/text.vs", "shaders/text.fs", nullptr, "textShader");
     ResourceManager::LoadTexture("resources/map/pacman_map.png", true, "baseMap");
     ResourceManager::LoadTexture("resources/blinky.png", true, "blinky");
     ResourceManager::LoadTexture("resources/pinky.png", true, "pinky");

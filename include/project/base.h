@@ -2,6 +2,7 @@
 #include <project/common.h>
 #include <project/mapData.h>
 #include <project/sprite.h>
+#include <project/text_renderer.h>
 #include <vector>
 #include <memory>
 
@@ -16,6 +17,8 @@ class Base : public Sprite {
 
     // Decrease lives by 1. To be called when ghost eats pacman 
     void decreaselives();
+
+    TextRenderer* Text;
 
     ~Base();
 };

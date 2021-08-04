@@ -25,6 +25,7 @@ class Pellet : public Sprite {
     int getScore();
     int getPelletsEaten();
     void setMode();
+    int getMode();
 
     // Returns true if all(244) pellets are eaten  
     bool allPelletsEaten();

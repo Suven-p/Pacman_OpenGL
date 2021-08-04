@@ -215,6 +215,10 @@ void Pellet::setMode()
     }
 }
 
+int Pellet::getMode() {
+    return mode;
+}
+
 bool Pellet::allPelletsEaten(){
     if(pelletsEaten == 244)
         return true;
