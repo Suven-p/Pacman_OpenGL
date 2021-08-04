@@ -25,6 +25,7 @@ set(${PROJECT_NAME}_SOURCES
     ${CMAKE_SOURCE_DIR}/src/helpers.cpp
     ${CMAKE_SOURCE_DIR}/src/main.cpp
     ${CMAKE_SOURCE_DIR}/src/map.cpp
+    ${CMAKE_SOURCE_DIR}/src/menu.cpp
     ${CMAKE_SOURCE_DIR}/src/pacman.cpp
     ${CMAKE_SOURCE_DIR}/src/pellet.cpp
     ${CMAKE_SOURCE_DIR}/src/resourceManager.cpp

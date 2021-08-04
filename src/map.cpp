@@ -9,10 +9,10 @@ Map::Map() : gridSize({28, 36}), VAO(0), VBO(0), EBO(0), gridVAO(0), gridVBO(0) 
     glGenBuffers(1, &EBO);
     float vertices[] = {
         // positions              // colors               // texture coords
-        28.0F, 03.0F, -0.9F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 1.0F, 1.0F,  // top right
-        28.0F, 34.0F, -0.9F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 1.0F, 0.0F,  // bottom right
-        00.0F, 34.0F, -0.9F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F,  // bottom left
-        00.0F, 03.0F, -0.9F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 1.0F   // top left
+        28.0F, 03.0F, -0.9F, 1.0F, 0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F,  // top right
+        28.0F, 34.0F, -0.9F, 1.0F, 0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.0F,  // bottom right
+        00.0F, 34.0F, -0.9F, 1.0F, 0.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F,  // bottom left
+        00.0F, 03.0F, -0.9F, 1.0F, 0.0F, 0.0F, 0.0F, 1.0F, 0.0F, 1.0F   // top left
     };
     unsigned int indices[] = {
         // note that we start from 0!
