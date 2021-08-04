@@ -14,16 +14,16 @@
 
 TextRenderer::TextRenderer(unsigned int width, unsigned int height)
 {
-    // Load and configure shader
-    this->TextShader = ResourceManager::GetShader("textShader");
+    
+    TextShader = ResourceManager::GetShader("textShader");
 
-    this->TextShader.SetMatrix4("projection", glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f), true);
-    this->TextShader.SetInteger("text", 0);
-    // Configure VAO/VBO for texture quads
-    glGenVertexArrays(1, &this->VAO);
-    glGenBuffers(1, &this->VBO);
-    glBindVertexArray(this->VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
+    TextShader.SetMatrix4("projection", glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f), true);
+    TextShader.SetInteger("text", 0);
+
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
@@ -33,27 +33,26 @@ TextRenderer::TextRenderer(unsigned int width, unsigned int height)
 
 void TextRenderer::Load(std::string font, unsigned int fontSize)
 {
-    // First clear the previously loaded Characters
-    this->Characters.clear();
-    // Then initialize and load the FreeType library
+    Characters.clear();
     FT_Library ft;    
-    if (FT_Init_FreeType(&ft)) // All functions return a value different than 0 whenever an error occurred
-        std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
-    // Load font as face
+    if (FT_Init_FreeType(&ft) != 0) {
+        spdlog::error("ERROR::FREETYPE: Could not init FreeType Library");
+    }
+
     FT_Face face;
-    if (FT_New_Face(ft, font.c_str(), 0, &face))
-        std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
-    // Set size to load glyphs as
+    if (FT_New_Face(ft, font.c_str(), 0, &face)) {
+        spdlog::error("ERROR::FREETYPE: Failed to load font");
+    }
+
     FT_Set_Pixel_Sizes(face, 0, fontSize);
     // Disable byte-alignment restriction
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1); 
-    // Then for the first 128 ASCII characters, pre-load/compile their characters and store them
-    for (GLubyte c = 0; c < 128; c++) // lol see what I did there 
+
+    for (GLubyte c = 0; c < 128; c++)
     {
-        // Load character glyph 
         if (FT_Load_Char(face, c, FT_LOAD_RENDER))
         {
-            std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
+            spdlog::info("ERROR::FREETYTPE: Failed to load Glyph");
             continue;
         }
         // Generate texture
@@ -87,7 +86,7 @@ void TextRenderer::Load(std::string font, unsigned int fontSize)
         Characters.insert(std::pair<char, Character>(c, character));
     }
     glBindTexture(GL_TEXTURE_2D, 0);
-    // Destroy FreeType once we're finished
+    // Destroy FreeType
     FT_Done_Face(face);
     FT_Done_FreeType(ft);
 }
@@ -95,10 +94,10 @@ void TextRenderer::Load(std::string font, unsigned int fontSize)
 void TextRenderer::RenderText(std::string text, float x, float y, float scale, glm::vec3 color)
 {
     // Activate corresponding render state	
-    this->TextShader.Use();
-    this->TextShader.SetVector3f("textColor", color);
+    TextShader.Use();
+    TextShader.SetVector3f("textColor", color);
     glActiveTexture(GL_TEXTURE0);
-    glBindVertexArray(this->VAO);
+    glBindVertexArray(VAO);
 
     // Iterate through all characters
     std::string::const_iterator c;
@@ -107,7 +106,7 @@ void TextRenderer::RenderText(std::string text, float x, float y, float scale, g
         Character ch = Characters[*c];
 
         float xpos = x + ch.Bearing.x * scale;
-        float ypos = y + (this->Characters['H'].Bearing.y - ch.Bearing.y) * scale;
+        float ypos = y + (Characters['H'].Bearing.y - ch.Bearing.y) * scale;
 
         float w = ch.Size.x * scale;
         float h = ch.Size.y * scale;
@@ -124,7 +123,7 @@ void TextRenderer::RenderText(std::string text, float x, float y, float scale, g
         // Render glyph texture over quad
         glBindTexture(GL_TEXTURE_2D, ch.TextureID);
         // Update content of VBO memory
-        glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // Be sure to use glBufferSubData and not glBufferData
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         // Render quad
