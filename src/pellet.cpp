@@ -223,4 +223,16 @@ bool Pellet::allPelletsEaten(){
         return false;
 }
 
+void Pellet::addToScore(int value) {
+    score += value;
+}
+
+void Pellet::initializeModeTimer() {
+    timeTillCherryDisappears = 0;
+    timeTillFrightenedModeStops = 0;
+    timeTillScatterMode = glfwGetTime() + 7;
+    timeTillChaseMode = timeTillScatterMode + 20;
+}
+
+
 Pellet::~Pellet() = default;

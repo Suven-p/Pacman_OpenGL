@@ -30,6 +30,13 @@ class Pellet : public Sprite {
     // Returns true if all(244) pellets are eaten  
     bool allPelletsEaten();
 
+    // Adds incoming value to score
+    void addToScore(int value);
+
+    // Initializes timers for mode selection.
+    // To be called when ghost eats pacman
+    void initializeModeTimer();
+
     ~Pellet();
 };
 std::shared_ptr<Pellet> getPelletPtr();
