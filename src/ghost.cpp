@@ -7,7 +7,6 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
 #include <cmath>
-#include <project/gameState.hpp>
 #include <random>
 #include <utility>
 
@@ -77,7 +76,7 @@ Ghost::Ghost(const std::string& name) : name(name) {
     position = initialPosition.at(name);
     currentDirection = (name == "blinky") ? DIRECTION::right : DIRECTION::up;
     nextDirection = DIRECTION::right;
-    currentMode = GhostMode::chase;
+    currentMode = GhostMode::frightened;
 
     setMultiplier(0.75);
 
@@ -146,6 +145,11 @@ void Ghost::drawEyes(const std::string& shader) const {
 }
 
 void Ghost::recalculatePosition() {
+    if (Game::getState().isPaused()) {
+        ghostTimer.pause();
+        return;
+    }
+    ghostTimer.resume();
     bool ghostInPen = (position.first >= 11 && position.first <= 16 && position.second > 11 &&
                        position.second <= 15);
     calculateMultiplier();
@@ -174,7 +178,7 @@ void Ghost::initialMovement() {
 }
 
 void Ghost::calculateMultiplier() {
-    auto levelData = GameState::getInstance().getLevelData();
+    auto levelData = Game::getState().getLevelData();
     auto pelletPtr = getPelletPtr();
     if ((position.first <= 4 || position.first >= 23) && position.second == 14) {
         setMultiplier(levelData["ghostTunnelSpeed"].get<float>());

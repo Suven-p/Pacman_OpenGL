@@ -13,8 +13,6 @@
 std::map<std::string, Texture2D> ResourceManager::Textures;
 std::map<std::string, Shader> ResourceManager::Shaders;
 std::map<std::string, std::shared_ptr<Sprite>> ResourceManager::Sprites;
-std::shared_ptr<spdlog::logger> ResourceManager::logger =
-    spdlog::stdout_color_mt("ResourceManager");
 
 Shader ResourceManager::LoadShader(const char* vShaderFile,
                                    const char* fShaderFile,
@@ -97,13 +95,13 @@ Shader ResourceManager::loadShaderFromFile(const char* vShaderFile,
             geometryCode = gShaderStream.str();
         }
     } catch (std::exception e) {
-        logger->error("SHADER::Failed to read shader files.\n"
-                      " Vertex Shader Path: {}\n"
-                      " Fragment Shader Path: {}\n"
-                      " Geometric Shadder Path: {}\n",
-                      std::string(vShaderFile),
-                      std::string(fShaderFile),
-                      std::string(gShaderFile));
+        getLogger()->error("SHADER::Failed to read shader files.\n"
+                           " Vertex Shader Path: {}\n"
+                           " Fragment Shader Path: {}\n"
+                           " Geometric Shadder Path: {}\n",
+                           std::string(vShaderFile),
+                           std::string(fShaderFile),
+                           std::string(gShaderFile));
     }
     const char* vShaderCode = vertexCode.c_str();
     const char* fShaderCode = fragmentCode.c_str();
@@ -130,7 +128,7 @@ Texture2D ResourceManager::loadTextureFromFile(const char* file, bool alpha) {
     stbi_set_flip_vertically_on_load(int(true));
     unsigned char* data = stbi_load(fileLocation.c_str(), &width, &height, &nrChannels, 0);
     if (data == nullptr) {
-        logger->error("Failed to load texture file: {}", file);
+        getLogger()->error("Failed to load texture file: {}", file);
     }
     // now generate texture
     texture.Generate(width, height, data);  // NOLINT: values initialized by stbi_load
@@ -167,15 +165,15 @@ std::string ResourceManager::resolvePath(const std::string& toResolve) {
     // TODO: Use whereami library for cross platform detection
     auto executionPath = getExecutablePath();
     if (!std::filesystem::exists(executionPath)) {
-        logger->debug("Received path to executable as: \"{}\""
-                      "but could not find file \"{}\"",
-                      executionPath.string(),
-                      toResolve);
+        getLogger()->debug("Received path to executable as: \"{}\""
+                           "but could not find file \"{}\"",
+                           executionPath.string(),
+                           toResolve);
     } else {
         auto attemptPath = executionPath / pathToResolve;
         if (std::filesystem::exists(attemptPath)) {
             std::string fullPath = attemptPath.string();
-            logger->trace("Resolved {} to {}", toResolve, fullPath);
+            getLogger()->trace("Resolved {} to {}", toResolve, fullPath);
             return fullPath;
         }
     }
@@ -185,17 +183,18 @@ std::string ResourceManager::resolvePath(const std::string& toResolve) {
     if (std::filesystem::exists(binaryPath)) {
         auto attemptPath = binaryPath / pathToResolve;
         if (!std::filesystem::exists(attemptPath)) {
-            logger->debug("Received path to binary directory as: \"{}\""
-                          "but could not find file \"{}\"",
-                          BINARY_DIRECTORY,
-                          toResolve);
+            getLogger()->debug("Received path to binary directory as: \"{}\""
+                               "but could not find file \"{}\"",
+                               BINARY_DIRECTORY,
+                               toResolve);
         } else {
             std::string fullPath = attemptPath.string();
-            logger->trace("Resolved {} to {}", toResolve, fullPath);
+            spdlog::get("ResourceManager")->info("hello");
+            getLogger()->trace("Resolved {} to {}", toResolve, fullPath);
             return fullPath;
         }
     } else {
-        logger->info("Stored path to binary: \"{}\" is invalid.", BINARY_DIRECTORY);
+        getLogger()->info("Stored path to binary: \"{}\" is invalid.", BINARY_DIRECTORY);
     }
 
     // On windows this path is location of exe when program is run by clicking exe
@@ -203,12 +202,17 @@ std::string ResourceManager::resolvePath(const std::string& toResolve) {
     auto currentPath = std::filesystem::current_path();
     auto attemptPath = currentPath / pathToResolve;
     if (!std::filesystem::exists(attemptPath)) {
-        logger->error("Could not find file: \"{}\"", toResolve);
+        getLogger()->error("Could not find file: \"{}\"", toResolve);
     } else {
         std::string fullPath = attemptPath.string();
-        logger->trace("Resolved {} to {}", toResolve, fullPath);
+        getLogger()->trace("Resolved {} to {}", toResolve, fullPath);
         return fullPath;
     }
 
     return "";
+}
+
+std::shared_ptr<spdlog::logger> ResourceManager::getLogger() {
+    static std::shared_ptr<spdlog::logger> logger = spdlog::stdout_color_mt("ResourceManager");
+    return logger;
 }

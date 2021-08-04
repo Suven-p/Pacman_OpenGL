@@ -100,9 +100,11 @@ class ResourceManager {
     ~ResourceManager() = default;
     ResourceManager(const ResourceManager&) = delete;
     ResourceManager& operator=(const ResourceManager&) = delete;
+    ResourceManager(const ResourceManager&&) = delete;
+    ResourceManager& operator=(const ResourceManager&&) = delete;
 
    private:
-    static std::shared_ptr<spdlog::logger> logger;
+    static std::shared_ptr<spdlog::logger> getLogger();
     static Shader loadShaderFromFile(const char* vShaderFile,
                                      const char* fShaderFile,
                                      const char* gShaderFile = nullptr);

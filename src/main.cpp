@@ -1,5 +1,3 @@
-#include <fstream>
-
 #include <project/main.h>
 #include <spdlog/spdlog.h>
 #include <project/gameState.hpp>
@@ -31,8 +29,7 @@ int main(int argc, char** argv) {
         spdlog::error("Failed to initialize GLAD");
     }
 
-    Game::initialize();        // NOLINT: required to initialize game class
-    GameState::getInstance();  // NOLINT: initialization
+    Game::initialize();  // NOLINT: required to initialize game class
 
     spdlog::set_level(spdlog::level::debug);
     spdlog::get("ResourceManager")->set_level(spdlog::level::err);

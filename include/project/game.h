@@ -4,6 +4,7 @@
 #include <project/common.h>
 #include <project/map.h>
 #include <memory>
+#include <project/gameState.hpp>
 #include <project/timer.hpp>
 #include <unordered_map>
 #include <vector>
@@ -21,6 +22,7 @@ class Game {
     static double baseSpeed;
     static Timer redrawTimer;
     static double lastRedraw;
+    static GameState state;
 
    public:
     ~Game() = default;
@@ -28,6 +30,13 @@ class Game {
     Game& operator=(const Game&) = delete;
     Game(Game&&) = delete;
     Game& operator=(const Game&&) = delete;
+
+    /**
+     * @brief Get the State object
+     *
+     * @return GameState&
+     */
+    static GameState& getState();
 
     /**
      * @brief Get the current instance.
