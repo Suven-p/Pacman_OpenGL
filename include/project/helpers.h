@@ -2,6 +2,7 @@
 #define HELPERS_HPP_GUARD
 
 #include <project/common.h>
+#include <spdlog/spdlog.h>
 #include <string>
 
 void draw_gridlines();
@@ -38,16 +39,20 @@ constexpr auto addPosition =
                 newPosition.first += diff;
                 break;
             }
+            case DIRECTION::invalid: {
+                spdlog::error("Invalid Direction provided to function addPosition().");
+                break;
+            }
         }
         return newPosition;
     };
 
 struct windowData {
-    int* argc;
-    char** argv;
-    int height;
-    int width;
-    int refreshInterval;
+    int* argc{};
+    char** argv{};
+    int height{};
+    int width{};
+    int refreshInterval{60};
 };
 
 #endif

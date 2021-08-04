@@ -73,7 +73,7 @@ void WindowManager::setWindowSize(std::pair<double, double> newSize) {
 void WindowManager::run() {
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        Game::getInstance()->render();
+        Game::render();
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

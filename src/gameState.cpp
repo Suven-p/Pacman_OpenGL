@@ -1,24 +1,20 @@
-#include <project/gameState.hpp>
 #include <project/resourceManager.h>
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <project/gameState.hpp>
 
 using json = nlohmann::json;
 
-std::shared_ptr<GameState> GameState::instance;
-
-std::shared_ptr<GameState> GameState::getInstance() {
-    if (!instance) {
-        instance = std::shared_ptr<GameState>(new GameState());
-    }
+GameState& GameState::getInstance() {
+    static GameState instance;
     return instance;
 }
 
-GameState::GameState(): level(1) {
+GameState::GameState() : level(1), isPaused(false) {
     std::ifstream i(ResourceManager::resolvePath("resources/config.json"));
     i >> jsonData;
 }
 
 json GameState::getLevelData() {
-    return jsonData["level"][level-1];
+    return jsonData["level"][level - 1];
 }

@@ -6,11 +6,17 @@
 
 class GameState {
     GameState();
-    static std::shared_ptr<GameState> instance;
     nlohmann::json jsonData;
     int level;
+    bool isPaused;
 
-public:
-    static std::shared_ptr<GameState> getInstance();
+   public:
+    ~GameState() = default;
+    GameState(const GameState&) = delete;
+    GameState& operator=(const GameState&) = delete;
+    GameState(const GameState&&) = delete;
+    GameState& operator=(const GameState&&) = delete;
+
+    static GameState& getInstance();
     nlohmann::json getLevelData();
 };

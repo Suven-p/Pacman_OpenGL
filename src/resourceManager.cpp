@@ -25,7 +25,7 @@ Shader ResourceManager::LoadShader(const char* vShaderFile,
 }
 
 Shader ResourceManager::GetShader(const std::string& name) {
-    return Shaders[name];
+    return Shaders.at(name);
 }
 
 Texture2D ResourceManager::LoadTexture(const char* file, bool alpha, const std::string& name) {
@@ -34,7 +34,7 @@ Texture2D ResourceManager::LoadTexture(const char* file, bool alpha, const std::
 }
 
 Texture2D ResourceManager::GetTexture(const std::string& name) {
-    return Textures[name];
+    return Textures.at(name);
 }
 
 std::shared_ptr<Sprite> ResourceManager::LoadSprite(const std::string& name, Sprite* sprite) {
@@ -49,16 +49,18 @@ std::shared_ptr<Sprite> ResourceManager::LoadSprite(const std::string& name,
 }
 
 std::shared_ptr<Sprite> ResourceManager::GetSprite(const std::string& name) {
-    return Sprites[name];
+    return Sprites.at(name);
 }
 
 void ResourceManager::Clear() {
     // (properly) delete all shaders
-    for (const auto& iter : Shaders)
+    for (const auto& iter : Shaders) {
         glDeleteProgram(iter.second.ID);
+    }
     // (properly) delete all textures
-    for (const auto& iter : Textures)
+    for (const auto& iter : Textures) {
         glDeleteTextures(1, &iter.second.ID);
+    }
 }
 
 Shader ResourceManager::loadShaderFromFile(const char* vShaderFile,
@@ -74,7 +76,8 @@ Shader ResourceManager::loadShaderFromFile(const char* vShaderFile,
         // open files
         std::ifstream vertexShaderFile(vShaderFileResolved.c_str());
         std::ifstream fragmentShaderFile(fShaderFileResolved.c_str());
-        std::stringstream vShaderStream, fShaderStream;
+        std::stringstream vShaderStream;
+        std::stringstream fShaderStream;
         // read file's buffer contents into streams
         vShaderStream << vertexShaderFile.rdbuf();
         fShaderStream << fragmentShaderFile.rdbuf();
@@ -120,11 +123,13 @@ Texture2D ResourceManager::loadTextureFromFile(const char* file, bool alpha) {
         texture.Image_Format = GL_RGBA;
     }
     // load image
-    int width, height, nrChannels;
+    int width = 0;
+    int height = 0;
+    int nrChannels = 0;
 
-    stbi_set_flip_vertically_on_load(true);
+    stbi_set_flip_vertically_on_load(int(true));
     unsigned char* data = stbi_load(fileLocation.c_str(), &width, &height, &nrChannels, 0);
-    if (!data) {
+    if (data == nullptr) {
         logger->error("Failed to load texture file: {}", file);
     }
     // now generate texture
@@ -161,17 +166,17 @@ std::string ResourceManager::resolvePath(const std::string& toResolve) {
     // Try executablePath first
     // TODO: Use whereami library for cross platform detection
     auto executionPath = getExecutablePath();
-    if (std::filesystem::exists(executionPath)) {
+    if (!std::filesystem::exists(executionPath)) {
+        logger->debug("Received path to executable as: \"{}\""
+                      "but could not find file \"{}\"",
+                      executionPath.string(),
+                      toResolve);
+    } else {
         auto attemptPath = executionPath / pathToResolve;
         if (std::filesystem::exists(attemptPath)) {
             std::string fullPath = attemptPath.string();
             logger->trace("Resolved {} to {}", toResolve, fullPath);
             return fullPath;
-        } else {
-            logger->debug("Received path to executable as: \"{}\""
-                          "but could not find file \"{}\"",
-                          executionPath.string(),
-                          toResolve);
         }
     }
 
@@ -179,15 +184,15 @@ std::string ResourceManager::resolvePath(const std::string& toResolve) {
     auto binaryPath = std::filesystem::path(BINARY_DIRECTORY);
     if (std::filesystem::exists(binaryPath)) {
         auto attemptPath = binaryPath / pathToResolve;
-        if (std::filesystem::exists(attemptPath)) {
-            std::string fullPath = attemptPath.string();
-            logger->trace("Resolved {} to {}", toResolve, fullPath);
-            return fullPath;
-        } else {
+        if (!std::filesystem::exists(attemptPath)) {
             logger->debug("Received path to binary directory as: \"{}\""
                           "but could not find file \"{}\"",
                           BINARY_DIRECTORY,
                           toResolve);
+        } else {
+            std::string fullPath = attemptPath.string();
+            logger->trace("Resolved {} to {}", toResolve, fullPath);
+            return fullPath;
         }
     } else {
         logger->info("Stored path to binary: \"{}\" is invalid.", BINARY_DIRECTORY);
@@ -197,12 +202,12 @@ std::string ResourceManager::resolvePath(const std::string& toResolve) {
     // When running from terminal it is directory from which command is run
     auto currentPath = std::filesystem::current_path();
     auto attemptPath = currentPath / pathToResolve;
-    if (std::filesystem::exists(attemptPath)) {
+    if (!std::filesystem::exists(attemptPath)) {
+        logger->error("Could not find file: \"{}\"", toResolve);
+    } else {
         std::string fullPath = attemptPath.string();
         logger->trace("Resolved {} to {}", toResolve, fullPath);
         return fullPath;
-    } else {
-        logger->error("Could not find file: \"{}\"", toResolve);
     }
 
     return "";

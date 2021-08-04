@@ -2,15 +2,15 @@
 #define RESOURCE_MANAGER_HPP_GUARD
 
 #include <map>
-#include <string>
 #include <memory>
+#include <string>
 
 #include <project/common.h>
 #include <project/shader.h>
 #include <project/sprite.h>
 #include <project/texture.h>
-#include <project/gameState.hpp>
 #include <spdlog/spdlog.h>
+#include <project/gameState.hpp>
 
 /**
  * @brief Manage all game resources.
@@ -96,8 +96,12 @@ class ResourceManager {
     static void Clear();
     static std::string resolvePath(const std::string& toResolve);
 
+    ResourceManager() = delete;
+    ~ResourceManager() = default;
+    ResourceManager(const ResourceManager&) = delete;
+    ResourceManager& operator=(const ResourceManager&) = delete;
+
    private:
-    ResourceManager() = default;
     static std::shared_ptr<spdlog::logger> logger;
     static Shader loadShaderFromFile(const char* vShaderFile,
                                      const char* fShaderFile,

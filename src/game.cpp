@@ -1,13 +1,24 @@
+#include <project/base.h>
 #include <project/game.h>
 #include <project/ghost.h>
 #include <project/helpers.h>
 #include <project/map.h>
 #include <project/pacman.h>
 #include <project/pellet.h>
-#include <project/base.h>
 #include <project/resourceManager.h>
 #include <spdlog/spdlog.h>
 #include <memory>
+
+std::vector<bool> Game::key_states(256, false);
+double Game::baseSpeed = 0.01;
+Timer Game::redrawTimer = Timer();
+double Game::lastRedraw = 0;
+
+std::unordered_map<int, int> Game::special_key_map = {{GLFW_KEY_DOWN, int(DIRECTION::down)},
+                                                      {GLFW_KEY_UP, int(DIRECTION::up)},
+                                                      {GLFW_KEY_LEFT, int(DIRECTION::left)},
+                                                      {GLFW_KEY_RIGHT, int(DIRECTION::right)}};
+std::vector<bool> Game::special_key_states(Game::special_key_map.size(), false);
 
 Game::Game() {
     ResourceManager::LoadShader("shaders/shader.vs", "shaders/shader.fs", nullptr, "mainShader");
@@ -36,27 +47,12 @@ Game::Game() {
     ResourceManager::GetSprite("pacman")->setPosition(std::make_pair(13.5, 23));
 }
 
-std::shared_ptr<Game> Game::instance = nullptr;
-std::vector<bool> Game::key_states(256, false);
-double Game::baseSpeed = 0.01;
-Timer Game::redrawTimer = Timer();
-double Game::lastRedraw = 0;
-
-std::unordered_map<int, int> Game::special_key_map = {{GLFW_KEY_DOWN, int(DIRECTION::down)},
-                                                      {GLFW_KEY_UP, int(DIRECTION::up)},
-                                                      {GLFW_KEY_LEFT, int(DIRECTION::left)},
-                                                      {GLFW_KEY_RIGHT, int(DIRECTION::right)}};
-std::vector<bool> Game::special_key_states(Game::special_key_map.size(), false);
-
-std::shared_ptr<Game> Game::getInstance() {
-    if (instance == nullptr) {
-        instance = std::shared_ptr<Game>(new Game());
-    }
-    return instance;
+Game& Game::initialize() {
+    static Game game_obj;
+    return game_obj;
 }
 
 void Game::render() {
-
     glClearColor(0.2F, 0.2F, 0.2F, 0.0F);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

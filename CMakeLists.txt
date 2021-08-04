@@ -18,21 +18,21 @@ file(
 )
 
 set(${PROJECT_NAME}_SOURCES
-    src/game.cpp
-    src/gameState.cpp
-    src/ghost.cpp
-    src/helpers.cpp
-    src/main.cpp
-    src/map.cpp
-    src/pacman.cpp
-    src/pellet.cpp
-    src/base.cpp
-    src/resourceManager.cpp
-    src/shader.cpp
-    src/sprite.cpp
-    src/texture.cpp
-    src/timer.cpp
-    src/windowManager.cpp
+    ${CMAKE_SOURCE_DIR}/src/base.cpp
+    ${CMAKE_SOURCE_DIR}/src/game.cpp
+    ${CMAKE_SOURCE_DIR}/src/gameState.cpp
+    ${CMAKE_SOURCE_DIR}/src/ghost.cpp
+    ${CMAKE_SOURCE_DIR}/src/helpers.cpp
+    ${CMAKE_SOURCE_DIR}/src/main.cpp
+    ${CMAKE_SOURCE_DIR}/src/map.cpp
+    ${CMAKE_SOURCE_DIR}/src/pacman.cpp
+    ${CMAKE_SOURCE_DIR}/src/pellet.cpp
+    ${CMAKE_SOURCE_DIR}/src/resourceManager.cpp
+    ${CMAKE_SOURCE_DIR}/src/shader.cpp
+    ${CMAKE_SOURCE_DIR}/src/sprite.cpp
+    ${CMAKE_SOURCE_DIR}/src/texture.cpp
+    ${CMAKE_SOURCE_DIR}/src/timer.cpp
+    ${CMAKE_SOURCE_DIR}/src/windowManager.cpp
 )
 file(GLOB_RECURSE ${PROJECT_NAME}_HEADERS
     include/*.h

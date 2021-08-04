@@ -1,18 +1,14 @@
 #include <fstream>
 
 #include <project/main.h>
-#include <project/gameState.hpp>
 #include <spdlog/spdlog.h>
-#include <nlohhmann/json.hpp>
+#include <project/gameState.hpp>
 #ifdef SPDLOG_HEADER_ONLY
 #warning USING HEADER ONLY SPDLOG LIBRARY
 #endif
 
 using namespace std;
-using json = nlohmann::json;
 
-void reshape(int width, int height);
-void render();
 void GLAPIENTRY MessageCallback(GLenum source,
                                 GLenum type,
                                 GLuint id,
@@ -30,15 +26,15 @@ int main(int argc, char** argv) {
     windowData.refreshInterval = 1000.0F / 60.0F;
     auto* windowManagerPtr = WindowManager::getInstance();
     windowManagerPtr->createNewWindow(PROJECT_NAME, windowData);
-    spdlog::set_level(spdlog::level::debug);
 
-    if (!gladLoadGL()) {
+    if (gladLoadGL() == 0) {
         spdlog::error("Failed to initialize GLAD");
     }
 
-    auto game_obj = Game::getInstance();  // NOLINT: required to initialize game class
-    auto game_state = GameState::getInstance(); // NOLINT: initialization
+    Game::initialize();        // NOLINT: required to initialize game class
+    GameState::getInstance();  // NOLINT: initialization
 
+    spdlog::set_level(spdlog::level::debug);
     spdlog::get("ResourceManager")->set_level(spdlog::level::err);
 
     glEnable(GL_DEBUG_OUTPUT);

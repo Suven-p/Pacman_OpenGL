@@ -15,7 +15,6 @@
  */
 class Game {
     Game();
-    static std::shared_ptr<Game> instance;
     static std::vector<bool> key_states;
     static std::unordered_map<int, int> special_key_map;
     static std::vector<bool> special_key_states;
@@ -24,13 +23,19 @@ class Game {
     static double lastRedraw;
 
    public:
+    ~Game() = default;
+    Game(const Game&) = delete;
+    Game& operator=(const Game&) = delete;
+    Game(Game&&) = delete;
+    Game& operator=(const Game&&) = delete;
+
     /**
      * @brief Get the current instance.
      * Get the current instance if it exists and generate one if it doesn't exist.
      * This is used to enforce singleton pattern.
      * @return Game*
      */
-    static std::shared_ptr<Game> getInstance();
+    static Game& initialize();
 
     /** @brief Draw function to be called for every render.
      */
@@ -44,6 +49,7 @@ class Game {
      * @param y Y coordinate for Mouse position.
      */
     static void key_down(unsigned char key, int x, int y);
+
     /**
      * @brief Callback function for key released.
      *
@@ -52,6 +58,7 @@ class Game {
      * @param y Y coordinate for Mouse position.
      */
     static void key_up(unsigned char key, int x, int y);
+
     /**
      * @brief Callback function for special key pressed.
      *
@@ -60,6 +67,7 @@ class Game {
      * @param y Y coordinate for Mouse position.
      */
     static void special_key_down(int key, int x, int y);
+
     /**
      * @brief Callback function for special key released.
      *
@@ -68,17 +76,20 @@ class Game {
      * @param y Y coordinate for Mouse position.
      */
     static void special_key_up(int key, int x, int y);
+
     /**
      * @brief Get the value of base speed
      *
      */
     static double getSpeed();
+
     /**
      * @brief Set the value of base speed
      *
      * @param newSpeed Value of new speed
      */
     static void setSpeed(double newSpeed);
+
     /**
      * @brief Get the value of delta time
      *

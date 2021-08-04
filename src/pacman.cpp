@@ -36,6 +36,7 @@ Pacman::Pacman() {
 
     currentDirection = DIRECTION::right;
     nextDirection = DIRECTION::right;
+    multiplier = 0.8;
 }
 
 void Pacman::draw(std::string shader) {
@@ -119,10 +120,7 @@ std::shared_ptr<Pacman> getPacmanPtr() {
 }
 
 void Pacman::getNewPosition() {
-    float diffPixels = Game::getInstance()->getSpeed() * Game::getInstance()->getTime() * 0.8;
-    // float diffPixels = Game::getInstance()->getSpeed() *
-    // Game::getInstance()->getTime() * getMultiplier();
-    // float diffPixels = Game::getInstance()->getSpeed() * 16 * 0.75;
+    auto diffPixels = Game::getSpeed() * Game::getTime() * getMultiplier();
     oldPosition = position;
     bool reachedNewTile = false;
     switch (currentDirection) {
