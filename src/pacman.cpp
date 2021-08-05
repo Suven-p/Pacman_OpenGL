@@ -8,9 +8,10 @@
 #include <set>
 
 void callback(int key) {
-        if (key <= 3)
-        getPacmanPtr()->setDirection(DIRECTION(key));
-    };
+    if (key < 4 && !Game::getState().isPaused()) {
+        getPacmanPtr()->setNextDirection(DIRECTION(key));
+    }
+};
 
 Pacman::Pacman() {
     glGenVertexArrays(1, &vao);
@@ -44,7 +45,7 @@ Pacman::Pacman() {
     nextDirection = DIRECTION::right;
     multiplier = 0.8;
 
-    // Game::registerKeyboardCallback(callback);
+    Game::registerKeyboardCallback(callback);
 }
 
 void Pacman::draw(std::string shader) {

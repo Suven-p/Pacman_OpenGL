@@ -7,7 +7,6 @@
 #include <project/gameState.hpp>
 #include <project/timer.hpp>
 #include <unordered_map>
-#include <set>
 #include <vector>
 
 /**
@@ -53,10 +52,10 @@ class Game {
 
     /**
      * @brief Register callback for keyboard event
-     * 
-     * @param function 
+     *
+     * @param function
      */
-    static void registerKeyboardCallback(std::function<void(int)> function);
+    static void registerKeyboardCallback(const std::function<void(int)>& function);
 
     /**
      * @brief Callback function for key pressed.

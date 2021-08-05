@@ -98,16 +98,22 @@ void Game::render() {
     lastRedraw = redrawTimer.timeElapsed();
 }
 
-void Game::registerKeyboardCallback(std::function<void(int)> function) {
+void Game::registerKeyboardCallback(const std::function<void(int)>& function) {
     keyboardCallbacks.push_back(function);
 }
 
 void Game::key_down(int key) {
-    if (key < 4)
-        getPacmanPtr()->setDirection(DIRECTION(key));
-    // for (auto func: keyboardCallbacks) {
-    //     func(key);
-    // }
+    for (const auto& func : keyboardCallbacks) {
+        func(key);
+    }
+    if (key < 4) {
+        if (state.isPaused()) {
+            auto menuPtr = std::dynamic_pointer_cast<Menu>(ResourceManager::GetSprite("pauseMenu"));
+            menuPtr->handleKeyboardInput(DIRECTION(key));
+        }
+    } else if (key == 4) {
+        state.invertPaused();
+    }
 }
 
 double Game::getSpeed() {
