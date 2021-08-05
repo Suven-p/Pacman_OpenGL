@@ -52,7 +52,9 @@ Game::Game() {
     ResourceManager::LoadSprite("pacman", std::make_shared<Pacman>());
     ResourceManager::LoadSprite("pellet", std::make_shared<Pellet>());
     ResourceManager::LoadSprite("base", std::make_shared<Base>());
-    ResourceManager::LoadSprite("menu", std::make_shared<Menu>());
+
+    const std::vector<std::string> pauseOptions = {"Continue", "Main Menu", "Exit"};
+    ResourceManager::LoadSprite("pauseMenu", std::make_shared<Menu>(pauseOptions));
 
     ResourceManager::GetSprite("pacman")->setPosition(std::make_pair(13.5, 23));
 }
@@ -82,7 +84,7 @@ void Game::render() {
     ResourceManager::GetSprite("blinky")->draw("mainShader");
 
     if (state.isPaused()) {
-        ResourceManager::GetSprite("menu")->draw("mainShader");
+        ResourceManager::GetSprite("pauseMenu")->draw("mainShader");
     }
 
     lastRedraw = redrawTimer.timeElapsed();
@@ -101,7 +103,13 @@ void Game::special_key_down(int key, int x, int y) {
         auto mapped_key = Game::special_key_map[key];
         special_key_states[mapped_key] = true;
         if (mapped_key < 4) {
-            getPacmanPtr()->setNextDirection(DIRECTION(mapped_key));
+            if (state.isPaused()) {
+                auto menuPtr =
+                    std::dynamic_pointer_cast<Menu>(ResourceManager::GetSprite("pauseMenu"));
+                menuPtr->handleKeyboardInput(DIRECTION(mapped_key));
+            } else {
+                getPacmanPtr()->setNextDirection(DIRECTION(mapped_key));
+            }
         } else if (mapped_key == 4) {
             state.invertPaused();
         }

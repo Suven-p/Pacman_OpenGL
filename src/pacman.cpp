@@ -120,6 +120,9 @@ std::shared_ptr<Pacman> getPacmanPtr() {
 }
 
 void Pacman::getNewPosition() {
+    if (Game::getState().isPaused()) {
+        return;
+    }
     auto diffPixels = Game::getSpeed() * Game::getTime() * getMultiplier();
     oldPosition = position;
     bool reachedNewTile = false;

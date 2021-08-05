@@ -1,15 +1,19 @@
 #include <project/resourceManager.h>
+#include <project/text_renderer.h>
 #include <project/menu.hpp>
+#include <utility>
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/fwd.hpp"
+#include "project/helpers.h"
+#include "project/windowManager.h"
 
-Menu::Menu() {
+Menu::Menu(std::vector<std::string> options) : options(std::move(options)), selectedOption(0) {
     glGenVertexArrays(3, vao);
     glGenBuffers(4, vbo);
     glGenBuffers(1, &ebo);
 
     // clang-format off
-    float colorDark[4] = {0.0, 0.0, 0.0, 0.65f};
+    float colorDark[4] = {0.0, 0.0, 0.0, 0.65F};
     float verticesPos[] = {
         -1.0F, -1.0F, 0.8F, 1.0F,
         -1.0F, 01.0F, 0.8F, 1.0F,
@@ -63,8 +67,8 @@ Menu::Menu() {
 
 void Menu::draw(std::string shader) {
     ResourceManager::GetShader(shader).Use();
-    glBindVertexArray(vao[0]);
 
+    glBindVertexArray(vao[0]);
     glm::mat4 model = glm::mat4(1.0F);
     glm::mat4 view = glm::mat4(1.0F);
     glm::mat4 projection = glm::mat4(1.0F);
@@ -74,6 +78,7 @@ void Menu::draw(std::string shader) {
 
     ResourceManager::GetShader(shader).SetFloat("textureColorMix", 1.0F);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)nullptr);
+
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glLineWidth(5);
@@ -85,5 +90,41 @@ void Menu::draw(std::string shader) {
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glLineWidth(1);
 
+    show_options();
+
     glBindVertexArray(0);
+}
+
+void Menu::show_options() {
+    auto sz = WindowManager::getInstance()->getWindowSize();
+    static auto text = TextRenderer(sz.first, sz.second);
+    static bool initText = false;
+    if (!initText) {
+        initText = true;
+        text.Load(ResourceManager::resolvePath("resources/fonts/ARIAL.TTF"), 24);
+    }
+
+    for (int i=0; i < options.size(); i++) {
+        constexpr glm::vec3 colorSelected = {1.0F, 1.0F, 1.0F};
+        constexpr glm::vec3 colorUnselected = {0.5, 0.5, 0.5};
+        auto optionColor = (i == selectedOption)?colorSelected:colorUnselected;
+        int xOffset = (sz.first/2) - int(options[i].size() * 12 / 2);
+        constexpr int yOffset = 50;
+        text.RenderText(options[i], 175, 150.0F + yOffset * i, 1.0F, optionColor);
+    }
+}
+
+void Menu::handleKeyboardInput(DIRECTION key) {
+    if (key == DIRECTION::down) {
+        selectedOption++;
+    }
+    else if (key == DIRECTION::up) {
+        selectedOption--;
+    }
+    if (selectedOption >= options.size()) {
+        selectedOption = 0;
+    }
+    else if (selectedOption < 0) {
+        selectedOption = options.size() - 1;
+    }
 }
