@@ -5,7 +5,8 @@
 #include <string>
 
 class Menu : public Sprite {
-    GLuint vao[2]{}, vbo[3]{}, ebo{};
+    // vao for: darkening, white outline, actual menu
+    GLuint vao[3]{}, vbo[4]{}, ebo{};
 
    public:
     Menu();

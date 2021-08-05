@@ -63,7 +63,7 @@ Game& Game::initialize() {
 }
 
 void Game::render() {
-    glClearColor(0.2F, 0.2F, 0.2F, 0.0F);
+    glClearColor(0.1F, 0.1F, 0.1F, 0.0F);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // IMPORTANT: order of draw calls is important

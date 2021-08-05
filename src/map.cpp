@@ -8,7 +8,7 @@ Map::Map() : gridSize({28, 36}), VAO(0), VBO(0), EBO(0), gridVAO(0), gridVBO(0) 
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
     float vertices[] = {
-        // positions              // colors               // texture coords
+        // positions               // colors               // texture coords
         28.0F, 03.0F, -0.9F, 1.0F, 0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F,  // top right
         28.0F, 34.0F, -0.9F, 1.0F, 0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.0F,  // bottom right
         00.0F, 34.0F, -0.9F, 1.0F, 0.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F,  // bottom left
@@ -58,6 +58,7 @@ void Map::draw(std::string shaderName) {
     auto texture = ResourceManager::GetTexture("baseMap");
     texture.Bind(0);
     shader.SetInteger("texture1", 0, true);
+    shader.SetFloat("textureColorMix", 0.0F);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
 }
