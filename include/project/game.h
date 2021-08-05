@@ -7,6 +7,7 @@
 #include <project/gameState.hpp>
 #include <project/timer.hpp>
 #include <unordered_map>
+#include <set>
 #include <vector>
 
 /**
@@ -16,13 +17,11 @@
  */
 class Game {
     Game();
-    static std::vector<bool> key_states;
-    static std::unordered_map<int, int> special_key_map;
-    static std::vector<bool> special_key_states;
     static double baseSpeed;
     static Timer redrawTimer;
     static double lastRedraw;
     static GameState state;
+    static std::vector<std::function<void(int)>> keyboardCallbacks;
 
    public:
     ~Game() = default;
@@ -30,6 +29,8 @@ class Game {
     Game& operator=(const Game&) = delete;
     Game(Game&&) = delete;
     Game& operator=(const Game&&) = delete;
+
+    static std::unordered_map<int, int> key_map;
 
     /**
      * @brief Get the State object
@@ -51,40 +52,18 @@ class Game {
     static void render();
 
     /**
+     * @brief Register callback for keyboard event
+     * 
+     * @param function 
+     */
+    static void registerKeyboardCallback(std::function<void(int)> function);
+
+    /**
      * @brief Callback function for key pressed.
      *
-     * @param key Ascii code for the key pressed.
-     * @param x X coordinate for mouse position.
-     * @param y Y coordinate for Mouse position.
+     * @param key code for key pressed
      */
-    static void key_down(unsigned char key, int x, int y);
-
-    /**
-     * @brief Callback function for key released.
-     *
-     * @param key Ascii code for the key released.
-     * @param x X coordinate for mouse position.
-     * @param y Y coordinate for Mouse position.
-     */
-    static void key_up(unsigned char key, int x, int y);
-
-    /**
-     * @brief Callback function for special key pressed.
-     *
-     * @param key Value for the key pressed. Value is defined in macros.
-     * @param x X coordinate for mouse position.
-     * @param y Y coordinate for Mouse position.
-     */
-    static void special_key_down(int key, int x, int y);
-
-    /**
-     * @brief Callback function for special key released.
-     *
-     * @param key Value for the key released. Value is defined in macros.
-     * @param x X coordinate for mouse position.
-     * @param y Y coordinate for Mouse position.
-     */
-    static void special_key_up(int key, int x, int y);
+    static void key_down(int key);
 
     /**
      * @brief Get the value of base speed

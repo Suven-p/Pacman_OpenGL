@@ -12,18 +12,26 @@
 #include <project/menu.hpp>
 #include "GLFW/glfw3.h"
 
-std::vector<bool> Game::key_states(256, false);
 double Game::baseSpeed = 0.01;
 Timer Game::redrawTimer = Timer();
 double Game::lastRedraw = 0;
 GameState Game::state;
+std::vector<std::function<void(int)>> Game::keyboardCallbacks;
 
-std::unordered_map<int, int> Game::special_key_map = {{GLFW_KEY_DOWN, int(DIRECTION::down)},
-                                                      {GLFW_KEY_UP, int(DIRECTION::up)},
-                                                      {GLFW_KEY_LEFT, int(DIRECTION::left)},
-                                                      {GLFW_KEY_RIGHT, int(DIRECTION::right)},
-                                                      {GLFW_KEY_ESCAPE, 4}};
-std::vector<bool> Game::special_key_states(Game::special_key_map.size(), false);
+// clang-format off
+std::unordered_map<int, int> Game::key_map = {
+    {GLFW_KEY_DOWN, int(DIRECTION::down)},
+    {GLFW_KEY_UP, int(DIRECTION::up)},
+    {GLFW_KEY_LEFT, int(DIRECTION::left)},
+    {GLFW_KEY_RIGHT, int(DIRECTION::right)},
+    {GLFW_KEY_ESCAPE, 4},
+    {GLFW_KEY_W, int('w')},
+    {GLFW_KEY_A, int('a')},
+    {GLFW_KEY_S, int('s')},
+    {GLFW_KEY_D, int('d')},
+    {GLFW_KEY_ENTER, 5}
+};
+// clang-format on
 
 Game::Game() {
     ResourceManager::LoadShader("shaders/shader.vs", "shaders/shader.fs", nullptr, "mainShader");
@@ -67,7 +75,7 @@ Game& Game::initialize() {
 void Game::render() {
     glClearColor(0.1F, 0.1F, 0.1F, 0.0F);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+    redrawTimer.start();
     // IMPORTANT: order of draw calls is important
     // especially when depth testing is disabled.
     // Objects drawn later appear above objects drawn
@@ -90,36 +98,16 @@ void Game::render() {
     lastRedraw = redrawTimer.timeElapsed();
 }
 
-void Game::key_down(unsigned char key, int x, int y) {
-    Game::key_states[key] = true;
+void Game::registerKeyboardCallback(std::function<void(int)> function) {
+    keyboardCallbacks.push_back(function);
 }
 
-void Game::key_up(unsigned char key, int x, int y) {
-    Game::key_states[key] = false;
-}
-
-void Game::special_key_down(int key, int x, int y) {
-    if (Game::special_key_map.count(key) > 0) {
-        auto mapped_key = Game::special_key_map[key];
-        special_key_states[mapped_key] = true;
-        if (mapped_key < 4) {
-            if (state.isPaused()) {
-                auto menuPtr =
-                    std::dynamic_pointer_cast<Menu>(ResourceManager::GetSprite("pauseMenu"));
-                menuPtr->handleKeyboardInput(DIRECTION(mapped_key));
-            } else {
-                getPacmanPtr()->setNextDirection(DIRECTION(mapped_key));
-            }
-        } else if (mapped_key == 4) {
-            state.invertPaused();
-        }
-    }
-}
-
-void Game::special_key_up(int key, int x, int y) {
-    if (Game::special_key_map.count(key) > 0) {
-        Game::special_key_states[Game::special_key_map[key]] = false;
-    }
+void Game::key_down(int key) {
+    if (key < 4)
+        getPacmanPtr()->setDirection(DIRECTION(key));
+    // for (auto func: keyboardCallbacks) {
+    //     func(key);
+    // }
 }
 
 double Game::getSpeed() {

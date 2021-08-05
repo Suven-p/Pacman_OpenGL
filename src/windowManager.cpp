@@ -87,18 +87,9 @@ void WindowManager::windowResizeCallback(GLFWwindow* window, int w, int h) {
 void inputCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     switch (action) {
         case GLFW_PRESS: {
-            if (key < 256) {
-                Game::key_down(key, 0, 0);
-            } else {
-                Game::special_key_down(key, 0, 0);
-            }
-            break;
-        }
-        case GLFW_RELEASE: {
-            if (key < 256) {
-                Game::key_up(key, 0, 0);
-            } else {
-                Game::special_key_up(key, 0, 0);
+            auto it = Game::key_map.find(key);
+            if (it != Game::key_map.end()) {
+                Game::key_down(it->second);
             }
         }
     }

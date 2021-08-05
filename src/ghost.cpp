@@ -88,6 +88,7 @@ Ghost::Ghost(const std::string& name) : name(name) {
 }
 
 void Ghost::draw(std::string shader) {
+    ghostTimer.start();
     recalculatePosition();
 
     ResourceManager::GetShader(shader).Use();
@@ -184,7 +185,7 @@ void Ghost::calculateMultiplier() {
         setMultiplier(levelData["ghostTunnelSpeed"].get<float>());
         return;
     }
-    if (name == "blinky") {
+    if (name == "blinky" && (currentMode != GhostMode::frightened || currentMode != GhostMode::dead)) {
         if ((244 - pelletPtr->getPelletsEaten()) <= levelData["elroy2Dots"].get<int>()) {
             setMultiplier(levelData["elroy2Speed"].get<float>());
             return;
@@ -468,4 +469,13 @@ void Ghost::MoveOutofPen() {
         position.second -= diffPixels;
         currentDirection = DIRECTION::up;
     }
+}
+
+void Ghost::resetState() {
+    position = initialPosition.at(name);
+    currentMode = GhostMode::scatter;
+    currentDirection = (name == "blinky") ? DIRECTION::right : DIRECTION::up;
+    nextDirection = DIRECTION::right;
+    outOfPen = false;
+    ghostTimer = Timer();
 }

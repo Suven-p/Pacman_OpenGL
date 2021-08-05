@@ -51,5 +51,6 @@ class Ghost : public Sprite {
     void setMode(GhostMode newMode);
     [[nodiscard]] float getMultiplier() const;
     void setMultiplier(double newSpeed);
+    void resetState();
     ~Ghost() override = default;
 };

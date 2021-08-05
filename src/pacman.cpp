@@ -6,6 +6,12 @@
 #include <iostream>
 #include <iterator>
 #include <set>
+
+void callback(int key) {
+        if (key <= 3)
+        getPacmanPtr()->setDirection(DIRECTION(key));
+    };
+
 Pacman::Pacman() {
     glGenVertexArrays(1, &vao);
     glGenBuffers(2, vbo);
@@ -37,6 +43,8 @@ Pacman::Pacman() {
     currentDirection = DIRECTION::right;
     nextDirection = DIRECTION::right;
     multiplier = 0.8;
+
+    // Game::registerKeyboardCallback(callback);
 }
 
 void Pacman::draw(std::string shader) {
@@ -203,4 +211,11 @@ void Pacman::setMultiplier(float mul = 0.8) {
 }
 float Pacman::getMultiplier() {
     return multiplier;
+}
+
+void Pacman::resetState() {
+    position = {13.5, 23};
+    currentDirection = DIRECTION::left;
+    nextDirection = DIRECTION::left;
+    multiplier = 0.8;
 }

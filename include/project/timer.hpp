@@ -17,7 +17,7 @@ class Timer {
     bool _isStopped;
 
    public:
-    Timer(std::string name = "", bool start = true);
+    Timer(std::string name = "", bool start = false);
     ~Timer() = default;
     static Timer* getTimer(std::string name);
     void start();
