@@ -1,5 +1,7 @@
+#include <project/game.h>
 #include <project/resourceManager.h>
 #include <project/text_renderer.h>
+#include <spdlog/spdlog.h>
 #include <project/menu.hpp>
 #include <utility>
 #include "glm/ext/matrix_transform.hpp"
@@ -7,7 +9,21 @@
 #include "project/helpers.h"
 #include "project/windowManager.h"
 
-Menu::Menu(std::vector<std::string> options) : options(std::move(options)), selectedOption(0) {
+const std::vector<std::string> optionNames = {"Continue", "Main Menu", "Exit"};
+auto continueFunc = []() {
+    if (Game::getState().isPaused()) {
+        Game::getState().invertPaused();
+    }
+};
+auto exitFunc = []() { WindowManager::getInstance()->exit(); };
+auto defaultFunc = []() {};
+const std::map<std::string, std::function<void(void)>> optionFunc = {{"Continue", continueFunc},
+                                                                     {"Main Menu", defaultFunc},
+                                                                     {"Exit", exitFunc}};
+
+PauseMenu::PauseMenu() : selectedOption(0) {
+    options = optionNames;
+
     glGenVertexArrays(3, vao);
     glGenBuffers(4, vbo);
     glGenBuffers(1, &ebo);
@@ -63,11 +79,25 @@ Menu::Menu(std::vector<std::string> options) : options(std::move(options)), sele
     glEnableVertexAttribArray(1);
 
     glBindVertexArray(0);
+
+    auto callback = [&](auto key) {
+        this->handleKeyboardInput(key);
+    };
+    keyboardCallbackID = Game::registerKeyboardCallback(callback);
 }
 
-void Menu::draw(std::string shader) {
+PauseMenu::~PauseMenu() {
+    Game::unregisterKeyboardCallback(keyboardCallbackID);
+}
+
+void PauseMenu::draw(std::string shader) {
+    if (!Game::getState().isPaused()) {
+        return;
+    }
+
     ResourceManager::GetShader(shader).Use();
 
+    // Draw dark overlay
     glBindVertexArray(vao[0]);
     glm::mat4 model = glm::mat4(1.0F);
     glm::mat4 view = glm::mat4(1.0F);
@@ -75,11 +105,10 @@ void Menu::draw(std::string shader) {
     ResourceManager::GetShader(shader).SetMatrix4("model", model, true);
     ResourceManager::GetShader(shader).SetMatrix4("view", view, true);
     ResourceManager::GetShader(shader).SetMatrix4("projection", projection, true);
-
     ResourceManager::GetShader(shader).SetFloat("textureColorMix", 1.0F);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)nullptr);
 
-
+    // Show white rectangle
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glLineWidth(5);
     glBindVertexArray(vao[1]);
@@ -95,7 +124,7 @@ void Menu::draw(std::string shader) {
     glBindVertexArray(0);
 }
 
-void Menu::show_options() {
+void PauseMenu::show_options() {
     auto sz = WindowManager::getInstance()->getWindowSize();
     static auto text = TextRenderer(sz.first, sz.second);
     static bool initText = false;
@@ -114,17 +143,26 @@ void Menu::show_options() {
     }
 }
 
-void Menu::handleKeyboardInput(DIRECTION key) {
-    if (key == DIRECTION::down) {
-        selectedOption++;
+void PauseMenu::handleKeyboardInput(int key) {
+    if (!Game::getState().isPaused()) {
+        return;
     }
-    else if (key == DIRECTION::up) {
-        selectedOption--;
+    switch (key) {
+        case int(DIRECTION::down): {
+            selectedOption = (selectedOption == (options.size() - 1)) ? 0 : selectedOption + 1;
+            break;
+        }
+        case int(DIRECTION::up): {
+            selectedOption = (selectedOption == 0) ? (options.size() - 1) : selectedOption - 1;
+            break;
+        }
+        case ENTERKEY: {
+            executeFunction();
+        }
     }
-    if (selectedOption >= options.size()) {
-        selectedOption = 0;
-    }
-    else if (selectedOption < 0) {
-        selectedOption = options.size() - 1;
-    }
+}
+
+void PauseMenu::executeFunction() {
+    auto option = options[selectedOption];
+    (optionFunc.at(option))();
 }

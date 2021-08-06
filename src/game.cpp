@@ -1,5 +1,5 @@
-#include <project/base.h>
 #include <project/game.h>
+#include <project/gameLogic.h>
 #include <project/ghost.h>
 #include <project/helpers.h>
 #include <project/map.h>
@@ -16,7 +16,14 @@ double Game::baseSpeed = 0.01;
 Timer Game::redrawTimer = Timer();
 double Game::lastRedraw = 0;
 GameState Game::state;
-std::vector<std::function<void(int)>> Game::keyboardCallbacks;
+int Game::callbackCounter = 0;
+std::map<int, std::function<void(int)>> Game::keyboardCallbacks;
+
+auto callback = [](auto key) {
+    if (key == 4) {
+        Game::getState().invertPaused();
+    }
+};
 
 // clang-format off
 std::unordered_map<int, int> Game::key_map = {
@@ -24,12 +31,12 @@ std::unordered_map<int, int> Game::key_map = {
     {GLFW_KEY_UP, int(DIRECTION::up)},
     {GLFW_KEY_LEFT, int(DIRECTION::left)},
     {GLFW_KEY_RIGHT, int(DIRECTION::right)},
-    {GLFW_KEY_ESCAPE, 4},
+    {GLFW_KEY_ESCAPE, ESCKEY},
     {GLFW_KEY_W, int('w')},
     {GLFW_KEY_A, int('a')},
     {GLFW_KEY_S, int('s')},
     {GLFW_KEY_D, int('d')},
-    {GLFW_KEY_ENTER, 5}
+    {GLFW_KEY_ENTER, ENTERKEY}
 };
 // clang-format on
 
@@ -59,12 +66,13 @@ Game::Game() {
     ResourceManager::LoadSprite("clyde", std::make_shared<Ghost>("clyde"));
     ResourceManager::LoadSprite("pacman", std::make_shared<Pacman>());
     ResourceManager::LoadSprite("pellet", std::make_shared<Pellet>());
-    ResourceManager::LoadSprite("base", std::make_shared<Base>());
+    ResourceManager::LoadSprite("base", std::make_shared<GameLogic>());
 
-    const std::vector<std::string> pauseOptions = {"Continue", "Main Menu", "Exit"};
-    ResourceManager::LoadSprite("pauseMenu", std::make_shared<Menu>(pauseOptions));
+    ResourceManager::LoadSprite("pauseMenu", std::make_shared<PauseMenu>());
 
     ResourceManager::GetSprite("pacman")->setPosition(std::make_pair(13.5, 23));
+
+    Game::registerKeyboardCallback(callback);
 }
 
 Game& Game::initialize() {
@@ -90,29 +98,23 @@ void Game::render() {
     ResourceManager::GetSprite("inky")->draw("mainShader");
     ResourceManager::GetSprite("pinky")->draw("mainShader");
     ResourceManager::GetSprite("blinky")->draw("mainShader");
-
-    if (state.isPaused()) {
-        ResourceManager::GetSprite("pauseMenu")->draw("mainShader");
-    }
+    ResourceManager::GetSprite("pauseMenu")->draw("mainShader");
 
     lastRedraw = redrawTimer.timeElapsed();
 }
 
-void Game::registerKeyboardCallback(const std::function<void(int)>& function) {
-    keyboardCallbacks.push_back(function);
+int Game::registerKeyboardCallback(const std::function<void(int)>& function) {
+    keyboardCallbacks[callbackCounter] = function;
+    return callbackCounter++;
+}
+
+void Game::unregisterKeyboardCallback(const int& id) {
+    keyboardCallbacks.erase(id);
 }
 
 void Game::key_down(int key) {
-    for (const auto& func : keyboardCallbacks) {
+    for (const auto& [id, func] : keyboardCallbacks) {
         func(key);
-    }
-    if (key < 4) {
-        if (state.isPaused()) {
-            auto menuPtr = std::dynamic_pointer_cast<Menu>(ResourceManager::GetSprite("pauseMenu"));
-            menuPtr->handleKeyboardInput(DIRECTION(key));
-        }
-    } else if (key == 4) {
-        state.invertPaused();
     }
 }
 

@@ -6,15 +6,18 @@
 #include <vector>
 #include "project/helpers.h"
 
-class Menu : public Sprite {
+class PauseMenu : public Sprite {
     // vao for: darkening, white outline, actual menu
     GLuint vao[3]{}, vbo[4]{}, ebo{};
     std::vector<std::string> options;
     std::vector<std::string>::size_type selectedOption;
+    int keyboardCallbackID;
 
    public:
-    Menu(std::vector<std::string> options);
+    PauseMenu();
+    ~PauseMenu() override;
     void draw(std::string shader) override;
     void show_options();
-    void handleKeyboardInput(DIRECTION key);
+    void handleKeyboardInput(int key);
+    void executeFunction();
 };

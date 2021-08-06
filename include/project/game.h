@@ -20,7 +20,8 @@ class Game {
     static Timer redrawTimer;
     static double lastRedraw;
     static GameState state;
-    static std::vector<std::function<void(int)>> keyboardCallbacks;
+    static int callbackCounter;
+    static std::map<int, std::function<void(int)>> keyboardCallbacks;
 
    public:
     ~Game() = default;
@@ -53,9 +54,17 @@ class Game {
     /**
      * @brief Register callback for keyboard event
      *
-     * @param function
+     * @param function Function to be called
+     * @return int  Identifier to be used to unregister callback
      */
-    static void registerKeyboardCallback(const std::function<void(int)>& function);
+    static int registerKeyboardCallback(const std::function<void(int)>& function);
+
+    /**
+     * @brief Unregister previously registered keyboard callback
+     *
+     * @param id Id of callback returned by registerKeyboardCallback()
+     */
+    static void unregisterKeyboardCallback(const int& id);
 
     /**
      * @brief Callback function for key pressed.
