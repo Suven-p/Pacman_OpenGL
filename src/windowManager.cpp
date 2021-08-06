@@ -12,6 +12,21 @@ WindowManager* WindowManager::instance = nullptr;
 void windowResizeCallback(GLFWwindow* window, int width, int height);
 void inputCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
+// clang-format off
+std::unordered_map<int, int> key_map = {
+    {GLFW_KEY_DOWN, int('s')},
+    {GLFW_KEY_UP, int('w')},
+    {GLFW_KEY_LEFT, int('a')},
+    {GLFW_KEY_RIGHT, int('d')},
+    {GLFW_KEY_ESCAPE, KEY_ESC},
+    {GLFW_KEY_W, int('w')},
+    {GLFW_KEY_A, int('a')},
+    {GLFW_KEY_S, int('s')},
+    {GLFW_KEY_D, int('d')},
+    {GLFW_KEY_ENTER, int('\n')}
+};
+// clang-format on
+
 WindowManager* WindowManager::getInstance() {
     if (!instance) {
         instance = new WindowManager();
@@ -88,8 +103,8 @@ void WindowManager::windowResizeCallback(GLFWwindow* window, int w, int h) {
 void inputCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     switch (action) {
         case GLFW_PRESS: {
-            auto it = Game::key_map.find(key);
-            if (it != Game::key_map.end()) {
+            auto it = key_map.find(key);
+            if (it != key_map.end()) {
                 Game::key_down(it->second);
             }
         }

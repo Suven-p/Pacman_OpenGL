@@ -11,6 +11,7 @@
 #include <memory>
 #include <project/menu.hpp>
 #include "GLFW/glfw3.h"
+#include "project/timer.hpp"
 
 double Game::baseSpeed = 0.01;
 Timer Game::redrawTimer = Timer();
@@ -51,7 +52,7 @@ Game::Game() {
     ResourceManager::LoadSprite("clyde", std::make_shared<Ghost>("clyde"));
     ResourceManager::LoadSprite("pacman", std::make_shared<Pacman>());
     ResourceManager::LoadSprite("pellet", std::make_shared<Pellet>());
-    ResourceManager::LoadSprite("base", std::make_shared<GameLogic>());
+    ResourceManager::LoadSprite("gameLogic", std::make_shared<GameLogic>(state));
 
     ResourceManager::LoadSprite("pauseMenu", std::make_shared<PauseMenu>());
 
@@ -73,10 +74,10 @@ void Game::render() {
     // especially when depth testing is disabled.
     // Objects drawn later appear above objects drawn
     // before.
-    auto baseMapPtr = std::dynamic_pointer_cast<Map>(ResourceManager::GetSprite("baseMap"));
+    auto baseMapPtr = ResourceManager::GetSprite<Map>("baseMap");
     baseMapPtr->draw("mainShader");
-    // baseMapPtr->drawGridLines("mainShader");
-    ResourceManager::GetSprite("base")->draw("mainShader");
+    baseMapPtr->drawGridLines("mainShader");
+    ResourceManager::GetSprite("gameLogic")->draw("mainShader");
     ResourceManager::GetSprite("pellet")->draw("mainShader");
     ResourceManager::GetSprite("pacman")->draw("mainShader");
     ResourceManager::GetSprite("clyde")->draw("mainShader");

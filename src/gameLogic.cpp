@@ -1,47 +1,39 @@
 #include <project/common.h>
 #include <project/game.h>
 #include <project/gameLogic.h>
+#include <project/ghost.h>
 #include <project/pacman.h>
 #include <project/pellet.h>
 #include <project/resourceManager.h>
 #include <project/text_renderer.h>
+#include <string>
 #include <vector>
+#include "project/windowManager.h"
 
-GameLogic::GameLogic() {
-    lives = 3;
-    position = {
-        24,  // Position of cherry in bottom layer
-        2,   // Position of first pacman displayed if remaining life >= 2
-        4    // Position of second pacman displayed if remaining life == 3
-    };
+GameLogic::GameLogic(GameState& gameState) : gameState(gameState), text(0, 0) {
+    auto windowSize = WindowManager::getInstance()->getWindowSize();
+    text = std::move(TextRenderer(windowSize.first, windowSize.second));
+    text.Load(ResourceManager::resolvePath("resources/fonts/ARIAL.TTF"), 24);
 
-    // TODO : Add height and weight with variables in TextRenderer
-    Text = new TextRenderer(448, 576);
-    Text->Load(ResourceManager::resolvePath("resources/fonts/ARIAL.TTF").c_str(), 24);
-
-    glGenVertexArrays(1, &blockVAO);
-    glGenBuffers(1, &blockVBO);
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
     glGenBuffers(1, &blockEBO);
+    // clang-format off
     float obstacleVertices[] = {
-        // positions            // colors               // texture coords
+        // positions             // colors               // texture coords
         1.8F, 0.2F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 1.0F, 1.0F,  // top right
         1.8F, 1.8F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 1.0F, 0.0F,  // bottom right
         0.2F, 1.8F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F,  // bottom left
         0.2F, 0.2F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F, 1.0F   // top left
     };
-
     unsigned int indices[] = {
-        // note that we start from 0!
-        0,
-        1,
-        3,  // first Triangle
-        1,
-        2,
-        3  // second Triangle
+        0, 1, 3,
+        1, 2, 3
     };
+    // clang-format on
 
-    glBindVertexArray(blockVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, blockVBO);
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, blockEBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(obstacleVertices), obstacleVertices, GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
@@ -55,50 +47,68 @@ GameLogic::GameLogic() {
 }
 
 void GameLogic::draw(std::string shaderName) {
-    int currentScore = getPelletPtr()->getScore();
-    std::string textToRender = "Score : " + std::to_string(currentScore);
-    Text->RenderText(textToRender, 15.0f, 15.0f, 1.0f);
+    checkStatus();
+    displayScore();
+    displayLives(shaderName);
+    displayLevel(shaderName);
+}
 
+void GameLogic::displayScore() {
+    int currentScore = ResourceManager::GetSprite<Pellet>("pellet")->getScore();
+    std::string textToRender = "Score : " + std::to_string(currentScore);
+}
+
+void GameLogic::displayLives(const std::string& shaderName) {
     auto shader = ResourceManager::GetShader(shaderName);
     shader.Use();
-    glBindVertexArray(blockVAO);
+    glBindVertexArray(VAO);
 
+    glm::mat4 model = glm::mat4(1.0F);
+    model = glm::translate(model, glm::vec3(0.0F, 34.0F, 0.0F));
     glm::mat4 view = glm::mat4(1.0F);
-    glm::mat4 projection = glm::ortho(0.0F, 28.0F, 36.0F, 0.0F, 1.0F, -1.0F);
+    glm::mat4 projection = glm::ortho(0.0F, 28.0F, 36.0F, 0.0F, -1.0F, 1.0F);
     shader.SetMatrix4("view", view);
     shader.SetMatrix4("projection", projection);
     shader.SetFloat("textureColorMix", 0.0F);
     auto texture = ResourceManager::GetTexture("pacman");
     texture.Bind(0);
-    auto texture2 = ResourceManager::GetTexture("cherry");
-    texture2.Bind(1);
-
     shader.SetInteger("texture1", 0, true);
 
-    glm::mat4 model;
-
-    for (int i = 0; i < lives; i++) {
-        model = glm::mat4(1.0F);
-        model = glm::translate(model, glm::vec3(0.0F, 3.0F, 0.0F));
-        model = glm::translate(model, glm::vec3(float(position[i]), float(31), 0.0F));
+    for (int i = 1, lives = gameState.getLives(); i < lives; i++) {
+        model = glm::translate(model, glm::vec3(2.0F, 0.0F, 0.0F));
         shader.SetMatrix4("model", model);
-
-        if (i == 0)
-            shader.SetInteger("texture1", 1, true);
-        else
-            shader.SetInteger("texture1", 0, true);
-
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
     }
+}
+
+void GameLogic::displayLevel(const std::string& shaderName) {
+    auto currentLevel = gameState.getLevel();
+
+    auto shader = ResourceManager::GetShader(shaderName);
+    shader.Use();
+    glBindVertexArray(VAO);
+
+    glm::mat4 model = glm::mat4(1.0F);
+    model = glm::translate(model, glm::vec3(24.0F, 34.0F, 0.0F));
+    glm::mat4 view = glm::mat4(1.0F);
+    glm::mat4 projection = glm::ortho(0.0F, 28.0F, 36.0F, 0.0F, -1.0F, 1.0F);
+    shader.SetMatrix4("model", model);
+    shader.SetMatrix4("view", view);
+    shader.SetMatrix4("projection", projection);
+    shader.SetFloat("textureColorMix", 0.0F);
+    auto texture2 = ResourceManager::GetTexture("cherry");
+    texture2.Bind(1);
+    shader.SetInteger("texture1", 1, true);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+
+    // tile coordinates multiplied to convert to pixel coordinates
+    auto levelText = std::to_string(currentLevel);
+    text.RenderText(levelText, 26.0F * 16, 34.5F * 16, 1.0F);
     glBindVertexArray(0);
 }
 
-void GameLogic::decreaselives() {
-    lives = lives - 1;
-}
+GameLogic::~GameLogic() = default;
 
-std::shared_ptr<GameLogic> getBasePtr() {
-    return std::dynamic_pointer_cast<GameLogic>(ResourceManager::GetSprite("base"));
-}
+void GameLogic::checkStatus() {}
 
 GameLogic::~GameLogic() = default;

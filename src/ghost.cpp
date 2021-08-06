@@ -180,12 +180,13 @@ void Ghost::initialMovement() {
 
 void Ghost::calculateMultiplier() {
     auto levelData = Game::getState().getLevelData();
-    auto pelletPtr = getPelletPtr();
+    auto pelletPtr = ResourceManager::GetSprite<Pellet>("pellet");
     if ((position.first <= 4 || position.first >= 23) && position.second == 14) {
         setMultiplier(levelData["ghostTunnelSpeed"].get<float>());
         return;
     }
-    if (name == "blinky" && (currentMode != GhostMode::frightened || currentMode != GhostMode::dead)) {
+    if (name == "blinky" &&
+        (currentMode != GhostMode::frightened || currentMode != GhostMode::dead)) {
         if ((244 - pelletPtr->getPelletsEaten()) <= levelData["elroy2Dots"].get<int>()) {
             setMultiplier(levelData["elroy2Speed"].get<float>());
             return;
@@ -319,7 +320,7 @@ DIRECTION Ghost::setNextDirection() {
     logger->trace("Next tile is: {}, {}", nextTile.first, nextTile.second);
 
     if (currentMode == GhostMode::frightened) {
-        auto baseMapPtr = std::dynamic_pointer_cast<Map>(ResourceManager::GetSprite("baseMap"));
+        auto baseMapPtr = ResourceManager::GetSprite<Map>("baseMap");
         auto possible = baseMapPtr->possibleDirections(nextTile);
         possible.erase(getOppositeDirection(currentDirection));
         std::uniform_int_distribution<int> distrib(0, possible.size() - 1);
@@ -339,7 +340,7 @@ DIRECTION Ghost::setNextDirection() {
 void Ghost::selectTargetTile() {
     switch (currentMode) {
         case GhostMode::chase: {
-            auto pacmanPtr = getPacmanPtr();
+            auto pacmanPtr = ResourceManager::GetSprite<Pacman>("pacman");
             DIRECTION pacmanDirection = pacmanPtr->getDirection();
             auto pacmanPosition = pacmanPtr->getPosition();
             targetTile = pacmanPosition;
@@ -389,7 +390,7 @@ void Ghost::selectTargetTile() {
 
 DIRECTION Ghost::selectBestDirection(pair<float, float> fromPosition,
                                      pair<float, float> toPosition) {
-    auto baseMapPtr = std::dynamic_pointer_cast<Map>(ResourceManager::GetSprite("baseMap"));
+    auto baseMapPtr = ResourceManager::GetSprite<Map>("baseMap");
     set<DIRECTION> possible;
     if (currentMode == GhostMode::dead) {
         possible = baseMapPtr->possibleDirections(fromPosition, {MAP_WALL});

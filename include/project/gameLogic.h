@@ -3,23 +3,22 @@
 #include <project/mapData.h>
 #include <project/sprite.h>
 #include <project/text_renderer.h>
+#include <project/windowManager.h>
 #include <memory>
+#include <project/gameState.hpp>
 #include <vector>
 
 class GameLogic : public Sprite {
-    GLuint blockVAO, blockVBO, blockEBO;
-    int lives;
-    std::vector<int> position;
+    GLuint VAO, VBO, blockEBO;
+    GameState& gameState;
+    TextRenderer text;
+    void displayScore();
+    void displayLives(const std::string& shaderName);
+    void displayLevel(const std::string& shaderName);
+    void checkStatus();
 
    public:
-    GameLogic();
-    void draw(std::string shaderName);
-
-    // Decrease lives by 1. To be called when ghost eats pacman
-    void decreaselives();
-
-    TextRenderer* Text;
-
+    GameLogic(GameState& gameState);
     ~GameLogic();
+    void draw(std::string shaderName) override;
 };
-std::shared_ptr<GameLogic> getBasePtr();

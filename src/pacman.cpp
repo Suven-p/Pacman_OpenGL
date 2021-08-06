@@ -133,7 +133,7 @@ void Pacman::setNextDirection(DIRECTION newDirection) {
     nextDirection = newDirection;
 }
 bool Pacman::isColliding(DIRECTION aDirection) {
-    auto baseMapPtr = std::dynamic_pointer_cast<Map>(ResourceManager::GetSprite("baseMap"));
+    auto baseMapPtr = ResourceManager::GetSprite<Map>("baseMap");
     auto possible = baseMapPtr->possibleDirections(std::pair<int, int>(oldPosition));
     bool collision = true;
 
@@ -143,9 +143,6 @@ bool Pacman::isColliding(DIRECTION aDirection) {
         }
     }
     return collision;
-}
-std::shared_ptr<Pacman> getPacmanPtr() {
-    return std::dynamic_pointer_cast<Pacman>(ResourceManager::GetSprite("pacman"));
 }
 
 void Pacman::getNewPosition() {

@@ -27,9 +27,9 @@ Pellet::Pellet() {
     glGenBuffers(1, &blockEBO);
     float obstacleVertices[] = {
         // positions            // colors               // texture coords
-        1.5F, -0.5F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 1.0F, 1.0F,  // top right
-        1.5F, 1.5F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 1.0F, 0.0F,  // bottom right
-        -0.5F, 1.5F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F,  // bottom left
+        1.5F,  -0.5F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 1.0F, 1.0F,  // top right
+        1.5F,  1.5F,  0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 1.0F, 0.0F,  // bottom right
+        -0.5F, 1.5F,  0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F,  // bottom left
         -0.5F, -0.5F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F, 1.0F   // top left
     };
 
@@ -62,7 +62,7 @@ void Pellet::draw(std::string shaderName) {
     shader.Use();
     glBindVertexArray(blockVAO);
 
-    auto pacmanPosition = getPacmanPtr()->getPosition();
+    auto pacmanPosition = ResourceManager::GetSprite<Pacman>("pacman")->getPosition();
     changePelletStatus(pacmanPosition);
     setMode();
 
@@ -120,21 +120,16 @@ void Pellet::drawCherry(const std::string& shaderName) {
     return;
 }
 
-std::shared_ptr<Pellet> getPelletPtr() {
-    return std::dynamic_pointer_cast<Pellet>(ResourceManager::GetSprite("pellet"));
-}
-
 void Pellet::changePelletStatus(std::pair<float, float> pacmanPosition) {
     int xCoordinate = int(pacmanPosition.first), yCoordinate = int(pacmanPosition.second);
-    if (Map::getBlockType(pacmanPosition) == MAP_OUTOFBOUNDS) { 
+    if (Map::getBlockType(pacmanPosition) == MAP_OUTOFBOUNDS) {
         return;
     }
     if (mapData[xCoordinate][yCoordinate] == 'o') {
         mapData[xCoordinate][yCoordinate] = 'F';
         score += 10;
         pelletsEaten++;
-    } 
-    else if (mapData[xCoordinate][yCoordinate] == 'X') {
+    } else if (mapData[xCoordinate][yCoordinate] == 'X') {
         mapData[xCoordinate][yCoordinate] = 'F';
         score += 50;
         pelletsEaten++;
@@ -143,8 +138,7 @@ void Pellet::changePelletStatus(std::pair<float, float> pacmanPosition) {
 
         timeTillScatterMode += timeTillFrightenedModeStops;
         timeTillChaseMode += timeTillFrightenedModeStops;
-    } 
-    else if (mapData[xCoordinate][yCoordinate] == 'C') {
+    } else if (mapData[xCoordinate][yCoordinate] == 'C') {
         mapData[xCoordinate][yCoordinate] = 'F';
         score += 100;
     }
@@ -160,8 +154,7 @@ bool Pellet::toDrawCherry() {
     if (glfwGetTime() > timeTillCherryDisappears) {
         mapData[14][17] = 'n';
         return false;
-    } 
-    else
+    } else
         return true;
 }
 
@@ -173,45 +166,38 @@ int Pellet::getPelletsEaten() {
     return pelletsEaten;
 }
 
-void Pellet::setMode()
-{
+void Pellet::setMode() {
     // Check for Frightened mode
-    if(glfwGetTime() < timeTillFrightenedModeStops) {
+    if (glfwGetTime() < timeTillFrightenedModeStops) {
         mode = 3;
         return;
     }
 
-    // If there have been 4 or more chases then there is no more future scatter mode 
-    if(chaseIteration >= 4) {
+    // If there have been 4 or more chases then there is no more future scatter mode
+    if (chaseIteration >= 4) {
         mode = 2;
         return;
     }
-    
-    if(timeTillScatterMode < timeTillChaseMode) {
 
+    if (timeTillScatterMode < timeTillChaseMode) {
         // If scatter mode has just passed
-        if(glfwGetTime() > timeTillScatterMode) {
+        if (glfwGetTime() > timeTillScatterMode) {
             timeTillScatterMode = timeTillChaseMode + 7;
             mode = 2;
             chaseIteration++;
-        }
-        else {
+        } else {
             mode = 1;
         }
-
     }
-    
-    if(timeTillChaseMode < timeTillScatterMode) {
 
+    if (timeTillChaseMode < timeTillScatterMode) {
         // If chase mode has just just passed
-        if(glfwGetTime() > timeTillChaseMode and chaseIteration < 4) {
+        if (glfwGetTime() > timeTillChaseMode and chaseIteration < 4) {
             timeTillChaseMode = timeTillScatterMode + 20;
             mode = 1;
-        }
-        else {
+        } else {
             mode = 2;
         }
-        
     }
 }
 
@@ -219,8 +205,8 @@ int Pellet::getMode() {
     return mode;
 }
 
-bool Pellet::allPelletsEaten(){
-    if(pelletsEaten == 244)
+bool Pellet::allPelletsEaten() {
+    if (pelletsEaten == 244)
         return true;
     else
         return false;
@@ -236,6 +222,5 @@ void Pellet::initializeModeTimer() {
     timeTillScatterMode = glfwGetTime() + 7;
     timeTillChaseMode = timeTillScatterMode + 20;
 }
-
 
 Pellet::~Pellet() = default;
