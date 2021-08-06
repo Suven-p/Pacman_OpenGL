@@ -16,3 +16,19 @@ std::string toString(DIRECTION d) {
             return "";
     }
 }
+
+DIRECTION getOppositeDirection(DIRECTION current) {
+    switch (current) {
+        case DIRECTION::up:
+            return DIRECTION::down;
+        case DIRECTION::down:
+            return DIRECTION::up;
+        case DIRECTION::left:
+            return DIRECTION::right;
+        case DIRECTION::right:
+            return DIRECTION::left;
+        default:
+            spdlog::error("Invalid direction provided to getOppositeDirection().");
+            return DIRECTION::invalid;
+    }
+}

@@ -8,9 +8,13 @@
 			"options": {
 				"cwd": "${workspaceFolder}"
 			},
-			"problemMatcher": [
-				"$gcc"
-			],
+			"problemMatcher": {
+				"base": "$gcc",
+				"fileLocation": [
+					"relative",
+					"$workspaceRoot/build"
+				]
+			},
 			"group": "build",
 			"detail": "Compile a freeglut project"
 		},

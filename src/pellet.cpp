@@ -126,6 +126,9 @@ std::shared_ptr<Pellet> getPelletPtr() {
 
 void Pellet::changePelletStatus(std::pair<float, float> pacmanPosition) {
     int xCoordinate = int(pacmanPosition.first), yCoordinate = int(pacmanPosition.second);
+    if (Map::getBlockType(pacmanPosition) == MAP_OUTOFBOUNDS) { 
+        return;
+    }
     if (mapData[xCoordinate][yCoordinate] == 'o') {
         mapData[xCoordinate][yCoordinate] = 'F';
         score += 10;

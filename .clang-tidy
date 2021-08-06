@@ -1,5 +1,5 @@
 ---
-Checks:          'clang-diagnostic-*,clang-analyzer-*,-*,bugprone-*,-bugprone-narrowing-conversions,cppcoreguidelines-*,-cppcoreguidelines-avoid-non-const-global-variables,-cppcoreguidelines-avoid-c-arrays,-cppcoreguidelines-narrowing-conversions,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-cppcoreguidelines-non-private-member-variables-in-classes,-cppcoreguidelines-avoid-magic-numbers,modernize-*,-modernize-use-trailing-return-type,-modernize-avoid-c-arrays,performance-*,-performance-no-int-to-ptr,readability-*,-readability-magic-numbers,-readability-function-cognitive-complexity,portability-*,clang-analyzer-*'
+Checks:          'clang-diagnostic-*,clang-analyzer-*,-*,bugprone-*,-bugprone-narrowing-conversions,cppcoreguidelines-*,-cppcoreguidelines-avoid-non-const-global-variables,-cppcoreguidelines-avoid-c-arrays,-cppcoreguidelines-narrowing-conversions,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-cppcoreguidelines-non-private-member-variables-in-classes,-cppcoreguidelines-avoid-magic-numbers,modernize-*,-modernize-use-trailing-return-type,-modernize-avoid-c-arrays,performance-*,-performance-no-int-to-ptr,readability-*,-readability-magic-numbers,portability-*,clang-analyzer-*'
 WarningsAsErrors: ''
 HeaderFilterRegex: '.*include/project.*\.h(pp)?'
 AnalyzeTemporaryDtors: false
@@ -262,6 +262,8 @@ CheckOptions:
     value:           'true'
   - key:             google-readability-namespace-comments.SpacesBeforeComments
     value:           '2'
+  - key:             readability-function-cognitive-complexity.Threshold
+    value:           '25'
   - key:             cppcoreguidelines-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic
     value:           '1'
   - key:             bugprone-argument-comment.IgnoreSingleArgument

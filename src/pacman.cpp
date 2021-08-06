@@ -6,6 +6,13 @@
 #include <iostream>
 #include <iterator>
 #include <set>
+
+void callback(int key) {
+    if (key < 4 && !Game::getState().isPaused()) {
+        getPacmanPtr()->setNextDirection(DIRECTION(key));
+    }
+};
+
 Pacman::Pacman() {
     glGenVertexArrays(1, &vao);
     glGenBuffers(2, vbo);
@@ -36,6 +43,9 @@ Pacman::Pacman() {
 
     currentDirection = DIRECTION::right;
     nextDirection = DIRECTION::right;
+    multiplier = 0.8;
+
+    Game::registerKeyboardCallback(callback);
 }
 
 void Pacman::draw(std::string shader) {
@@ -119,10 +129,10 @@ std::shared_ptr<Pacman> getPacmanPtr() {
 }
 
 void Pacman::getNewPosition() {
-    float diffPixels = Game::getInstance()->getSpeed() * Game::getInstance()->getTime() * 0.8;
-    // float diffPixels = Game::getInstance()->getSpeed() *
-    // Game::getInstance()->getTime() * getMultiplier();
-    // float diffPixels = Game::getInstance()->getSpeed() * 16 * 0.75;
+    if (Game::getState().isPaused()) {
+        return;
+    }
+    auto diffPixels = Game::getSpeed() * Game::getTime() * getMultiplier();
     oldPosition = position;
     bool reachedNewTile = false;
     switch (currentDirection) {
@@ -171,10 +181,12 @@ void Pacman::getNewPosition() {
     }
     // std::cout<<position.first<<","<<position.second<<"\t"<<oldPosition.first<<","<<oldPosition.second<<std::endl;
     if (int(position.second) == 14) {
-        if (int(position.first) <= 0 && currentDirection == DIRECTION::left) {
-            position.first = 28;
-        } else if (position.first > 27 && currentDirection == DIRECTION::right) {
-            position.first = -1;
+        if (int(position.first) <= -2 && currentDirection == DIRECTION::left) {
+            position.first = 29;
+            return;
+        } else if (position.first >= 29 && currentDirection == DIRECTION::right) {
+            position.first = -2;
+            return;
         }
     }
     bool collision = isColliding(currentDirection);
@@ -200,4 +212,11 @@ void Pacman::setMultiplier(float mul = 0.8) {
 }
 float Pacman::getMultiplier() {
     return multiplier;
+}
+
+void Pacman::resetState() {
+    position = {13.5, 23};
+    currentDirection = DIRECTION::left;
+    nextDirection = DIRECTION::left;
+    multiplier = 0.8;
 }

@@ -5,6 +5,7 @@
 #include <spdlog/spdlog.h>
 
 #include <stb_image/stb_image.h>
+#include "GLFW/glfw3.h"
 
 WindowManager::WindowManager() = default;
 WindowManager* WindowManager::instance = nullptr;
@@ -71,9 +72,9 @@ void WindowManager::setWindowSize(std::pair<double, double> newSize) {
 }
 
 void WindowManager::run() {
-    while (!glfwWindowShouldClose(window)) {
+    while (glfwWindowShouldClose(window) == 0) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        Game::getInstance()->render();
+        Game::render();
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -87,18 +88,9 @@ void WindowManager::windowResizeCallback(GLFWwindow* window, int w, int h) {
 void inputCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     switch (action) {
         case GLFW_PRESS: {
-            if (key < 256) {
-                Game::key_down(key, 0, 0);
-            } else {
-                Game::special_key_down(key, 0, 0);
-            }
-            break;
-        }
-        case GLFW_RELEASE: {
-            if (key < 256) {
-                Game::key_up(key, 0, 0);
-            } else {
-                Game::special_key_up(key, 0, 0);
+            auto it = Game::key_map.find(key);
+            if (it != Game::key_map.end()) {
+                Game::key_down(it->second);
             }
         }
     }
@@ -106,4 +98,8 @@ void inputCallback(GLFWwindow* window, int key, int scancode, int action, int mo
 
 GLFWwindow* WindowManager::getWindow() {
     return window;
+}
+
+void WindowManager::exit() {
+    glfwSetWindowShouldClose(window, 1);
 }

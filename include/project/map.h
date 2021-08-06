@@ -18,7 +18,6 @@ class Map : public Sprite {
     std::vector<std::vector<int>> gridData;
     GLuint VAO, VBO, EBO;
     GLuint gridVAO, gridVBO;
-    GLuint blockVAO, blockVBO, blockEBO;
     void initializeGrid();
 
    public:
@@ -33,7 +32,7 @@ class Map : public Sprite {
      * @param shader Index of shader to use. Shader must be stored in ResourceManager.
      */
     void draw(const std::string& shader, bool drawGrid);
-    void draw(std::string shader);
+    void draw(std::string shader) override;
     /**
      * @brief Draw grid lines on top of map.
      * This is used only for debuggin purposes.
@@ -41,18 +40,16 @@ class Map : public Sprite {
      * @param shader Index of shader to use. Shader must be stored in ResourceManager.
      */
     void drawGridLines(const std::string& shader) const;
-    /**
-     * @brief Show obstacles as colored blocks.
-     * This is used to demonstrate and verify position of obstacles according to stored map data.
-     *
-     */
-    void drawObstacles(const std::string& shader) const;
-    bool checkObstacle(const std::pair<float, float>& toCheck,
-                       const std::set<char>& obstacles = {MAP_WALL, MAP_GATE}) const;
-    char getBlockType(const std::pair<int, int>& toCheck) const;
-    std::set<DIRECTION> possibleDirections(const std::pair<float, float>& toCheck,
-                                           const std::set<char>& obstacles = {MAP_WALL,
-                                                                              MAP_GATE}) const;
+
+    [[nodiscard]] bool checkObstacle(const std::pair<float, float>& toCheck,
+                                     const std::set<char>& obstacles = {MAP_WALL, MAP_GATE}) const;
+
+    [[nodiscard]] static char getBlockType(const std::pair<int, int>& toCheck);
+
+    [[nodiscard]] std::set<DIRECTION> possibleDirections(const std::pair<float, float>& toCheck,
+                                                         const std::set<char>& obstacles = {
+                                                             MAP_WALL,
+                                                             MAP_GATE}) const;
 };
 
 #endif

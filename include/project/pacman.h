@@ -19,5 +19,6 @@ class Pacman : public Sprite {
     void setMultiplier(float);
     void setNextDirection(DIRECTION);
     bool isColliding(DIRECTION aDirection);
+    void resetState();
 };
 std::shared_ptr<Pacman> getPacmanPtr();

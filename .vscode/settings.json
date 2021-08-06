@@ -79,6 +79,8 @@
         "variant": "cpp",
         "regex": "cpp"
     },
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
     "debug.terminal.clearBeforeReusing": true,
     "terminal.integrated.profiles.windows": {
         "PowerShell": {
@@ -103,5 +105,6 @@
         "external/include"
     ],
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
-    "clang-tidy.buildPath": "build"
+    "clang-tidy.buildPath": "build",
+    "clang-tidy.lintOnSave": false
 }
