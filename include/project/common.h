@@ -7,4 +7,6 @@
 #include <project/CMakeConfig.h>
 #include <project/helpers.h>
 
+constexpr int KEY_ESC = 27;
+
 #endif

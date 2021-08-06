@@ -10,7 +10,7 @@ class Pacman : public Sprite {
 
    public:
     Pacman();
-    void draw(std::string shaderName);
+    void draw(std::string shaderName) override;
     DIRECTION getDirection();
     void setDirection(DIRECTION newDirection);
     void getNewPosition();
@@ -19,5 +19,5 @@ class Pacman : public Sprite {
     void setMultiplier(float);
     void setNextDirection(DIRECTION);
     bool isColliding(DIRECTION aDirection);
+    void reset() override;
 };
-std::shared_ptr<Pacman> getPacmanPtr();

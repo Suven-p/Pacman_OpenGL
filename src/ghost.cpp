@@ -2,6 +2,7 @@
 #include <project/game.h>
 #include <project/ghost.h>
 #include <project/pacman.h>
+#include <project/pellet.h>
 #include <project/resourceManager.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
@@ -15,15 +16,20 @@ const std::map<std::string, std::pair<float, float>> Ghost::positionInPen = {{"b
                                                                              {"inky", {12, 14}},
                                                                              {"pinky", {13, 14}},
                                                                              {"clyde", {15, 14}}};
-const std::map<std::string, std::pair<float, float>> Ghost::initialPosition = {{"blinky", {1, 1}},
-                                                                               {"inky", {23, 29}},
-                                                                               {"pinky", {23, 1}},
-                                                                               {"clyde", {1, 29}}};
+const std::map<std::string, std::pair<float, float>> Ghost::initialPosition = {
+    {"blinky", {13.5, 11}},
+    {"inky", {11.5, 14}},
+    {"pinky", {13.5, 14}},
+    {"clyde", {15.5, 14}}};
+const std::map<std::string, int> Ghost::timeToLeave = {{"blinky", 0},
+                                                       {"pinky", 2000},
+                                                       {"inky", 7000},
+                                                       {"clyde", 12000}};
 
 std::random_device rd;   // Will be used to obtain a seed for the random number engine
 std::mt19937 gen(rd());  // Standard mersenne_twister_engine seeded with rd()
 
-// TODO frightened texture change, speed vary, dead mode, blinky cruise elroy,
+// TODO scatter/chase timer, reset game state, clear resources
 Ghost::Ghost(const std::string& name) : name(name) {
     glGenVertexArrays(1, &vao);
     glGenBuffers(2, vbo);
@@ -68,18 +74,21 @@ Ghost::Ghost(const std::string& name) : name(name) {
     glEnableVertexAttribArray(2);
 
     position = initialPosition.at(name);
-    currentDirection = DIRECTION::right;
+    currentDirection = (name == "blinky") ? DIRECTION::right : DIRECTION::up;
     nextDirection = DIRECTION::right;
-    currentMode = GhostMode::dead;
+    currentMode = GhostMode::frightened;
 
     setMultiplier(0.75);
 
     std::string loggerName = std::string("ghostLogger::") + name;
     logger = spdlog::basic_logger_mt(loggerName, "logs/ghostLog.txt");
     logger->set_level(spdlog::level::debug);
+
+    outOfPen = false;
 }
 
 void Ghost::draw(std::string shader) {
+    ghostTimer.start();
     recalculatePosition();
 
     ResourceManager::GetShader(shader).Use();
@@ -100,15 +109,16 @@ void Ghost::draw(std::string shader) {
     ResourceManager::GetShader(shader).SetMatrix4("model", temp_model, true);
 
     if (currentMode != GhostMode::dead) {
-        auto texture = ResourceManager::GetTexture(name);
+        std::string textureToUse = (currentMode == GhostMode::frightened) ? "frightened" : name;
+        auto texture = ResourceManager::GetTexture(textureToUse);
         texture.Bind(0);
         ResourceManager::GetShader(shader).SetInteger("texture1", 0, true);
         ResourceManager::GetShader(shader).SetFloat("textureColorMix", 0.0F);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)nullptr);
     }
-
-    drawEyes(shader);
-
+    if (currentMode != GhostMode::frightened) {
+        drawEyes(shader);
+    }
     glBindVertexArray(0);
 }
 
@@ -136,12 +146,72 @@ void Ghost::drawEyes(const std::string& shader) const {
 }
 
 void Ghost::recalculatePosition() {
-    bool ghostInPen = (position.first >= 11 && position.first <= 16 && position.second >= 12 &&
+    if (Game::getState().isPaused()) {
+        ghostTimer.pause();
+        return;
+    }
+    ghostTimer.resume();
+    bool ghostInPen = (position.first >= 11 && position.first <= 16 && position.second > 11 &&
                        position.second <= 15);
+    calculateMultiplier();
+    if (!outOfPen) {
+        initialMovement();
+        return;
+    }
     if (ghostInPen || currentMode != GhostMode::dead) {
         deadModeMovement(ghostInPen);
     } else {
         basicMovement();
+    }
+}
+
+void Ghost::initialMovement() {
+    if (ghostTimer.timeElapsed() < timeToLeave.at(name)) {
+        if (position.second >= 14.5) {
+            currentDirection = DIRECTION::up;
+        } else if (position.second <= 13.5) {
+            currentDirection = DIRECTION::down;
+        }
+        basicMovement();
+    } else {
+        outOfPen = true;
+    }
+}
+
+void Ghost::calculateMultiplier() {
+    auto levelData = Game::getState().getLevelData();
+    auto pelletPtr = ResourceManager::GetSprite<Pellet>("pellet");
+    if ((position.first <= 4 || position.first >= 23) && position.second == 14) {
+        setMultiplier(levelData["ghostTunnelSpeed"].get<float>());
+        return;
+    }
+    if (name == "blinky" &&
+        (currentMode != GhostMode::frightened || currentMode != GhostMode::dead)) {
+        if ((244 - pelletPtr->getPelletsEaten()) <= levelData["elroy2Dots"].get<int>()) {
+            setMultiplier(levelData["elroy2Speed"].get<float>());
+            return;
+        }
+        if ((244 - pelletPtr->getPelletsEaten()) <= levelData["elroy1Dots"].get<int>()) {
+            setMultiplier(levelData["elroy1Speed"].get<float>());
+            return;
+        }
+    }
+    bool ghostInPen = (position.first >= 11 && position.first <= 16 && position.second >= 12 &&
+                       position.second <= 15);
+    if (ghostInPen) {
+        setMultiplier(levelData["ghostPenSpeed"].get<float>());
+        return;
+    }
+    switch (currentMode) {
+        case GhostMode::frightened:
+            setMultiplier(levelData["ghostFrightSpeed"].get<float>());
+            return;
+        case GhostMode::scatter:
+        case GhostMode::chase:
+            setMultiplier(levelData["ghostSpeed"].get<float>());
+            return;
+        case GhostMode::dead:
+            setMultiplier(1.2);
     }
 }
 
@@ -191,7 +261,7 @@ void Ghost::basicMovement() {
             break;
         }
     }
-    if (!reachedNewTile) {
+    if (!reachedNewTile || !outOfPen) {
         return;
     }
 
@@ -250,19 +320,19 @@ DIRECTION Ghost::setNextDirection() {
     logger->trace("Next tile is: {}, {}", nextTile.first, nextTile.second);
 
     if (currentMode == GhostMode::frightened) {
-        auto baseMapPtr = std::dynamic_pointer_cast<Map>(ResourceManager::GetSprite("baseMap"));
+        auto baseMapPtr = ResourceManager::GetSprite<Map>("baseMap");
         auto possible = baseMapPtr->possibleDirections(nextTile);
         possible.erase(getOppositeDirection(currentDirection));
-        std::uniform_int_distribution<> distrib(0, possible.size() - 1);
+        std::uniform_int_distribution<int> distrib(0, possible.size() - 1);
         auto it = possible.begin();
         auto index = distrib(gen);
         std::advance(it, index);
         nextDirection = *it;
     } else {
         selectTargetTile();
+        nextDirection = selectBestDirection(nextTile, targetTile);
     }
     logger->info("Target Tile is: {} {}", targetTile.first, targetTile.second);
-    nextDirection = selectBestDirection(nextTile, targetTile);
     logger->trace("Best direction is set to be: {}", toString(nextDirection));
     return nextDirection;
 }
@@ -270,7 +340,7 @@ DIRECTION Ghost::setNextDirection() {
 void Ghost::selectTargetTile() {
     switch (currentMode) {
         case GhostMode::chase: {
-            auto pacmanPtr = getPacmanPtr();
+            auto pacmanPtr = ResourceManager::GetSprite<Pacman>("pacman");
             DIRECTION pacmanDirection = pacmanPtr->getDirection();
             auto pacmanPosition = pacmanPtr->getPosition();
             targetTile = pacmanPosition;
@@ -320,7 +390,7 @@ void Ghost::selectTargetTile() {
 
 DIRECTION Ghost::selectBestDirection(pair<float, float> fromPosition,
                                      pair<float, float> toPosition) {
-    auto baseMapPtr = std::dynamic_pointer_cast<Map>(ResourceManager::GetSprite("baseMap"));
+    auto baseMapPtr = ResourceManager::GetSprite<Map>("baseMap");
     set<DIRECTION> possible;
     if (currentMode == GhostMode::dead) {
         possible = baseMapPtr->possibleDirections(fromPosition, {MAP_WALL});
@@ -391,10 +461,22 @@ void Ghost::MoveOutofPen() {
     auto oldPosition = position;
     if (position.first <= 13.3) {
         position.first += diffPixels;
+        currentDirection = DIRECTION::right;
     } else if (position.first >= 13.7) {
         position.first -= diffPixels;
+        currentDirection = DIRECTION::left;
     } else {
         position.first = 13.5;
         position.second -= diffPixels;
+        currentDirection = DIRECTION::up;
     }
+}
+
+void Ghost::reset() {
+    position = initialPosition.at(name);
+    currentMode = GhostMode::scatter;
+    currentDirection = (name == "blinky") ? DIRECTION::right : DIRECTION::up;
+    nextDirection = DIRECTION::right;
+    outOfPen = false;
+    ghostTimer = Timer();
 }

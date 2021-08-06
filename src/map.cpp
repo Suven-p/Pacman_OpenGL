@@ -8,11 +8,11 @@ Map::Map() : gridSize({28, 36}), VAO(0), VBO(0), EBO(0), gridVAO(0), gridVBO(0) 
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
     float vertices[] = {
-        // positions              // colors               // texture coords
-        28.0F, 03.0F, -0.9F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 1.0F, 1.0F,  // top right
-        28.0F, 34.0F, -0.9F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 1.0F, 0.0F,  // bottom right
-        00.0F, 34.0F, -0.9F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F,  // bottom left
-        00.0F, 03.0F, -0.9F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 1.0F   // top left
+        // positions               // colors               // texture coords
+        28.0F, 03.0F, -0.9F, 1.0F, 0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F,  // top right
+        28.0F, 34.0F, -0.9F, 1.0F, 0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.0F,  // bottom right
+        00.0F, 34.0F, -0.9F, 1.0F, 0.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F,  // bottom left
+        00.0F, 03.0F, -0.9F, 1.0F, 0.0F, 0.0F, 0.0F, 1.0F, 0.0F, 1.0F   // top left
     };
     unsigned int indices[] = {
         // note that we start from 0!
@@ -58,6 +58,7 @@ void Map::draw(std::string shaderName) {
     auto texture = ResourceManager::GetTexture("baseMap");
     texture.Bind(0);
     shader.SetInteger("texture1", 0, true);
+    shader.SetFloat("textureColorMix", 0.0F);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
 }
@@ -150,7 +151,7 @@ bool Map::checkObstacle(const std::pair<float, float>& toCheck,
     return (obstacles.count(block) > 0);
 }
 
-char Map::getBlockType(const std::pair<int, int>& toCheck) const {
+char Map::getBlockType(const std::pair<int, int>& toCheck) {
     if (toCheck.first < 0 || toCheck.first >= mapDataColRow.size()) {
         return MAP_OUTOFBOUNDS;
     }
@@ -169,16 +170,16 @@ std::set<DIRECTION> Map::possibleDirections(const std::pair<float, float>& toChe
     if (toCheck.second < 0 || toCheck.second > 30) {
         validCoord = false;
     }
-    if (toCheck.first < 0) {
+    if (toCheck.first < 1) {
         if (abs(toCheck.second - 14) < 0.3) {
-            return {DIRECTION::left};
+            return {DIRECTION::left, DIRECTION::right};
         } else {
             validCoord == false;
         }
     }
-    if (toCheck.first > 27) {
+    if (toCheck.first > 26) {
         if (abs(toCheck.second - 14) < 0.3) {
-            return {DIRECTION::right};
+            return {DIRECTION::right, DIRECTION::left};
         } else {
             validCoord == false;
         }

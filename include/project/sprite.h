@@ -15,13 +15,14 @@ class Sprite {
    protected:
     std::pair<float, float> position;
     std::string texture;
+    void setTexture(std::string newTexture);
+    std::string getTexture() const;
 
    public:
     Sprite();
     void setPosition(std::pair<float, float> newPosition);
     std::pair<float, float> getPosition() const;
-    void setTexture(std::string newTexture);
-    std::string getTexture() const;
     virtual void draw(std::string shader) = 0;
     virtual ~Sprite();
+    virtual void reset();
 };

@@ -18,3 +18,5 @@ std::string Sprite::getTexture() const {
     return texture;
 }
 Sprite::~Sprite() = default;
+
+void Sprite::reset() {}

@@ -1,13 +1,12 @@
 #include <project/main.h>
 #include <spdlog/spdlog.h>
+#include <project/gameState.hpp>
 #ifdef SPDLOG_HEADER_ONLY
 #warning USING HEADER ONLY SPDLOG LIBRARY
 #endif
 
 using namespace std;
 
-void reshape(int width, int height);
-void render();
 void GLAPIENTRY MessageCallback(GLenum source,
                                 GLenum type,
                                 GLuint id,
@@ -25,14 +24,14 @@ int main(int argc, char** argv) {
     windowData.refreshInterval = 1000.0F / 60.0F;
     auto* windowManagerPtr = WindowManager::getInstance();
     windowManagerPtr->createNewWindow(PROJECT_NAME, windowData);
-    spdlog::set_level(spdlog::level::debug);
 
-    if (!gladLoadGL()) {
+    if (gladLoadGL() == 0) {
         spdlog::error("Failed to initialize GLAD");
     }
 
-    auto game_obj = Game::getInstance();  // NOLINT: required to initialize game class
+    Game::initialize();  // NOLINT: required to initialize game class
 
+    spdlog::set_level(spdlog::level::debug);
     spdlog::get("ResourceManager")->set_level(spdlog::level::err);
 
     glEnable(GL_DEBUG_OUTPUT);

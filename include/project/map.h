@@ -44,7 +44,7 @@ class Map : public Sprite {
     [[nodiscard]] bool checkObstacle(const std::pair<float, float>& toCheck,
                                      const std::set<char>& obstacles = {MAP_WALL, MAP_GATE}) const;
 
-    [[nodiscard]] char getBlockType(const std::pair<int, int>& toCheck) const;
+    [[nodiscard]] static char getBlockType(const std::pair<int, int>& toCheck);
 
     [[nodiscard]] std::set<DIRECTION> possibleDirections(const std::pair<float, float>& toCheck,
                                                          const std::set<char>& obstacles = {

@@ -6,6 +6,33 @@
 #include <iostream>
 #include <iterator>
 #include <set>
+
+void callback(int key) {
+    if (Game::getState().isPaused()) {
+        return;
+    }
+    auto ptr = ResourceManager::GetSprite<Pacman>("pacman");
+    ;
+    switch (key) {
+        case int('w'): {
+            ptr->setNextDirection(DIRECTION::up);
+            break;
+        }
+        case int('a'): {
+            ptr->setNextDirection(DIRECTION::left);
+            break;
+        }
+        case int('s'): {
+            ptr->setNextDirection(DIRECTION::down);
+            break;
+        }
+        case int('d'): {
+            ptr->setNextDirection(DIRECTION::right);
+            break;
+        }
+    }
+};
+
 Pacman::Pacman() {
     glGenVertexArrays(1, &vao);
     glGenBuffers(2, vbo);
@@ -36,6 +63,9 @@ Pacman::Pacman() {
 
     currentDirection = DIRECTION::right;
     nextDirection = DIRECTION::right;
+    multiplier = 0.8;
+
+    Game::registerKeyboardCallback(callback);
 }
 
 void Pacman::draw(std::string shader) {
@@ -103,7 +133,7 @@ void Pacman::setNextDirection(DIRECTION newDirection) {
     nextDirection = newDirection;
 }
 bool Pacman::isColliding(DIRECTION aDirection) {
-    auto baseMapPtr = std::dynamic_pointer_cast<Map>(ResourceManager::GetSprite("baseMap"));
+    auto baseMapPtr = ResourceManager::GetSprite<Map>("baseMap");
     auto possible = baseMapPtr->possibleDirections(std::pair<int, int>(oldPosition));
     bool collision = true;
 
@@ -114,15 +144,12 @@ bool Pacman::isColliding(DIRECTION aDirection) {
     }
     return collision;
 }
-std::shared_ptr<Pacman> getPacmanPtr() {
-    return std::dynamic_pointer_cast<Pacman>(ResourceManager::GetSprite("pacman"));
-}
 
 void Pacman::getNewPosition() {
-    float diffPixels = Game::getInstance()->getSpeed() * Game::getInstance()->getTime() * 0.8;
-    // float diffPixels = Game::getInstance()->getSpeed() *
-    // Game::getInstance()->getTime() * getMultiplier();
-    // float diffPixels = Game::getInstance()->getSpeed() * 16 * 0.75;
+    if (Game::getState().isPaused()) {
+        return;
+    }
+    auto diffPixels = Game::getSpeed() * Game::getTime() * getMultiplier();
     oldPosition = position;
     bool reachedNewTile = false;
     switch (currentDirection) {
@@ -171,10 +198,12 @@ void Pacman::getNewPosition() {
     }
     // std::cout<<position.first<<","<<position.second<<"\t"<<oldPosition.first<<","<<oldPosition.second<<std::endl;
     if (int(position.second) == 14) {
-        if (int(position.first) <= 0 && currentDirection == DIRECTION::left) {
-            position.first = 28;
-        } else if (position.first > 27 && currentDirection == DIRECTION::right) {
-            position.first = -1;
+        if (int(position.first) <= -2 && currentDirection == DIRECTION::left) {
+            position.first = 29;
+            return;
+        } else if (position.first >= 29 && currentDirection == DIRECTION::right) {
+            position.first = -2;
+            return;
         }
     }
     bool collision = isColliding(currentDirection);
@@ -200,4 +229,11 @@ void Pacman::setMultiplier(float mul = 0.8) {
 }
 float Pacman::getMultiplier() {
     return multiplier;
+}
+
+void Pacman::reset() {
+    position = {13.5, 23};
+    currentDirection = DIRECTION::left;
+    nextDirection = DIRECTION::left;
+    multiplier = 0.8;
 }

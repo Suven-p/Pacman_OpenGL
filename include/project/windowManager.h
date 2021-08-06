@@ -31,6 +31,7 @@ class WindowManager {
     std::pair<double, double> getWindowSize();
     void setWindowSize(std::pair<double, double> newSize);
     void run();
+    void exit();
 };
 
 #endif

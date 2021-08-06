@@ -18,20 +18,25 @@ file(
 )
 
 set(${PROJECT_NAME}_SOURCES
-    src/game.cpp
-    src/ghost.cpp
-    src/helpers.cpp
-    src/main.cpp
-    src/map.cpp
-    src/pacman.cpp
-    src/pellet.cpp
-    src/resourceManager.cpp
-    src/shader.cpp
-    src/sprite.cpp
-    src/texture.cpp
-    src/timer.cpp
-    src/windowManager.cpp
+    ${CMAKE_SOURCE_DIR}/src/game.cpp
+    ${CMAKE_SOURCE_DIR}/src/gameLogic.cpp
+    ${CMAKE_SOURCE_DIR}/src/gameState.cpp
+    ${CMAKE_SOURCE_DIR}/src/ghost.cpp
+    ${CMAKE_SOURCE_DIR}/src/helpers.cpp
+    ${CMAKE_SOURCE_DIR}/src/main.cpp
+    ${CMAKE_SOURCE_DIR}/src/map.cpp
+    ${CMAKE_SOURCE_DIR}/src/menu.cpp
+    ${CMAKE_SOURCE_DIR}/src/pacman.cpp
+    ${CMAKE_SOURCE_DIR}/src/pellet.cpp
+    ${CMAKE_SOURCE_DIR}/src/resourceManager.cpp
+    ${CMAKE_SOURCE_DIR}/src/shader.cpp
+    ${CMAKE_SOURCE_DIR}/src/sprite.cpp
+    ${CMAKE_SOURCE_DIR}/src/texture.cpp
+    ${CMAKE_SOURCE_DIR}/src/timer.cpp
+    ${CMAKE_SOURCE_DIR}/src/windowManager.cpp
+    ${CMAKE_SOURCE_DIR}/src/text_renderer.cpp
 )
+
 file(GLOB_RECURSE ${PROJECT_NAME}_HEADERS
     include/*.h
     include/*.hpp
@@ -48,6 +53,7 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/glfw)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/glad)
+add_subdirectory(${CMAKE_SOURCE_DIR}/external/freetype)
 
 add_executable(${PROJECT_NAME}
     ${${PROJECT_NAME}_SOURCES}
@@ -81,6 +87,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     glfw
     spdlog::spdlog
     glad
+    freetype
 )
 
 add_custom_command(

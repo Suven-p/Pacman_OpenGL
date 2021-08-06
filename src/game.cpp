@@ -1,20 +1,41 @@
 #include <project/game.h>
+#include <project/gameLogic.h>
 #include <project/ghost.h>
 #include <project/helpers.h>
 #include <project/map.h>
 #include <project/pacman.h>
 #include <project/pellet.h>
 #include <project/resourceManager.h>
+#include <project/text_renderer.h>
 #include <spdlog/spdlog.h>
 #include <memory>
+#include <project/menu.hpp>
+#include "GLFW/glfw3.h"
+#include "project/timer.hpp"
+
+double Game::baseSpeed = 0.01;
+Timer Game::redrawTimer = Timer();
+double Game::lastRedraw = 0;
+GameState Game::state;
+int Game::callbackCounter = 0;
+std::map<int, std::function<void(int)>> Game::keyboardCallbacks;
+
+constexpr auto callback = [](auto key) {
+    if (key == KEY_ESC) {
+        Game::getState().invertPaused();
+    }
+};
 
 Game::Game() {
     ResourceManager::LoadShader("shaders/shader.vs", "shaders/shader.fs", nullptr, "mainShader");
+    ResourceManager::LoadShader("shaders/text.vs", "shaders/text.fs", nullptr, "textShader");
+
     ResourceManager::LoadTexture("resources/map/pacman_map.png", true, "baseMap");
     ResourceManager::LoadTexture("resources/blinky.png", true, "blinky");
     ResourceManager::LoadTexture("resources/pinky.png", true, "pinky");
     ResourceManager::LoadTexture("resources/inky.png", true, "inky");
     ResourceManager::LoadTexture("resources/clyde.png", true, "clyde");
+    ResourceManager::LoadTexture("resources/frightened.png", true, "frightened");
     ResourceManager::LoadTexture("resources/pacman.png", true, "pacman");
     ResourceManager::LoadTexture("resources/pellet.png", true, "pellet");
     ResourceManager::LoadTexture("resources/power_pellet.png", true, "power_pellet");
@@ -23,6 +44,7 @@ Game::Game() {
     ResourceManager::LoadTexture("resources/eyes/eyes_left.png", true, "eyesLeft");
     ResourceManager::LoadTexture("resources/eyes/eyes_up.png", true, "eyesUp");
     ResourceManager::LoadTexture("resources/eyes/eyes_down.png", true, "eyesDown");
+
     ResourceManager::LoadSprite("baseMap", std::make_shared<Map>());
     ResourceManager::LoadSprite("blinky", std::make_shared<Ghost>("blinky"));
     ResourceManager::LoadSprite("inky", std::make_shared<Ghost>("inky"));
@@ -30,68 +52,55 @@ Game::Game() {
     ResourceManager::LoadSprite("clyde", std::make_shared<Ghost>("clyde"));
     ResourceManager::LoadSprite("pacman", std::make_shared<Pacman>());
     ResourceManager::LoadSprite("pellet", std::make_shared<Pellet>());
+    ResourceManager::LoadSprite("gameLogic", std::make_shared<GameLogic>(state));
+
+    ResourceManager::LoadSprite("pauseMenu", std::make_shared<PauseMenu>());
 
     ResourceManager::GetSprite("pacman")->setPosition(std::make_pair(13.5, 23));
+
+    Game::registerKeyboardCallback(callback);
 }
 
-std::shared_ptr<Game> Game::instance = nullptr;
-std::vector<bool> Game::key_states(256, false);
-double Game::baseSpeed = 0.01;
-Timer Game::redrawTimer = Timer();
-double Game::lastRedraw = 0;
-
-std::unordered_map<int, int> Game::special_key_map = {{GLFW_KEY_DOWN, int(DIRECTION::down)},
-                                                      {GLFW_KEY_UP, int(DIRECTION::up)},
-                                                      {GLFW_KEY_LEFT, int(DIRECTION::left)},
-                                                      {GLFW_KEY_RIGHT, int(DIRECTION::right)}};
-std::vector<bool> Game::special_key_states(Game::special_key_map.size(), false);
-
-std::shared_ptr<Game> Game::getInstance() {
-    if (instance == nullptr) {
-        instance = std::shared_ptr<Game>(new Game());
-    }
-    return instance;
+Game& Game::initialize() {
+    static Game game_obj;
+    return game_obj;
 }
 
 void Game::render() {
-    glClearColor(0.2F, 0.2F, 0.2F, 0.0F);
+    glClearColor(0.1F, 0.1F, 0.1F, 0.0F);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+    redrawTimer.start();
     // IMPORTANT: order of draw calls is important
     // especially when depth testing is disabled.
     // Objects drawn later appear above objects drawn
     // before.
-    auto baseMapPtr = std::dynamic_pointer_cast<Map>(ResourceManager::GetSprite("baseMap"));
+    auto baseMapPtr = ResourceManager::GetSprite<Map>("baseMap");
     baseMapPtr->draw("mainShader");
     baseMapPtr->drawGridLines("mainShader");
+    ResourceManager::GetSprite("gameLogic")->draw("mainShader");
     ResourceManager::GetSprite("pellet")->draw("mainShader");
     ResourceManager::GetSprite("pacman")->draw("mainShader");
     ResourceManager::GetSprite("clyde")->draw("mainShader");
     ResourceManager::GetSprite("inky")->draw("mainShader");
     ResourceManager::GetSprite("pinky")->draw("mainShader");
     ResourceManager::GetSprite("blinky")->draw("mainShader");
+    ResourceManager::GetSprite("pauseMenu")->draw("mainShader");
 
     lastRedraw = redrawTimer.timeElapsed();
 }
 
-void Game::key_down(unsigned char key, int x, int y) {
-    Game::key_states[key] = true;
+int Game::registerKeyboardCallback(const std::function<void(int)>& function) {
+    keyboardCallbacks[callbackCounter] = function;
+    return callbackCounter++;
 }
 
-void Game::key_up(unsigned char key, int x, int y) {
-    Game::key_states[key] = false;
+void Game::unregisterKeyboardCallback(const int& id) {
+    keyboardCallbacks.erase(id);
 }
 
-void Game::special_key_down(int key, int x, int y) {
-    if (Game::special_key_map.count(key) > 0) {
-        Game::special_key_states[Game::special_key_map[key]] = true;
-        getPacmanPtr()->setNextDirection(DIRECTION(Game::special_key_map[key]));
-    }
-}
-
-void Game::special_key_up(int key, int x, int y) {
-    if (Game::special_key_map.count(key) > 0) {
-        Game::special_key_states[Game::special_key_map[key]] = false;
+void Game::key_down(int key) {
+    for (const auto& [id, func] : keyboardCallbacks) {
+        func(key);
     }
 }
 
@@ -105,4 +114,16 @@ void Game::setSpeed(double newSpeed) {
 
 double Game::getTime() {
     return std::min(redrawTimer.timeElapsed() - lastRedraw, 25.0);
+}
+
+GameState& Game::getState() {
+    return state;
+}
+
+void Game::reset() {
+    redrawTimer = Timer();
+    lastRedraw = 0;
+    if (state.isPaused()) {
+        state.invertPaused();
+    }
 }
