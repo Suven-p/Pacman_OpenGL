@@ -1,18 +1,18 @@
 #include <project/common.h>
 #include <project/game.h>
+#include <project/gameLogic.h>
 #include <project/pacman.h>
 #include <project/pellet.h>
-#include <project/base.h>
 #include <project/resourceManager.h>
 #include <project/text_renderer.h>
 #include <vector>
 
-Base::Base() {
+GameLogic::GameLogic() {
     lives = 3;
     position = {
-        24,     // Position of cherry in bottom layer
-        2,      // Position of first pacman displayed if remaining life >= 2
-        4       // Position of second pacman displayed if remaining life == 3
+        24,  // Position of cherry in bottom layer
+        2,   // Position of first pacman displayed if remaining life >= 2
+        4    // Position of second pacman displayed if remaining life == 3
     };
 
     // TODO : Add height and weight with variables in TextRenderer
@@ -54,9 +54,9 @@ Base::Base() {
     glBindVertexArray(0);
 }
 
-void Base::draw(std::string shaderName) {
+void GameLogic::draw(std::string shaderName) {
     int currentScore = getPelletPtr()->getScore();
-    std::string textToRender = "Score : " + std::to_string(currentScore); 
+    std::string textToRender = "Score : " + std::to_string(currentScore);
     Text->RenderText(textToRender, 15.0f, 15.0f, 1.0f);
 
     auto shader = ResourceManager::GetShader(shaderName);
@@ -83,7 +83,7 @@ void Base::draw(std::string shaderName) {
         model = glm::translate(model, glm::vec3(float(position[i]), float(31), 0.0F));
         shader.SetMatrix4("model", model);
 
-        if(i == 0)
+        if (i == 0)
             shader.SetInteger("texture1", 1, true);
         else
             shader.SetInteger("texture1", 0, true);
@@ -93,12 +93,12 @@ void Base::draw(std::string shaderName) {
     glBindVertexArray(0);
 }
 
-void Base::decreaselives() {
+void GameLogic::decreaselives() {
     lives = lives - 1;
 }
 
-std::shared_ptr<Base> getBasePtr() {
-    return std::dynamic_pointer_cast<Base>(ResourceManager::GetSprite("base"));
+std::shared_ptr<GameLogic> getBasePtr() {
+    return std::dynamic_pointer_cast<GameLogic>(ResourceManager::GetSprite("base"));
 }
 
-Base::~Base() = default;
+GameLogic::~GameLogic() = default;

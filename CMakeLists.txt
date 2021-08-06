@@ -18,8 +18,8 @@ file(
 )
 
 set(${PROJECT_NAME}_SOURCES
-    ${CMAKE_SOURCE_DIR}/src/base.cpp
     ${CMAKE_SOURCE_DIR}/src/game.cpp
+    ${CMAKE_SOURCE_DIR}/src/gameLogic.cpp
     ${CMAKE_SOURCE_DIR}/src/gameState.cpp
     ${CMAKE_SOURCE_DIR}/src/ghost.cpp
     ${CMAKE_SOURCE_DIR}/src/helpers.cpp
