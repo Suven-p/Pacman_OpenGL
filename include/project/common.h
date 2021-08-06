@@ -7,7 +7,6 @@
 #include <project/CMakeConfig.h>
 #include <project/helpers.h>
 
-constexpr int ESCKEY = 4;
-constexpr int ENTERKEY = 5;
+constexpr int KEY_ESC = 27;
 
 #endif

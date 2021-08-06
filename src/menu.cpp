@@ -148,15 +148,15 @@ void PauseMenu::handleKeyboardInput(int key) {
         return;
     }
     switch (key) {
-        case int(DIRECTION::down): {
+        case int('s'): {
             selectedOption = (selectedOption == (options.size() - 1)) ? 0 : selectedOption + 1;
             break;
         }
-        case int(DIRECTION::up): {
+        case int('a'): {
             selectedOption = (selectedOption == 0) ? (options.size() - 1) : selectedOption - 1;
             break;
         }
-        case ENTERKEY: {
+        case int('\n'): {
             executeFunction();
         }
     }

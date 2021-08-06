@@ -19,26 +19,11 @@ GameState Game::state;
 int Game::callbackCounter = 0;
 std::map<int, std::function<void(int)>> Game::keyboardCallbacks;
 
-auto callback = [](auto key) {
-    if (key == 4) {
+constexpr auto callback = [](auto key) {
+    if (key == KEY_ESC) {
         Game::getState().invertPaused();
     }
 };
-
-// clang-format off
-std::unordered_map<int, int> Game::key_map = {
-    {GLFW_KEY_DOWN, int(DIRECTION::down)},
-    {GLFW_KEY_UP, int(DIRECTION::up)},
-    {GLFW_KEY_LEFT, int(DIRECTION::left)},
-    {GLFW_KEY_RIGHT, int(DIRECTION::right)},
-    {GLFW_KEY_ESCAPE, ESCKEY},
-    {GLFW_KEY_W, int('w')},
-    {GLFW_KEY_A, int('a')},
-    {GLFW_KEY_S, int('s')},
-    {GLFW_KEY_D, int('d')},
-    {GLFW_KEY_ENTER, ENTERKEY}
-};
-// clang-format on
 
 Game::Game() {
     ResourceManager::LoadShader("shaders/shader.vs", "shaders/shader.fs", nullptr, "mainShader");

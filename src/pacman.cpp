@@ -8,8 +8,28 @@
 #include <set>
 
 void callback(int key) {
-    if (key < 4 && !Game::getState().isPaused()) {
-        getPacmanPtr()->setNextDirection(DIRECTION(key));
+    if (Game::getState().isPaused()) {
+        return;
+    }
+    auto ptr = ResourceManager::GetSprite<Pacman>("pacman");
+    ;
+    switch (key) {
+        case int('w'): {
+            ptr->setNextDirection(DIRECTION::up);
+            break;
+        }
+        case int('a'): {
+            ptr->setNextDirection(DIRECTION::left);
+            break;
+        }
+        case int('s'): {
+            ptr->setNextDirection(DIRECTION::down);
+            break;
+        }
+        case int('d'): {
+            ptr->setNextDirection(DIRECTION::right);
+            break;
+        }
     }
 };
 
