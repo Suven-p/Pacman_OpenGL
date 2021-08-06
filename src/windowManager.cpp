@@ -5,6 +5,7 @@
 #include <spdlog/spdlog.h>
 
 #include <stb_image/stb_image.h>
+#include "GLFW/glfw3.h"
 
 WindowManager::WindowManager() = default;
 WindowManager* WindowManager::instance = nullptr;
@@ -71,7 +72,7 @@ void WindowManager::setWindowSize(std::pair<double, double> newSize) {
 }
 
 void WindowManager::run() {
-    while (!glfwWindowShouldClose(window)) {
+    while (glfwWindowShouldClose(window) == 0) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         Game::render();
         glfwSwapBuffers(window);
@@ -97,4 +98,8 @@ void inputCallback(GLFWwindow* window, int key, int scancode, int action, int mo
 
 GLFWwindow* WindowManager::getWindow() {
     return window;
+}
+
+void WindowManager::exit() {
+    glfwSetWindowShouldClose(window, 1);
 }
