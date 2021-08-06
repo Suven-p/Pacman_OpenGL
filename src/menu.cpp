@@ -174,7 +174,7 @@ void PauseMenu::executeFunction() {
 
 MainMenu::MainMenu() {
     glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
+    glGenBuffers(2, vbo);
     glGenBuffers(1, &ebo);
 
     // clang-format off
@@ -200,14 +200,15 @@ MainMenu::MainMenu() {
     glBindVertexArray(vao);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(verticesPos), verticesPos, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)nullptr);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(verticesColorDarken), verticesColorDarken, GL_STATIC_DRAW);
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)nullptr);
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
+    glBindVertexArray(0);
 
     auto callback = [](int key) {
         if (key == int('\n')) {
@@ -223,6 +224,7 @@ void MainMenu::draw(std::string shaderName) {
     }
     // Draw dark overlay
     auto shader = ResourceManager::GetShader(shaderName);
+    shader.Use();
     glBindVertexArray(vao);
     glm::mat4 model = glm::mat4(1.0F);
     glm::mat4 view = glm::mat4(1.0F);
@@ -241,7 +243,7 @@ void MainMenu::draw(std::string shaderName) {
         text.Load(ResourceManager::resolvePath("resources/fonts/ARIAL.TTF"), 24);
     }
     std::string toRender = "PRESS ENTER TO CONTINUE";
-    int xOffset = (sz.first/2)-(toRender.size()/2 * 12);
-    int yOffset = (sz.second/2) - (24);
+    int xOffset = (sz.first / 2) - (toRender.size() / 2 * 12);
+    int yOffset = (sz.second / 2) - (24);
     text.RenderText(toRender, xOffset, yOffset, 1.0F);
 }

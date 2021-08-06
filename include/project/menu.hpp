@@ -23,9 +23,9 @@ class PauseMenu : public Sprite {
 };
 
 class MainMenu : public Sprite {
-    GLuint vao, vbo, ebo;
+    GLuint vao, vbo[2], ebo;
 
-    public:
+   public:
     MainMenu();
     void draw(std::string shader) override;
 };
