@@ -9,7 +9,7 @@
 #include "project/helpers.h"
 #include "project/windowManager.h"
 
-const std::vector<std::string> optionNames = {"Continue", "Main Menu", "Exit"};
+const std::vector<std::string> optionNames = {"Continue", "Restart", "Exit"};
 auto continueFunc = []() {
     if (Game::getState().isPaused()) {
         Game::getState().invertPaused();
@@ -18,7 +18,7 @@ auto continueFunc = []() {
 auto exitFunc = []() { WindowManager::getInstance()->exit(); };
 auto defaultFunc = []() {};
 const std::map<std::string, std::function<void(void)>> optionFunc = {{"Continue", continueFunc},
-                                                                     {"Main Menu", defaultFunc},
+                                                                     {"Restart", defaultFunc},
                                                                      {"Exit", exitFunc}};
 
 PauseMenu::PauseMenu() : selectedOption(0) {
@@ -139,7 +139,7 @@ void PauseMenu::show_options() {
         auto optionColor = (i == selectedOption)?colorSelected:colorUnselected;
         int xOffset = (sz.first/2) - int(options[i].size() * 12 / 2);
         constexpr int yOffset = 50;
-        text.RenderText(options[i], 175, 150.0F + yOffset * i, 1.0F, optionColor);
+        text.RenderText(options[i], xOffset, 200.0F + yOffset * i, 1.0F, optionColor);
     }
 }
 
