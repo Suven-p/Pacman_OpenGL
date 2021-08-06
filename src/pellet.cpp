@@ -223,4 +223,19 @@ void Pellet::initializeModeTimer() {
     timeTillChaseMode = timeTillScatterMode + 20;
 }
 
+void Pellet::reset() {
+    mapData = mapDataColRow;
+    // X in mapData denotes uneaten Power Pellet
+    mapData[1][3] = 'X', mapData[26][3] = 'X';
+    mapData[1][23] = 'X', mapData[26][23] = 'X';
+    score = 0;
+    pelletsEaten = 0;
+    timeTillCherryDisappears = 0;
+    timeTillFrightenedModeStops = 0;
+    timeTillScatterMode = glfwGetTime() + 7;
+    timeTillChaseMode = timeTillScatterMode + 20;
+    chaseIteration = 0;
+    mode = 1;
+}
+
 Pellet::~Pellet() = default;

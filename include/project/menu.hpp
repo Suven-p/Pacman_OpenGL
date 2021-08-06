@@ -21,3 +21,11 @@ class PauseMenu : public Sprite {
     void handleKeyboardInput(int key);
     void executeFunction();
 };
+
+class MainMenu : public Sprite {
+    GLuint vao, vbo, ebo;
+
+    public:
+    MainMenu();
+    void draw(std::string shader) override;
+};

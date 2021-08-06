@@ -46,3 +46,13 @@ bool GameState::isStarted() {
 void GameState::setStarted(bool value) {
     _isStarted = value;
 }
+
+int GameState::getFrightenedTimer() {
+    return _frightenedTimer;
+}
+void GameState::reset() {
+    _lives = 3;
+    _level = 1;
+    _isStarted = false;
+    _isPaused = false;
+}

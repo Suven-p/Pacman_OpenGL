@@ -1,5 +1,6 @@
 #pragma once
 #include <project/common.h>
+#include <project/ghost.h>
 #include <project/mapData.h>
 #include <project/sprite.h>
 #include <project/text_renderer.h>
@@ -16,6 +17,7 @@ class GameLogic : public Sprite {
     void displayLives(const std::string& shaderName);
     void displayLevel(const std::string& shaderName);
     void checkStatus();
+    void handleCollision(std::shared_ptr<Ghost> ghostPtr);
 
    public:
     GameLogic(GameState& gameState);

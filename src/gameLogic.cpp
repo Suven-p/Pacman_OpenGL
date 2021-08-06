@@ -56,6 +56,7 @@ void GameLogic::draw(std::string shaderName) {
 void GameLogic::displayScore() {
     int currentScore = ResourceManager::GetSprite<Pellet>("pellet")->getScore();
     std::string textToRender = "Score : " + std::to_string(currentScore);
+    text.RenderText(textToRender, 15.0F, 15.0F, 1.0F);
 }
 
 void GameLogic::displayLives(const std::string& shaderName) {
@@ -109,6 +110,46 @@ void GameLogic::displayLevel(const std::string& shaderName) {
 
 GameLogic::~GameLogic() = default;
 
-void GameLogic::checkStatus() {}
+void GameLogic::checkStatus() {
+    auto pacmanPtr = ResourceManager::GetSprite<Pacman>("pacman");
+    auto blinkyPtr = ResourceManager::GetSprite<Ghost>("blinky");
+    auto pinkyPtr = ResourceManager::GetSprite<Ghost>("pinky");
+    auto inkyPtr = ResourceManager::GetSprite<Ghost>("inky");
+    auto clydePtr = ResourceManager::GetSprite<Ghost>("clyde");
+    constexpr auto toInt = [](std::pair<float, float> pos) {
+        std::pair<int, int> ans = pos;
+        if ((pos.first - int(pos.first)) >= 0.5) {
+            ans.first++;
+        }
+        if ((pos.second - int(pos.second)) >= 0.5) {
+            ans.second++;
+        }
+        return ans;
+    };
+    if (toInt(pacmanPtr->getPosition()) == toInt(blinkyPtr->getPosition())) {
+        handleCollision(blinkyPtr);
+    }
+    if (toInt(pacmanPtr->getPosition()) == toInt(pinkyPtr->getPosition())) {
+        handleCollision(pinkyPtr);
+    }
+    if (toInt(pacmanPtr->getPosition()) == toInt(inkyPtr->getPosition())) {
+        handleCollision(inkyPtr);
+    }
+    if (toInt(pacmanPtr->getPosition()) == toInt(clydePtr->getPosition())) {
+        handleCollision(clydePtr);
+    }
+}
+
+void GameLogic::handleCollision(std::shared_ptr<Ghost> ghostPtr) {
+    if (ghostPtr->getMode() == GhostMode::frightened) {
+        auto pelletPtr = ResourceManager::GetSprite<Pellet>("pellet");
+        pelletPtr->addToScore(200);
+        ghostPtr->setMode(GhostMode::dead);
+    }
+    else if (ghostPtr->getMode() == GhostMode::chase || ghostPtr->getMode() == GhostMode::scatter) {
+        Game::getState().setLives(Game::getState().getLives() - 1);
+        ResourceManager::resetSprites({"pellet"});
+    }
+}
 
 void GameLogic::reset() {}

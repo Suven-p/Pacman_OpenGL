@@ -146,7 +146,7 @@ void Ghost::drawEyes(const std::string& shader) const {
 }
 
 void Ghost::recalculatePosition() {
-    if (Game::getState().isPaused()) {
+    if (Game::getState().isPaused() || !Game::getState().isStarted()) {
         ghostTimer.pause();
         return;
     }

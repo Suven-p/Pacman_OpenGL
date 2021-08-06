@@ -8,7 +8,7 @@
 #include <set>
 
 void callback(int key) {
-    if (Game::getState().isPaused()) {
+    if (Game::getState().isPaused() || !Game::getState().isStarted()) {
         return;
     }
     auto ptr = ResourceManager::GetSprite<Pacman>("pacman");
@@ -146,7 +146,7 @@ bool Pacman::isColliding(DIRECTION aDirection) {
 }
 
 void Pacman::getNewPosition() {
-    if (Game::getState().isPaused()) {
+    if (Game::getState().isPaused() || !Game::getState().isStarted()) {
         return;
     }
     auto diffPixels = Game::getSpeed() * Game::getTime() * getMultiplier();

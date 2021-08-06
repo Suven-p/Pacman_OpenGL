@@ -8,8 +8,10 @@ class GameState {
     nlohmann::json _jsonData;
     int _level;
     int _lives;
+    int _frightenedTimer;
     bool _isPaused;
     bool _isStarted;
+    bool _isFrightened;
 
    public:
     GameState();
@@ -19,6 +21,7 @@ class GameState {
     GameState(const GameState&&) = delete;
     GameState& operator=(const GameState&&) = delete;
 
+    void reset();
     [[nodiscard]] nlohmann::json getLevelData() const;
     [[nodiscard]] bool isPaused() const;
     [[nodiscard]] int getLives() const;
@@ -28,4 +31,5 @@ class GameState {
     void setLevel(int newLevel);
     bool isStarted();
     void setStarted(bool value);
+    int getFrightenedTimer();
 };

@@ -214,8 +214,10 @@ std::shared_ptr<spdlog::logger> ResourceManager::getLogger() {
     return logger;
 }
 
-void ResourceManager::resetSprites() {
+void ResourceManager::resetSprites(std::set<std::string> excluded) {
     for (auto [key, ptr] : Sprites) {
-        ptr->reset();
+        if (excluded.find(key) == excluded.end()) {
+            ptr->reset();
+        }
     }
 }

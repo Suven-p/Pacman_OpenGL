@@ -37,6 +37,8 @@ class Pellet : public Sprite {
     // To be called when ghost eats pacman
     void initializeModeTimer();
 
+    void reset();
+
     ~Pellet();
 };
 std::shared_ptr<Pellet> getPelletPtr();

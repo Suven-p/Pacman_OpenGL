@@ -55,6 +55,7 @@ Game::Game() {
     ResourceManager::LoadSprite("gameLogic", std::make_shared<GameLogic>(state));
 
     ResourceManager::LoadSprite("pauseMenu", std::make_shared<PauseMenu>());
+    ResourceManager::LoadSprite("mainMenu", std::make_shared<MainMenu>());
 
     ResourceManager::GetSprite("pacman")->setPosition(std::make_pair(13.5, 23));
 
@@ -76,7 +77,7 @@ void Game::render() {
     // before.
     auto baseMapPtr = ResourceManager::GetSprite<Map>("baseMap");
     baseMapPtr->draw("mainShader");
-    baseMapPtr->drawGridLines("mainShader");
+    // baseMapPtr->drawGridLines("mainShader");
     ResourceManager::GetSprite("gameLogic")->draw("mainShader");
     ResourceManager::GetSprite("pellet")->draw("mainShader");
     ResourceManager::GetSprite("pacman")->draw("mainShader");
@@ -85,6 +86,8 @@ void Game::render() {
     ResourceManager::GetSprite("pinky")->draw("mainShader");
     ResourceManager::GetSprite("blinky")->draw("mainShader");
     ResourceManager::GetSprite("pauseMenu")->draw("mainShader");
+    ResourceManager::GetSprite("mainMenu")->draw("mainShader");
+
 
     lastRedraw = redrawTimer.timeElapsed();
 }
@@ -123,7 +126,5 @@ GameState& Game::getState() {
 void Game::reset() {
     redrawTimer = Timer();
     lastRedraw = 0;
-    if (state.isPaused()) {
-        state.invertPaused();
-    }
+    state.reset();
 }
