@@ -21,4 +21,5 @@ class GameLogic : public Sprite {
     GameLogic(GameState& gameState);
     ~GameLogic();
     void draw(std::string shaderName) override;
+    void reset() override;
 };

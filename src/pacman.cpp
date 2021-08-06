@@ -231,7 +231,7 @@ float Pacman::getMultiplier() {
     return multiplier;
 }
 
-void Pacman::resetState() {
+void Pacman::reset() {
     position = {13.5, 23};
     currentDirection = DIRECTION::left;
     nextDirection = DIRECTION::left;

@@ -472,7 +472,7 @@ void Ghost::MoveOutofPen() {
     }
 }
 
-void Ghost::resetState() {
+void Ghost::reset() {
     position = initialPosition.at(name);
     currentMode = GhostMode::scatter;
     currentDirection = (name == "blinky") ? DIRECTION::right : DIRECTION::up;

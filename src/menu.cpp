@@ -1,4 +1,5 @@
 #include <project/game.h>
+#include <project/gameLogic.h>
 #include <project/resourceManager.h>
 #include <project/text_renderer.h>
 #include <spdlog/spdlog.h>
@@ -15,10 +16,14 @@ auto continueFunc = []() {
         Game::getState().invertPaused();
     }
 };
+auto restartFunc = []() {
+    Game::reset();
+    ResourceManager::resetSprites();
+};
 auto exitFunc = []() { WindowManager::getInstance()->exit(); };
 auto defaultFunc = []() {};
 const std::map<std::string, std::function<void(void)>> optionFunc = {{"Continue", continueFunc},
-                                                                     {"Restart", defaultFunc},
+                                                                     {"Restart", restartFunc},
                                                                      {"Exit", exitFunc}};
 
 PauseMenu::PauseMenu() : selectedOption(0) {

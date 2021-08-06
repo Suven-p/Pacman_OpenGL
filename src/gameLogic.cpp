@@ -111,4 +111,4 @@ GameLogic::~GameLogic() = default;
 
 void GameLogic::checkStatus() {}
 
-GameLogic::~GameLogic() = default;
+void GameLogic::reset() {}

@@ -92,6 +92,8 @@ class Game {
      * @return unsigned long long
      */
     static double getTime();
+
+    static void reset();
 };
 
 #endif

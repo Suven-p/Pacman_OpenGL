@@ -2,9 +2,9 @@
 
 #include <project/common.h>
 #include <project/sprite.h>
-#include <project/timer.hpp>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <map>
+#include <project/timer.hpp>
 #include <set>
 #include <utility>
 
@@ -51,6 +51,6 @@ class Ghost : public Sprite {
     void setMode(GhostMode newMode);
     [[nodiscard]] float getMultiplier() const;
     void setMultiplier(double newSpeed);
-    void resetState();
+    void reset() override;
     ~Ghost() override = default;
 };

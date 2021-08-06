@@ -4,6 +4,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <memory>
 #include <sstream>
 #include <utility>
 
@@ -44,10 +45,6 @@ std::shared_ptr<Sprite> ResourceManager::LoadSprite(const std::string& name,
                                                     std::shared_ptr<Sprite> sprite) {
     Sprites[name] = std::move(sprite);
     return Sprites[name];
-}
-
-std::shared_ptr<Sprite> ResourceManager::GetSprite(const std::string& name) {
-    return Sprites.at(name);
 }
 
 void ResourceManager::Clear() {
@@ -215,4 +212,10 @@ std::string ResourceManager::resolvePath(const std::string& toResolve) {
 std::shared_ptr<spdlog::logger> ResourceManager::getLogger() {
     static std::shared_ptr<spdlog::logger> logger = spdlog::stdout_color_mt("ResourceManager");
     return logger;
+}
+
+void ResourceManager::resetSprites() {
+    for (auto [key, ptr] : Sprites) {
+        ptr->reset();
+    }
 }

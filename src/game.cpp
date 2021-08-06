@@ -119,3 +119,11 @@ double Game::getTime() {
 GameState& Game::getState() {
     return state;
 }
+
+void Game::reset() {
+    redrawTimer = Timer();
+    lastRedraw = 0;
+    if (state.isPaused()) {
+        state.invertPaused();
+    }
+}

@@ -72,6 +72,7 @@ class ResourceManager {
      * @return std::shared_ptr<Sprite>
      */
     static std::shared_ptr<Sprite> LoadSprite(const std::string& name, Sprite* sprite);
+
     /**
      * @brief Store a pointer to Sprite.
      *
@@ -81,13 +82,15 @@ class ResourceManager {
      */
     static std::shared_ptr<Sprite> LoadSprite(const std::string& name,
                                               std::shared_ptr<Sprite> sprite);
+
     /**
      * @brief Get the Sprite object.
      *
      * @param name Index for the stored sprite.
      * @return std::shared_ptr<Sprite>
      */
-    static std::shared_ptr<Sprite> GetSprite(const std::string& name);
+    template <typename T = Sprite>
+    static std::shared_ptr<T> GetSprite(const std::string& name);
 
     /**
      * @brief Clear all stored textures and shaders.
@@ -95,6 +98,7 @@ class ResourceManager {
      */
     static void Clear();
     static std::string resolvePath(const std::string& toResolve);
+    static void resetSprites();
 
     ResourceManager() = delete;
     ~ResourceManager() = default;
@@ -110,5 +114,11 @@ class ResourceManager {
                                      const char* gShaderFile = nullptr);
     static Texture2D loadTextureFromFile(const char* file, bool alpha);
 };
+
+template <typename T>
+std::shared_ptr<T> ResourceManager::GetSprite(const std::string& name) {
+    auto ptr = Sprites.at(name);
+    return std::dynamic_pointer_cast<T>(ptr);
+}
 
 #endif
