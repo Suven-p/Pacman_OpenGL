@@ -10,10 +10,14 @@
 #include "project/helpers.h"
 #include "project/windowManager.h"
 
-BorderedMenu::BorderedMenu(
-        std::string title,
-        std::vector<std::string> names,
-        std::map<std::string, std::function<void(void)>> callbacks) : title(title), optionNames(names), optionCallbacks(callbacks), selectedOption(0) {
+BorderedMenu::BorderedMenu(std::string title,
+                           std::vector<std::string> names,
+                           std::map<std::string, std::function<void(void)>> callbacks) :
+    title(title),
+    optionNames(names),
+    optionCallbacks(callbacks),
+    selectedOption(0),
+    isActive(false) {
     glGenVertexArrays(3, vao);
     glGenBuffers(4, vbo);
     glGenBuffers(1, &ebo);
@@ -71,7 +75,9 @@ BorderedMenu::BorderedMenu(
     glBindVertexArray(0);
 
     auto callback = [&](auto key) {
-        this->handleKeyboardInput(key);
+        if (isActive) {
+            handleKeyboardInput(key);
+        }
     };
     keyboardCallbackID = Game::registerKeyboardCallback(callback);
 }
@@ -151,6 +157,10 @@ void BorderedMenu::handleKeyboardInput(int key) {
 void BorderedMenu::executeFunction() {
     auto option = optionNames[selectedOption];
     (optionCallbacks.at(option))();
+}
+
+void BorderedMenu::activate(bool activate) {
+    isActive = activate;
 }
 
 MainMenu::MainMenu() {
