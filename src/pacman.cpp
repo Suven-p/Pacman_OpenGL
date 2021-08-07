@@ -33,7 +33,7 @@ void callback(int key) {
     }
 };
 
-Pacman::Pacman() {
+Pacman::Pacman(): currentTexture(14) {
     glGenVertexArrays(1, &vao);
     glGenBuffers(2, vbo);
     glGenBuffers(1, &ebo);
@@ -78,6 +78,13 @@ Pacman::Pacman() {
     nextDirection = DIRECTION::left;
     multiplier = 0.8;
 
+    auto texture = ResourceManager::GetTexture("pacman_0");
+    texture.Bind(14);
+    texture = ResourceManager::GetTexture("pacman_1");
+    texture.Bind(15);
+    texture = ResourceManager::GetTexture("pacman_2");
+    texture.Bind(16);
+
     Game::registerKeyboardCallback(callback);
 }
 
@@ -102,14 +109,34 @@ void Pacman::draw(std::string shader) {
 
     ResourceManager::GetShader(shader).SetMatrix4("model", temp_model, true);
 
-    auto texture = ResourceManager::GetTexture("pacman");
-    texture.Bind(0);
-    ResourceManager::GetShader(shader).SetInteger("texture1", 0, true);
+
+    ResourceManager::GetShader(shader).SetInteger("texture1", int(currentTexture), true);
+    oscillateTexture();
     ResourceManager::GetShader(shader).SetFloat("textureColorMix", 0.0F);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)nullptr);
 
     glBindVertexArray(0);
 }
+
+void Pacman::oscillateTexture() {
+    constexpr double diff = 1/20.0;
+    static bool increasing = true;
+    if (increasing) {
+        currentTexture += diff;
+    }
+    else {
+        currentTexture -= diff;
+    }
+    if (currentTexture >= 16) {
+        currentTexture = 16;
+        increasing = false;
+    }
+    if (currentTexture <= 14) {
+        currentTexture = 14;
+        increasing = true;
+    }
+}
+
 DIRECTION Pacman::getDirection() {
     return currentDirection;
 }

@@ -127,7 +127,8 @@ void Pellet::changePelletStatus(std::pair<float, float> pacmanPosition) {
         ResourceManager::GetSprite<GameLogic>("gameLogic")->setFright();
     } else if (mapData[xCoordinate][yCoordinate] == 'C') {
         mapData[xCoordinate][yCoordinate] = 'F';
-        score += 100;
+        auto levelData = Game::getState().getLevelData();
+        score += levelData["cherryValue"].get<int>();
     }
     if (pelletsEaten == 70 or pelletsEaten == 170) {
         timeTillCherryDisappears = Game::getTimer().timeElapsed() + 10000;

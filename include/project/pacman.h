@@ -7,6 +7,8 @@ class Pacman : public Sprite {
     std::pair<float, float> oldPosition;
     GLuint vao, vbo[2], ebo;
     float multiplier;
+    float currentTexture;
+    void oscillateTexture();
 
    public:
     Pacman();

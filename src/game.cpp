@@ -37,7 +37,9 @@ Game::Game() {
     ResourceManager::LoadTexture("resources/inky.png", true, "inky");
     ResourceManager::LoadTexture("resources/clyde.png", true, "clyde");
     ResourceManager::LoadTexture("resources/frightened.png", true, "frightened");
-    ResourceManager::LoadTexture("resources/pacman.png", true, "pacman");
+    ResourceManager::LoadTexture("resources/pacman/0.png", true, "pacman_0");
+    ResourceManager::LoadTexture("resources/pacman/1.png", true, "pacman_1");
+    ResourceManager::LoadTexture("resources/pacman/2.png", true, "pacman_2");
     ResourceManager::LoadTexture("resources/pellet.png", true, "pellet");
     ResourceManager::LoadTexture("resources/power_pellet.png", true, "power_pellet");
     ResourceManager::LoadTexture("resources/cherry.png", true, "cherry");
