@@ -38,13 +38,26 @@ Pacman::Pacman() {
     glGenBuffers(2, vbo);
     glGenBuffers(1, &ebo);
 
-    float vertices[] = {-0.5F, -0.5F, -0.5F, 1.0F,  0.0F,  1.0F,  0.0F,  1.0F,  -0.5F, 01.5F, -0.5F,
-                        1.0F,  0.0F,  1.0F,  0.0F,  1.0F,  01.5F, 01.5F, -0.5F, 1.0F,  0.0F,  1.0F,
-                        0.0F,  1.0F,  01.5F, -0.5F, -0.5F, 1.0F,  0.0F,  1.0F,  0.0F,  1.0F};
+    // clang-format off
+    float vertices[] = {
+        -0.5F, -0.5F, -0.5F, 1.0F,  0.0F,  1.0F, 0.0F,  1.0F,
+        -0.5F, 01.5F, -0.5F, 1.0F,  0.0F,  1.0F, 0.0F,  1.0F,
+        01.5F, 01.5F, -0.5F, 1.0F,  0.0F,  1.0F, 0.0F,  1.0F,
+        01.5F, -0.5F, -0.5F, 1.0F,  0.0F,  1.0F, 0.0F,  1.0F
+    };
 
-    float texCoord[] = {0.0F, 1.0F, 0.0F, 0.0F, 1.0F, 0.0F, 1.0F, 1.0F};
+    float texCoord[] = {
+        0.0F, 1.0F,
+        0.0F, 0.0F,
+        1.0F, 0.0F,
+        1.0F, 1.0F
+    };
 
-    GLuint indices[] = {0, 1, 2, 0, 2, 3};
+    GLuint indices[] = {
+        0, 1, 2,
+        0, 2, 3
+    };
+    // clang-format on
 
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
