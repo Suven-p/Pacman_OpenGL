@@ -15,7 +15,7 @@ class Pacman : public Sprite {
     void draw(std::string shaderName) override;
     DIRECTION getDirection();
     void setDirection(DIRECTION newDirection);
-    void getNewPosition();
+    bool getNewPosition();
     DIRECTION setNextDirection();
     float getMultiplier();
     void setMultiplier(float);

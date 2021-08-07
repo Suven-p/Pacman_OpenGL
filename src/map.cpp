@@ -107,7 +107,7 @@ void Map::displayLives(const std::string& shaderName) {
     shader.SetMatrix4("view", view);
     shader.SetMatrix4("projection", projection);
     shader.SetFloat("textureColorMix", 0.0F);
-    auto texture = ResourceManager::GetTexture("pacman");
+    auto texture = ResourceManager::GetTexture("pacman_1");
     texture.Bind(0);
     shader.SetInteger("texture1", 0, true);
 

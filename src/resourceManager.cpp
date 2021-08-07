@@ -159,7 +159,6 @@ std::string ResourceManager::resolvePath(const std::string& toResolve) {
     auto pathToResolve = std::filesystem::path(toResolve);
 
     // Try executablePath first
-    // TODO: Use whereami library for cross platform detection
     auto executionPath = getExecutablePath();
     if (!std::filesystem::exists(executionPath)) {
         getLogger()->debug("Received path to executable as: \"{}\""

@@ -79,17 +79,18 @@ Pacman::Pacman(): currentTexture(14) {
     multiplier = 0.8;
 
     auto texture = ResourceManager::GetTexture("pacman_0");
-    texture.Bind(14);
+    texture.Bind(13);
     texture = ResourceManager::GetTexture("pacman_1");
-    texture.Bind(15);
+    texture.Bind(14);
     texture = ResourceManager::GetTexture("pacman_2");
+    texture.Bind(15);
     texture.Bind(16);
 
     Game::registerKeyboardCallback(callback);
 }
 
 void Pacman::draw(std::string shader) {
-    getNewPosition();
+    auto updated = getNewPosition();
     ResourceManager::GetShader(shader).Use();
     glBindVertexArray(vao);
     glm::mat4 model = glm::mat4(1.0F);
@@ -111,7 +112,12 @@ void Pacman::draw(std::string shader) {
 
 
     ResourceManager::GetShader(shader).SetInteger("texture1", int(currentTexture), true);
-    oscillateTexture();
+    if (updated) {
+        oscillateTexture();
+    }
+    else {
+        currentTexture = 1;
+    }
     ResourceManager::GetShader(shader).SetFloat("textureColorMix", 0.0F);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)nullptr);
 
@@ -119,7 +125,7 @@ void Pacman::draw(std::string shader) {
 }
 
 void Pacman::oscillateTexture() {
-    constexpr double diff = 1/20.0;
+    constexpr double diff = 1/3.0;
     static bool increasing = true;
     if (increasing) {
         currentTexture += diff;
@@ -128,11 +134,11 @@ void Pacman::oscillateTexture() {
         currentTexture -= diff;
     }
     if (currentTexture >= 16) {
-        currentTexture = 16;
+        currentTexture = 15;
         increasing = false;
     }
-    if (currentTexture <= 14) {
-        currentTexture = 14;
+    if (currentTexture <= 13) {
+        currentTexture = 13;
         increasing = true;
     }
 }
@@ -185,9 +191,9 @@ bool Pacman::isColliding(DIRECTION aDirection) {
     return collision;
 }
 
-void Pacman::getNewPosition() {
-    if (Game::getState().isPaused() || !Game::getState().isStarted()) {
-        return;
+bool Pacman::getNewPosition() {
+    if (Game::getState().isPaused() || !Game::getState().isStarted() || Game::getState().isReady()) {
+        return false;
     }
     auto diffPixels = Game::getSpeed() * Game::getTime() * getMultiplier();
     oldPosition = position;
@@ -240,10 +246,10 @@ void Pacman::getNewPosition() {
     if (int(position.second) == 14) {
         if (int(position.first) <= -2 && currentDirection == DIRECTION::left) {
             position.first = 29;
-            return;
+            return true;
         } else if (position.first >= 29 && currentDirection == DIRECTION::right) {
             position.first = -2;
-            return;
+            return true;
         }
     }
     bool collision = isColliding(currentDirection);
@@ -262,6 +268,7 @@ void Pacman::getNewPosition() {
         }
     }
     setDirection(nextDirection);
+    return !collision;
 }
 
 void Pacman::setMultiplier(float mul = 0.8) {
