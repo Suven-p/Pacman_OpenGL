@@ -61,8 +61,8 @@ Pacman::Pacman() {
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)nullptr);
     glEnableVertexAttribArray(2);
 
-    currentDirection = DIRECTION::right;
-    nextDirection = DIRECTION::right;
+    currentDirection = DIRECTION::left;
+    nextDirection = DIRECTION::left;
     multiplier = 0.8;
 
     Game::registerKeyboardCallback(callback);

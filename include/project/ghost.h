@@ -41,6 +41,7 @@ class Ghost : public Sprite {
     std::shared_ptr<spdlog::logger> logger;
     double speedMultiplier{};
     Timer ghostTimer;
+    void setMultiplier(double newSpeed);
 
    public:
     Ghost() = delete;
@@ -54,7 +55,6 @@ class Ghost : public Sprite {
     [[nodiscard]] GhostMode getMode() const;
     void setMode(GhostMode newMode);
     [[nodiscard]] float getMultiplier() const;
-    void setMultiplier(double newSpeed);
     void reset() override;
     ~Ghost() override = default;
 };

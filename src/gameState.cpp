@@ -48,14 +48,24 @@ void GameState::setStarted(bool value) {
     _isStarted = value;
 }
 
+bool GameState::isGameOver() const {
+    return _isOver;
+}
+
+void GameState::setGameOver(bool value) {
+    _isOver = value;
+}
+
 int GameState::getFrightenedTimer() const {
     return _frightenedTimer;
 }
 
-void GameState::reset() {
+void GameState::reset(bool restart) {
     _lives = 3;
     _level = 1;
-    _isStarted = false;
+    if (!restart) {
+        _isStarted = false;
+    }
     _isPaused = false;
 }
 
@@ -65,4 +75,17 @@ double GameState::getBaseSpeed() const {
 
 double GameState::setBaseSpeed(double newSpeed) {
     _baseSpeed = newSpeed;
+    return _baseSpeed;
+}
+
+void GameState::setFrightened(bool value) {
+    _isFrightened = value;
+}
+
+void GameState::setFrightenedTimer(int time) {
+    _frightenedTimer = time;
+}
+
+bool GameState::getFrightened() {
+    return _isFrightened;
 }

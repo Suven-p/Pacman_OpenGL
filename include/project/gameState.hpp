@@ -12,6 +12,7 @@ class GameState {
     int _frightenedTimer;
     bool _isPaused;
     bool _isStarted;
+    bool _isOver;
     bool _isFrightened;
 
     double _baseSpeed;
@@ -24,7 +25,7 @@ class GameState {
     GameState(const GameState&&) = delete;
     GameState& operator=(const GameState&&) = delete;
 
-    void reset();
+    void reset(bool restart = false);
     [[nodiscard]] nlohmann::json getLevelData() const;
     [[nodiscard]] bool isPaused() const;
     [[nodiscard]] int getLives() const;
@@ -34,7 +35,12 @@ class GameState {
     void setLevel(int newLevel);
     [[nodiscard]] bool isStarted() const;
     void setStarted(bool value = true);
+    void setFrightened(bool value);
+    void setFrightenedTimer(int time);
+    bool getFrightened();
     [[nodiscard]] int getFrightenedTimer() const;
     [[nodiscard]] double getBaseSpeed() const;
     double setBaseSpeed(double newSpeed);
+    [[nodiscard]] bool isGameOver() const;
+    void setGameOver(bool value);
 };

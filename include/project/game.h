@@ -92,6 +92,8 @@ class Game {
      */
     static double getTime();
 
+    static Timer& getTimer();
+
     static void reset();
 };
 

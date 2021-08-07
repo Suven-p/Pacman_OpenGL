@@ -1,6 +1,7 @@
 #include <project/common.h>
 #include <project/game.h>
 #include <project/ghost.h>
+#include <project/gameLogic.h>
 #include <project/pacman.h>
 #include <project/pellet.h>
 #include <project/resourceManager.h>
@@ -76,7 +77,7 @@ Ghost::Ghost(const std::string& name) : name(name) {
     position = initialPosition.at(name);
     currentDirection = (name == "blinky") ? DIRECTION::right : DIRECTION::up;
     nextDirection = DIRECTION::right;
-    currentMode = GhostMode::frightened;
+    currentMode = GhostMode::scatter;
 
     setMultiplier(0.75);
 
@@ -270,7 +271,7 @@ void Ghost::basicMovement() {
     logger->trace("Switching direction to {}", toString(nextDirection));
 
     if (currentMode == GhostMode::dead && position == targetTile) {
-        setMode(GhostMode::chase);
+        setMode(ResourceManager::GetSprite<GameLogic>("gameLogic")->getMode());
     }
     // Adjustment for tunnel passthrough
     handleSpecialZone();

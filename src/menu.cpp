@@ -10,25 +10,10 @@
 #include "project/helpers.h"
 #include "project/windowManager.h"
 
-const std::vector<std::string> optionNames = {"Continue", "Restart", "Exit"};
-auto continueFunc = []() {
-    if (Game::getState().isPaused()) {
-        Game::getState().invertPaused();
-    }
-};
-auto restartFunc = []() {
-    Game::reset();
-    ResourceManager::resetSprites();
-};
-auto exitFunc = []() { WindowManager::getInstance()->exit(); };
-auto defaultFunc = []() {};
-const std::map<std::string, std::function<void(void)>> optionFunc = {{"Continue", continueFunc},
-                                                                     {"Restart", restartFunc},
-                                                                     {"Exit", exitFunc}};
-
-PauseMenu::PauseMenu() : selectedOption(0) {
-    options = optionNames;
-
+BorderedMenu::BorderedMenu(
+        std::string title,
+        std::vector<std::string> names,
+        std::map<std::string, std::function<void(void)>> callbacks) : title(title), optionNames(names), optionCallbacks(callbacks), selectedOption(0) {
     glGenVertexArrays(3, vao);
     glGenBuffers(4, vbo);
     glGenBuffers(1, &ebo);
@@ -91,17 +76,12 @@ PauseMenu::PauseMenu() : selectedOption(0) {
     keyboardCallbackID = Game::registerKeyboardCallback(callback);
 }
 
-PauseMenu::~PauseMenu() {
+BorderedMenu::~BorderedMenu() {
     Game::unregisterKeyboardCallback(keyboardCallbackID);
 }
 
-void PauseMenu::draw(std::string shader) {
-    if (!Game::getState().isPaused()) {
-        return;
-    }
-
+void BorderedMenu::draw(std::string shader) {
     ResourceManager::GetShader(shader).Use();
-
     // Draw dark overlay
     glBindVertexArray(vao[0]);
     glm::mat4 model = glm::mat4(1.0F);
@@ -129,7 +109,7 @@ void PauseMenu::draw(std::string shader) {
     glBindVertexArray(0);
 }
 
-void PauseMenu::show_options() {
+void BorderedMenu::show_options() {
     auto sz = WindowManager::getInstance()->getWindowSize();
     static auto text = TextRenderer(sz.first, sz.second);
     static bool initText = false;
@@ -138,28 +118,28 @@ void PauseMenu::show_options() {
         text.Load(ResourceManager::resolvePath("resources/fonts/ARIAL.TTF"), 24);
     }
 
-    for (int i=0; i < options.size(); i++) {
+    int xOffset = (sz.first/2) - int(title.size() * 12 / 2);
+    constexpr int yOffset = 50;
+    text.RenderText(title, xOffset, 150.0F, 1.0F);
+    int count = 0;
+    for (const auto name: optionNames) {
         constexpr glm::vec3 colorSelected = {1.0F, 1.0F, 1.0F};
         constexpr glm::vec3 colorUnselected = {0.5, 0.5, 0.5};
-        auto optionColor = (i == selectedOption)?colorSelected:colorUnselected;
-        int xOffset = (sz.first/2) - int(options[i].size() * 12 / 2);
-        constexpr int yOffset = 50;
-        text.RenderText(options[i], xOffset, 200.0F + yOffset * i, 1.0F, optionColor);
+        auto optionColor = (count == selectedOption)?colorSelected:colorUnselected;
+        xOffset = (sz.first/2) - int(name.size() * 12 / 2);
+        text.RenderText(name, xOffset, 150.0F + yOffset * (count + 1), 1.0F, optionColor);
+        count++;
     }
 }
 
-void PauseMenu::handleKeyboardInput(int key) {
-    if (!Game::getState().isPaused()) {
-        return;
-    }
-
+void BorderedMenu::handleKeyboardInput(int key) {
     switch (key) {
         case int('s'): {
-            selectedOption = (selectedOption == (options.size() - 1)) ? 0 : selectedOption + 1;
+            selectedOption = (selectedOption == (optionNames.size() - 1)) ? 0 : selectedOption + 1;
             break;
         }
         case int('w'): {
-            selectedOption = (selectedOption == 0) ? (options.size() - 1) : selectedOption - 1;
+            selectedOption = (selectedOption == 0) ? (optionNames.size() - 1) : selectedOption - 1;
             break;
         }
         case int('\n'): {
@@ -168,9 +148,9 @@ void PauseMenu::handleKeyboardInput(int key) {
     }
 }
 
-void PauseMenu::executeFunction() {
-    auto option = options[selectedOption];
-    (optionFunc.at(option))();
+void BorderedMenu::executeFunction() {
+    auto option = optionNames[selectedOption];
+    (optionCallbacks.at(option))();
 }
 
 MainMenu::MainMenu() {
@@ -220,9 +200,6 @@ MainMenu::MainMenu() {
 }
 
 void MainMenu::draw(std::string shaderName) {
-    if (Game::getState().isStarted()) {
-        return;
-    }
     // Draw dark overlay
     auto shader = ResourceManager::GetShader(shaderName);
     shader.Use();

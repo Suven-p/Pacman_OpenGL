@@ -6,28 +6,41 @@
 #include <project/pellet.h>
 #include <project/resourceManager.h>
 #include <project/text_renderer.h>
+#include <spdlog/spdlog.h>
 #include <string>
 #include <vector>
 #include "project/windowManager.h"
 
 GameLogic::GameLogic(GameState& gameState) : gameState(gameState), text(0, 0) {
+    blinkyPtr = ResourceManager::GetSprite<Ghost>("blinky");
+    pinkyPtr = ResourceManager::GetSprite<Ghost>("pinky");
+    inkyPtr = ResourceManager::GetSprite<Ghost>("inky");
+    clydePtr = ResourceManager::GetSprite<Ghost>("clyde");
+    pacmanPtr = ResourceManager::GetSprite<Pacman>("pacman");
+    scatterCount = 1;
+    chaseCount = 1;
+    scoreMultiplier = 1;
+    currentMode = GhostMode::scatter;
+    modeTimer.start();
     auto windowSize = WindowManager::getInstance()->getWindowSize();
     text = std::move(TextRenderer(windowSize.first, windowSize.second));
     text.Load(ResourceManager::resolvePath("resources/fonts/ARIAL.TTF"), 24);
 }
 
 void GameLogic::draw(std::string shaderName) {
+    levelData = Game::getState().getLevelData();
     checkStatus();
+    if(Game::getState().getFrightened()) {
+        handleFright();
+    } 
+    else {
+        changeGhostMode();
+    }
 }
 
 GameLogic::~GameLogic() = default;
 
 void GameLogic::checkStatus() {
-    auto pacmanPtr = ResourceManager::GetSprite<Pacman>("pacman");
-    auto blinkyPtr = ResourceManager::GetSprite<Ghost>("blinky");
-    auto pinkyPtr = ResourceManager::GetSprite<Ghost>("pinky");
-    auto inkyPtr = ResourceManager::GetSprite<Ghost>("inky");
-    auto clydePtr = ResourceManager::GetSprite<Ghost>("clyde");
     constexpr auto toInt = [](std::pair<float, float> pos) {
         std::pair<int, int> ans = pos;
         if ((pos.first - int(pos.first)) >= 0.5) {
@@ -55,13 +68,105 @@ void GameLogic::checkStatus() {
 void GameLogic::handleCollision(std::shared_ptr<Ghost> ghostPtr) {
     if (ghostPtr->getMode() == GhostMode::frightened) {
         auto pelletPtr = ResourceManager::GetSprite<Pellet>("pellet");
-        pelletPtr->addToScore(200);
+        // TODO: adjust score
+        pelletPtr->addToScore(200 * scoreMultiplier++);
         ghostPtr->setMode(GhostMode::dead);
     } else if (ghostPtr->getMode() == GhostMode::chase ||
                ghostPtr->getMode() == GhostMode::scatter) {
         Game::getState().setLives(Game::getState().getLives() - 1);
+        handleEnd();
         ResourceManager::resetSprites({"pellet"});
     }
 }
 
-void GameLogic::reset() {}
+void GameLogic::setFright() {
+    // Ghost when dead and returning to Ghost Pen won't change to frightened mode when another power pellet is eaten.
+    if (blinkyPtr->getMode() != GhostMode::dead) {
+        blinkyPtr->setMode(GhostMode::frightened);
+    }
+    if (pinkyPtr->getMode() != GhostMode::dead) {
+        pinkyPtr->setMode(GhostMode::frightened);
+    }
+    if (inkyPtr->getMode() != GhostMode::dead) {
+        inkyPtr->setMode(GhostMode::frightened);
+    }
+    if (clydePtr->getMode() != GhostMode::dead) {
+        clydePtr->setMode(GhostMode::frightened);
+    }
+    pacmanPtr->setMultiplier(levelData["pacmanFrightSpeed"].get<float>());
+    Game::getState().setFrightened(true);
+    Game::getState().setFrightenedTimer(levelData["frightTime"].get<int>());
+    frightTimer.start();
+    modeTimer.pause();
+}
+
+void GameLogic::handleFright() {
+    if (frightTimer.timeElapsed() >= Game::getState().getFrightenedTimer()) {
+        frightTimer = Timer();
+        if (blinkyPtr->getMode() != GhostMode::dead) {
+            blinkyPtr->setMode(currentMode);
+        }
+        if (pinkyPtr->getMode() != GhostMode::dead) {
+            pinkyPtr->setMode(currentMode);
+        }
+        if (inkyPtr->getMode() != GhostMode::dead) {
+            inkyPtr->setMode(currentMode);
+        }
+        if (clydePtr->getMode() != GhostMode::dead) {
+            clydePtr->setMode(currentMode);
+        }
+        pacmanPtr->setMultiplier(levelData["pacmanSpeed"].get<float>());
+        modeTimer.resume();
+        scoreMultiplier = 1;
+        Game::getState().setFrightened(false);
+    }
+}
+
+void GameLogic::changeGhostMode() {
+    if (currentMode == GhostMode::chase) {
+        if (chaseCount > 3) {
+            return;
+        }
+        if (modeTimer.timeElapsed() > levelData["chase"][chaseCount-1].get<int>()) {
+            currentMode = GhostMode::scatter;
+            blinkyPtr->setMode(GhostMode::scatter);
+            pinkyPtr->setMode(GhostMode::scatter);
+            inkyPtr->setMode(GhostMode::scatter);
+            clydePtr->setMode(GhostMode::scatter);
+            chaseCount++;
+            modeTimer = Timer("", true);
+        }
+    }
+    else if (currentMode == GhostMode::scatter) {
+        if (modeTimer.timeElapsed() > levelData["scatter"][scatterCount-1].get<int>()) {
+            currentMode = GhostMode::chase;
+            blinkyPtr->setMode(GhostMode::chase);
+            pinkyPtr->setMode(GhostMode::chase);
+            inkyPtr->setMode(GhostMode::chase);
+            clydePtr->setMode(GhostMode::chase);
+            scatterCount++;
+            modeTimer = Timer("", true);
+        }
+    }
+}
+
+void GameLogic::reset() {
+    frightTimer = Timer();
+    scatterCount = 1;
+    chaseCount = 1;
+    scoreMultiplier = 1;
+    modeTimer = Timer();
+}
+
+void GameLogic::handleEnd() {
+    if (Game::getState().getLives()  == 0) {
+        Game::reset();
+        Game::getState().setGameOver(true);
+        Game::getState().reset(true);
+        ResourceManager::resetSprites();
+    }
+}
+
+GhostMode GameLogic::getMode() {
+    return currentMode;
+}
