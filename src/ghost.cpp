@@ -30,7 +30,6 @@ const std::map<std::string, int> Ghost::timeToLeave = {{"blinky", 0},
 std::random_device rd;   // Will be used to obtain a seed for the random number engine
 std::mt19937 gen(rd());  // Standard mersenne_twister_engine seeded with rd()
 
-// TODO scatter/chase timer, reset game state, clear resources
 Ghost::Ghost(const std::string& name) : name(name) {
     glGenVertexArrays(1, &vao);
     glGenBuffers(2, vbo);
@@ -147,7 +146,7 @@ void Ghost::drawEyes(const std::string& shader) const {
 }
 
 void Ghost::recalculatePosition() {
-    if (Game::getState().isPaused() || !Game::getState().isStarted()) {
+    if (Game::getState().isPaused() || !Game::getState().isStarted() || Game::getState().isReady()) {
         ghostTimer.pause();
         return;
     }

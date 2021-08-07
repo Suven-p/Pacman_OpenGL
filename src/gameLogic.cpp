@@ -21,20 +21,27 @@ GameLogic::GameLogic(GameState& gameState) : gameState(gameState), text(0, 0) {
     chaseCount = 1;
     scoreMultiplier = 1;
     currentMode = GhostMode::scatter;
-    modeTimer.start();
     auto windowSize = WindowManager::getInstance()->getWindowSize();
     text = std::move(TextRenderer(windowSize.first, windowSize.second));
     text.Load(ResourceManager::resolvePath("resources/fonts/ARIAL.TTF"), 24);
 }
 
 void GameLogic::draw(std::string shaderName) {
+    if (Game::getState().isPaused() || !Game::getState().isStarted() || Game::getState().isReady()) {
+        modeTimer.pause();
+        return;
+    }
+    else {
+        modeTimer.resume();
+    }
     levelData = Game::getState().getLevelData();
     checkStatus();
     checkPellet();
     if(Game::getState().getFrightened()) {
         handleFright();
-    } 
+    }
     else {
+        modeTimer.start();
         changeGhostMode();
     }
 }
@@ -69,12 +76,12 @@ void GameLogic::checkStatus() {
 void GameLogic::handleCollision(std::shared_ptr<Ghost> ghostPtr) {
     if (ghostPtr->getMode() == GhostMode::frightened) {
         auto pelletPtr = ResourceManager::GetSprite<Pellet>("pellet");
-        // TODO: adjust score
         pelletPtr->addToScore(200 * scoreMultiplier++);
         ghostPtr->setMode(GhostMode::dead);
     } else if (ghostPtr->getMode() == GhostMode::chase ||
                ghostPtr->getMode() == GhostMode::scatter) {
         Game::getState().setLives(Game::getState().getLives() - 1);
+        Game::getState().setReady(true);
         handleEnd();
         ResourceManager::resetSprites({"pellet"});
     }
@@ -154,8 +161,11 @@ void GameLogic::changeGhostMode() {
 void GameLogic::checkPellet() {
     if (ResourceManager::GetSprite<Pellet>("pellet")->getPelletsEaten() >= 244) {
         Game::reset();
+        int level = Game::getState().getLevel();
+        int lives = Game::getState().getLives();
         Game::getState().reset(true);
-        Game::getState().setLevel(Game::getState().getLevel() + 1);
+        Game::getState().setLevel(level + 1);
+        Game::getState().setLives(lives);
         ResourceManager::resetSprites();
     }
 }
@@ -166,14 +176,15 @@ void GameLogic::reset() {
     chaseCount = 1;
     scoreMultiplier = 1;
     modeTimer = Timer();
-    currentMode = GhostMode::chase;
+    currentMode = GhostMode::scatter;
 }
 
 void GameLogic::handleEnd() {
     if (Game::getState().getLives()  == 0) {
         Game::reset();
         Game::getState().setGameOver(true);
-        Game::getState().reset(true);
+        Game::getState().setReady(false);
+        Game::getState().reset();
         ResourceManager::resetSprites();
     }
 }

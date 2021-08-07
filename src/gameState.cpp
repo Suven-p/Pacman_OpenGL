@@ -6,7 +6,7 @@
 using json = nlohmann::json;
 
 GameState::GameState() :
-    _level(3), _isStarted(false), _isPaused(false), _isReady(false), _lives(3), _baseSpeed(0.01) {
+    _level(1), _isStarted(false), _isPaused(false), _isReady(false), _lives(3), _baseSpeed(0.01) {
     std::ifstream i(ResourceManager::resolvePath("resources/config.json"));
     i >> _jsonData;
 }
@@ -75,9 +75,9 @@ int GameState::getFrightenedTimer() const {
 }
 
 void GameState::reset(bool restart) {
-    _lives = 3;
-    _level = 1;
-    if (!restart) {
+    if (restart) {
+        _lives = 3;
+        _level = 1;
         _isStarted = false;
     }
     _isPaused = false;

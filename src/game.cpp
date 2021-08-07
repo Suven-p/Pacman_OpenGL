@@ -59,8 +59,9 @@ Game::Game() {
 
     std::vector<std::string> optionNames = {"Continue", "Restart", "Exit"};
     auto continueFunc = []() {
-        if (Game::getState().isPaused()) {
-            Game::getState().invertPaused();
+        if (getState().isPaused()) {
+            getState().invertPaused();
+            getState().setReady(false);
         }
     };
     auto restartFunc = []() {
@@ -82,6 +83,7 @@ Game::Game() {
     ResourceManager::LoadSprite(
         "gameOverMenu", std::make_shared<BorderedMenu>("Game Over", optionNames2, options2));
     ResourceManager::LoadSprite("mainMenu", std::make_shared<MainMenu>());
+    ResourceManager::LoadSprite("readyScreen", std::make_shared<ReadyScreen>());
 
     ResourceManager::GetSprite("pacman")->setPosition(std::make_pair(13.5, 23));
 
@@ -111,8 +113,11 @@ void Game::render() {
     ResourceManager::GetSprite("inky")->draw("mainShader");
     ResourceManager::GetSprite("pinky")->draw("mainShader");
     ResourceManager::GetSprite("blinky")->draw("mainShader");
-    if (!getState().isStarted()) {
+    if (!getState().isStarted() && !getState().isReady()) {
         ResourceManager::GetSprite("mainMenu")->draw("mainShader");
+    }
+    if (getState().isReady()) {
+        ResourceManager::GetSprite("readyScreen")->draw("mainShader");
     }
     if (getState().isGameOver()) {
         ResourceManager::GetSprite<BorderedMenu>("gameOverMenu")->activate(true);
