@@ -13,7 +13,6 @@
 #include "GLFW/glfw3.h"
 #include "project/timer.hpp"
 
-double Game::baseSpeed = 0.01;
 Timer Game::redrawTimer = Timer();
 double Game::lastRedraw = 0;
 GameState Game::state;
@@ -88,7 +87,6 @@ void Game::render() {
     ResourceManager::GetSprite("pauseMenu")->draw("mainShader");
     ResourceManager::GetSprite("mainMenu")->draw("mainShader");
 
-
     lastRedraw = redrawTimer.timeElapsed();
 }
 
@@ -108,11 +106,11 @@ void Game::key_down(int key) {
 }
 
 double Game::getSpeed() {
-    return Game::baseSpeed;
+    return state.getBaseSpeed();
 }
 
 void Game::setSpeed(double newSpeed) {
-    Game::baseSpeed = newSpeed;
+    state.setBaseSpeed(newSpeed);
 }
 
 double Game::getTime() {

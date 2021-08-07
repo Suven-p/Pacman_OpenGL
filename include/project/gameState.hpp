@@ -3,6 +3,7 @@
 #include <project/common.h>
 #include <memory>
 #include <nlohhmann/json.hpp>
+#include <project/timer.hpp>
 
 class GameState {
     nlohmann::json _jsonData;
@@ -12,6 +13,8 @@ class GameState {
     bool _isPaused;
     bool _isStarted;
     bool _isFrightened;
+
+    double _baseSpeed;
 
    public:
     GameState();
@@ -29,7 +32,9 @@ class GameState {
     bool invertPaused();
     [[nodiscard]] int getLevel() const;
     void setLevel(int newLevel);
-    bool isStarted();
-    void setStarted(bool value);
-    int getFrightenedTimer();
+    [[nodiscard]] bool isStarted() const;
+    void setStarted(bool value = true);
+    [[nodiscard]] int getFrightenedTimer() const;
+    [[nodiscard]] double getBaseSpeed() const;
+    double setBaseSpeed(double newSpeed);
 };

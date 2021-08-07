@@ -10,18 +10,15 @@
 #include <vector>
 
 class GameLogic : public Sprite {
-    GLuint VAO, VBO, blockEBO;
+    GLuint VAO, VBO, EBO;
     GameState& gameState;
     TextRenderer text;
-    void displayScore();
-    void displayLives(const std::string& shaderName);
-    void displayLevel(const std::string& shaderName);
     void checkStatus();
     void handleCollision(std::shared_ptr<Ghost> ghostPtr);
 
    public:
     GameLogic(GameState& gameState);
-    ~GameLogic();
+    ~GameLogic() override;
     void draw(std::string shaderName) override;
     void reset() override;
 };

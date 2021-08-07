@@ -1,9 +1,12 @@
 #include <project/common.h>
+#include <project/game.h>
 #include <project/map.h>
+#include <project/pellet.h>
 #include <project/resourceManager.h>
+#include <project/windowManager.h>
 #include <utility>
 
-Map::Map() : gridSize({28, 36}), VAO(0), VBO(0), EBO(0), gridVAO(0), gridVBO(0) {
+Map::Map() : gridSize({28, 36}), VAO(0), VBO(0), EBO(0), gridVAO(0), gridVBO(0), text({0, 0}) {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -24,6 +27,10 @@ Map::Map() : gridSize({28, 36}), VAO(0), VBO(0), EBO(0), gridVAO(0), gridVBO(0) 
         3  // second Triangle
     };
 
+    auto windowSize = WindowManager::getInstance()->getWindowSize();
+    text = std::move(TextRenderer(windowSize.first, windowSize.second));
+    text.Load(ResourceManager::resolvePath("resources/fonts/ARIAL.TTF"), 24);
+
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -38,6 +45,7 @@ Map::Map() : gridSize({28, 36}), VAO(0), VBO(0), EBO(0), gridVAO(0), gridVBO(0) 
     glBindVertexArray(0);
 
     initializeGrid();
+    initializeTile();
 
     glBindVertexArray(0);
 }
@@ -61,6 +69,10 @@ void Map::draw(std::string shaderName) {
     shader.SetFloat("textureColorMix", 0.0F);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
+
+    displayScore();
+    displayLives(shaderName);
+    displayLevel(shaderName);
 }
 
 void Map::draw(const std::string& shaderName, bool drawGrid) {
@@ -75,6 +87,63 @@ void Map::drawGridLines(const std::string& shaderName) const {
     glBindVertexArray(gridVAO);
     shader.SetFloat("textureColorMix", 1.0F);
     glDrawArrays(GL_LINES, 0, (gridSize.first + gridSize.second) * 2);
+}
+
+void Map::displayScore() {
+    int currentScore = ResourceManager::GetSprite<Pellet>("pellet")->getScore();
+    std::string textToRender = "Score : " + std::to_string(currentScore);
+    text.RenderText(textToRender, 15.0F, 15.0F, 1.0F);
+}
+
+void Map::displayLives(const std::string& shaderName) {
+    auto shader = ResourceManager::GetShader(shaderName);
+    shader.Use();
+    glBindVertexArray(tileVAO);
+
+    glm::mat4 model = glm::mat4(1.0F);
+    model = glm::translate(model, glm::vec3(0.0F, 34.0F, 0.0F));
+    glm::mat4 view = glm::mat4(1.0F);
+    glm::mat4 projection = glm::ortho(0.0F, 28.0F, 36.0F, 0.0F, -1.0F, 1.0F);
+    shader.SetMatrix4("view", view);
+    shader.SetMatrix4("projection", projection);
+    shader.SetFloat("textureColorMix", 0.0F);
+    auto texture = ResourceManager::GetTexture("pacman");
+    texture.Bind(0);
+    shader.SetInteger("texture1", 0, true);
+
+    for (int i = 1, lives = Game::getState().getLives(); i < lives; i++) {
+        model = glm::translate(model, glm::vec3(2.0F, 0.0F, 0.0F));
+        shader.SetMatrix4("model", model);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+    }
+
+    glBindVertexArray(0);
+}
+
+void Map::displayLevel(const std::string& shaderName) {
+    auto currentLevel = Game::getState().getLevel();
+
+    auto shader = ResourceManager::GetShader(shaderName);
+    shader.Use();
+    glBindVertexArray(tileVAO);
+
+    glm::mat4 model = glm::mat4(1.0F);
+    model = glm::translate(model, glm::vec3(24.0F, 34.0F, 0.0F));
+    glm::mat4 view = glm::mat4(1.0F);
+    glm::mat4 projection = glm::ortho(0.0F, 28.0F, 36.0F, 0.0F, -1.0F, 1.0F);
+    shader.SetMatrix4("model", model);
+    shader.SetMatrix4("view", view);
+    shader.SetMatrix4("projection", projection);
+    shader.SetFloat("textureColorMix", 0.0F);
+    auto texture2 = ResourceManager::GetTexture("cherry");
+    texture2.Bind(1);
+    shader.SetInteger("texture1", 1, true);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+
+    // tile coordinates multiplied to convert to pixel coordinates
+    auto levelText = std::to_string(currentLevel);
+    text.RenderText(levelText, 26.0F * 16, 34.5F * 16, 1.0F);
+    glBindVertexArray(0);
 }
 
 void Map::initializeGrid() {
@@ -138,6 +207,37 @@ void Map::initializeGrid() {
     glBindVertexArray(0);
 }
 
+void Map::initializeTile() {
+    glGenVertexArrays(1, &tileVAO);
+    glGenBuffers(1, &tileVBO);
+    glGenBuffers(1, &tileEBO);
+    // clang-format off
+    float vertices[] = {
+        // positions             // colors               // texture coords
+        1.8F, 0.2F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 1.0F, 1.0F,  // top right
+        1.8F, 1.8F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 1.0F, 0.0F,  // bottom right
+        0.2F, 1.8F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F,  // bottom left
+        0.2F, 0.2F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F, 1.0F   // top left
+    };
+    unsigned int indices[] = {
+        0, 1, 3,
+        1, 2, 3
+    };
+    // clang-format on
+
+    glBindVertexArray(tileVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, tileVBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tileEBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)nullptr);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(4 * sizeof(float)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(8 * sizeof(float)));
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+    glBindVertexArray(0);
+}
 bool Map::checkObstacle(const std::pair<float, float>& toCheck,
                         const std::set<char>& obstacles) const {
     std::pair<int, int> position({toCheck.first, toCheck.second});

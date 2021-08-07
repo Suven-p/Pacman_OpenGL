@@ -16,7 +16,6 @@
  */
 class Game {
     Game();
-    static double baseSpeed;
     static Timer redrawTimer;
     static double lastRedraw;
     static GameState state;

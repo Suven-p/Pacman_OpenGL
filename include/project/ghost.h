@@ -45,6 +45,10 @@ class Ghost : public Sprite {
    public:
     Ghost() = delete;
     Ghost(const std::string& name);
+    Ghost(const Ghost&) = delete;   // Copy might cause problems
+    Ghost(Ghost&&) = default;
+    Ghost& operator=(const Ghost&) = delete;
+    Ghost& operator=(Ghost&&) = default;
     void draw(std::string shader) override;
     void drawEyes(const std::string& shader) const;
     [[nodiscard]] GhostMode getMode() const;
