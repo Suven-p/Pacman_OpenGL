@@ -24,6 +24,7 @@ class GameLogic : public Sprite {
     int scoreMultiplier;
     GhostMode currentMode;
     void checkStatus();
+    void checkPellet();
     void handleCollision(std::shared_ptr<Ghost> ghostPtr);
     void handleFright();
     void handleEnd();

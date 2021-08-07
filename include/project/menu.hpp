@@ -35,3 +35,11 @@ class MainMenu : public Sprite {
     MainMenu();
     void draw(std::string shader) override;
 };
+
+class ReadyScreen : public Sprite {
+    GLuint vao, vbo[2], ebo;
+
+   public:
+    ReadyScreen();
+    void draw(std::string shader) override;
+};

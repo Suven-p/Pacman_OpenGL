@@ -30,6 +30,7 @@ GameLogic::GameLogic(GameState& gameState) : gameState(gameState), text(0, 0) {
 void GameLogic::draw(std::string shaderName) {
     levelData = Game::getState().getLevelData();
     checkStatus();
+    checkPellet();
     if(Game::getState().getFrightened()) {
         handleFright();
     } 
@@ -150,12 +151,22 @@ void GameLogic::changeGhostMode() {
     }
 }
 
+void GameLogic::checkPellet() {
+    if (ResourceManager::GetSprite<Pellet>("pellet")->getPelletsEaten() >= 244) {
+        Game::reset();
+        Game::getState().reset(true);
+        Game::getState().setLevel(Game::getState().getLevel() + 1);
+        ResourceManager::resetSprites();
+    }
+}
+
 void GameLogic::reset() {
     frightTimer = Timer();
     scatterCount = 1;
     chaseCount = 1;
     scoreMultiplier = 1;
     modeTimer = Timer();
+    currentMode = GhostMode::chase;
 }
 
 void GameLogic::handleEnd() {
