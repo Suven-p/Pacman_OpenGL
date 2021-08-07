@@ -152,12 +152,13 @@ void PauseMenu::handleKeyboardInput(int key) {
     if (!Game::getState().isPaused()) {
         return;
     }
+
     switch (key) {
         case int('s'): {
             selectedOption = (selectedOption == (options.size() - 1)) ? 0 : selectedOption + 1;
             break;
         }
-        case int('a'): {
+        case int('w'): {
             selectedOption = (selectedOption == 0) ? (options.size() - 1) : selectedOption - 1;
             break;
         }
