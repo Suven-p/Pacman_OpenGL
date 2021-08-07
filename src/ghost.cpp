@@ -187,7 +187,7 @@ void Ghost::calculateMultiplier() {
         return;
     }
     if (name == "blinky" &&
-        (currentMode != GhostMode::frightened || currentMode != GhostMode::dead)) {
+        (currentMode != GhostMode::frightened && currentMode != GhostMode::dead)) {
         if ((244 - pelletPtr->getPelletsEaten()) <= levelData["elroy2Dots"].get<int>()) {
             setMultiplier(levelData["elroy2Speed"].get<float>());
             return;

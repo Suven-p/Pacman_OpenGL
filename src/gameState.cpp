@@ -6,13 +6,19 @@
 using json = nlohmann::json;
 
 GameState::GameState() :
-    _level(1), _isStarted(false), _isPaused(false), _lives(3), _baseSpeed(0.01) {
+    _level(3), _isStarted(false), _isPaused(false), _isReady(false), _lives(3), _baseSpeed(0.01) {
     std::ifstream i(ResourceManager::resolvePath("resources/config.json"));
     i >> _jsonData;
 }
 
 json GameState::getLevelData() const {
-    return _jsonData["level"][_level - 1];
+    auto size = (_jsonData["level"]).size();
+    if (_level > size) {
+        return _jsonData["level"][size - 1];
+    }
+    else {
+        return _jsonData["level"][_level - 1];
+    }
 }
 
 bool GameState::isPaused() const {
@@ -46,6 +52,14 @@ bool GameState::isStarted() const {
 
 void GameState::setStarted(bool value) {
     _isStarted = value;
+}
+
+bool GameState::isReady() const {
+    return _isReady;
+}
+
+void GameState::setReady(bool value) {
+    _isReady = value;
 }
 
 bool GameState::isGameOver() const {

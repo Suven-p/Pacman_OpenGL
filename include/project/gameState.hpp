@@ -14,6 +14,7 @@ class GameState {
     bool _isStarted;
     bool _isOver;
     bool _isFrightened;
+    bool _isReady;
 
     double _baseSpeed;
 
@@ -35,6 +36,8 @@ class GameState {
     void setLevel(int newLevel);
     [[nodiscard]] bool isStarted() const;
     void setStarted(bool value = true);
+    [[nodiscard]] bool isReady() const;
+    void setReady(bool value);
     void setFrightened(bool value);
     void setFrightenedTimer(int time);
     bool getFrightened();
