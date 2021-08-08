@@ -159,7 +159,6 @@ std::string ResourceManager::resolvePath(const std::string& toResolve) {
     auto pathToResolve = std::filesystem::path(toResolve);
 
     // Try executablePath first
-    // TODO: Use whereami library for cross platform detection
     auto executionPath = getExecutablePath();
     if (!std::filesystem::exists(executionPath)) {
         getLogger()->debug("Received path to executable as: \"{}\""
@@ -214,8 +213,10 @@ std::shared_ptr<spdlog::logger> ResourceManager::getLogger() {
     return logger;
 }
 
-void ResourceManager::resetSprites() {
+void ResourceManager::resetSprites(std::set<std::string> excluded) {
     for (auto [key, ptr] : Sprites) {
-        ptr->reset();
+        if (excluded.find(key) == excluded.end()) {
+            ptr->reset();
+        }
     }
 }

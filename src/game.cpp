@@ -13,7 +13,6 @@
 #include "GLFW/glfw3.h"
 #include "project/timer.hpp"
 
-double Game::baseSpeed = 0.01;
 Timer Game::redrawTimer = Timer();
 double Game::lastRedraw = 0;
 GameState Game::state;
@@ -22,7 +21,9 @@ std::map<int, std::function<void(int)>> Game::keyboardCallbacks;
 
 constexpr auto callback = [](auto key) {
     if (key == KEY_ESC) {
-        Game::getState().invertPaused();
+        if (Game::getState().isStarted()) {
+            Game::getState().invertPaused();
+        }
     }
 };
 
@@ -36,7 +37,9 @@ Game::Game() {
     ResourceManager::LoadTexture("resources/inky.png", true, "inky");
     ResourceManager::LoadTexture("resources/clyde.png", true, "clyde");
     ResourceManager::LoadTexture("resources/frightened.png", true, "frightened");
-    ResourceManager::LoadTexture("resources/pacman.png", true, "pacman");
+    ResourceManager::LoadTexture("resources/pacman/0.png", true, "pacman_0");
+    ResourceManager::LoadTexture("resources/pacman/1.png", true, "pacman_1");
+    ResourceManager::LoadTexture("resources/pacman/2.png", true, "pacman_2");
     ResourceManager::LoadTexture("resources/pellet.png", true, "pellet");
     ResourceManager::LoadTexture("resources/power_pellet.png", true, "power_pellet");
     ResourceManager::LoadTexture("resources/cherry.png", true, "cherry");
@@ -54,7 +57,33 @@ Game::Game() {
     ResourceManager::LoadSprite("pellet", std::make_shared<Pellet>());
     ResourceManager::LoadSprite("gameLogic", std::make_shared<GameLogic>(state));
 
-    ResourceManager::LoadSprite("pauseMenu", std::make_shared<PauseMenu>());
+    std::vector<std::string> optionNames = {"Continue", "Restart", "Exit"};
+    auto continueFunc = []() {
+        if (getState().isPaused()) {
+            getState().invertPaused();
+            getState().setReady(false);
+        }
+    };
+    auto restartFunc = []() {
+        reset();
+        getState().setStarted(false);
+        getState().reset(true);
+        getState().setGameOver(false);
+        ResourceManager::resetSprites();
+    };
+    auto exitFunc = []() { WindowManager::getInstance()->exit(); };
+    const std::map<std::string, std::function<void(void)>> options = {
+        {"Continue", continueFunc}, {"Restart", restartFunc}, {"Exit", exitFunc}};
+
+    ResourceManager::LoadSprite("pauseMenu",
+                                std::make_shared<BorderedMenu>("Paused", optionNames, options));
+    std::vector<std::string> optionNames2 = {"Restart", "Exit"};
+    const std::map<std::string, std::function<void(void)>> options2 = {{"Restart", restartFunc},
+                                                                       {"Exit", exitFunc}};
+    ResourceManager::LoadSprite(
+        "gameOverMenu", std::make_shared<BorderedMenu>("Game Over", optionNames2, options2));
+    ResourceManager::LoadSprite("mainMenu", std::make_shared<MainMenu>());
+    ResourceManager::LoadSprite("readyScreen", std::make_shared<ReadyScreen>());
 
     ResourceManager::GetSprite("pacman")->setPosition(std::make_pair(13.5, 23));
 
@@ -76,7 +105,7 @@ void Game::render() {
     // before.
     auto baseMapPtr = ResourceManager::GetSprite<Map>("baseMap");
     baseMapPtr->draw("mainShader");
-    baseMapPtr->drawGridLines("mainShader");
+    // baseMapPtr->drawGridLines("mainShader");
     ResourceManager::GetSprite("gameLogic")->draw("mainShader");
     ResourceManager::GetSprite("pellet")->draw("mainShader");
     ResourceManager::GetSprite("pacman")->draw("mainShader");
@@ -84,7 +113,24 @@ void Game::render() {
     ResourceManager::GetSprite("inky")->draw("mainShader");
     ResourceManager::GetSprite("pinky")->draw("mainShader");
     ResourceManager::GetSprite("blinky")->draw("mainShader");
-    ResourceManager::GetSprite("pauseMenu")->draw("mainShader");
+    if (!getState().isStarted() && !getState().isReady()) {
+        ResourceManager::GetSprite("mainMenu")->draw("mainShader");
+    }
+    if (getState().isReady()) {
+        ResourceManager::GetSprite("readyScreen")->draw("mainShader");
+    }
+    if (getState().isGameOver()) {
+        ResourceManager::GetSprite<BorderedMenu>("gameOverMenu")->activate(true);
+        ResourceManager::GetSprite("gameOverMenu")->draw("mainShader");
+    } else {
+        ResourceManager::GetSprite<BorderedMenu>("gameOverMenu")->activate(false);
+    }
+    if (getState().isPaused()) {
+        ResourceManager::GetSprite<BorderedMenu>("pauseMenu")->activate(true);
+        ResourceManager::GetSprite("pauseMenu")->draw("mainShader");
+    } else {
+        ResourceManager::GetSprite<BorderedMenu>("pauseMenu")->activate(false);
+    }
 
     lastRedraw = redrawTimer.timeElapsed();
 }
@@ -105,11 +151,11 @@ void Game::key_down(int key) {
 }
 
 double Game::getSpeed() {
-    return Game::baseSpeed;
+    return state.getBaseSpeed();
 }
 
 void Game::setSpeed(double newSpeed) {
-    Game::baseSpeed = newSpeed;
+    state.setBaseSpeed(newSpeed);
 }
 
 double Game::getTime() {
@@ -123,7 +169,8 @@ GameState& Game::getState() {
 void Game::reset() {
     redrawTimer = Timer();
     lastRedraw = 0;
-    if (state.isPaused()) {
-        state.invertPaused();
-    }
+}
+
+Timer& Game::getTimer() {
+    return redrawTimer;
 }

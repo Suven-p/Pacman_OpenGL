@@ -16,7 +16,6 @@
  */
 class Game {
     Game();
-    static double baseSpeed;
     static Timer redrawTimer;
     static double lastRedraw;
     static GameState state;
@@ -92,6 +91,8 @@ class Game {
      * @return unsigned long long
      */
     static double getTime();
+
+    static Timer& getTimer();
 
     static void reset();
 };

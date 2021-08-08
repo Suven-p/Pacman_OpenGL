@@ -6,6 +6,7 @@
 #include <project/common.h>
 #include <project/mapData.h>
 #include <project/sprite.h>
+#include <project/text_renderer.h>
 #include <set>
 #include <vector>
 
@@ -18,7 +19,13 @@ class Map : public Sprite {
     std::vector<std::vector<int>> gridData;
     GLuint VAO, VBO, EBO;
     GLuint gridVAO, gridVBO;
+    GLuint tileVAO, tileVBO, tileEBO;
+    TextRenderer text;
     void initializeGrid();
+    void initializeTile();
+    void displayScore();
+    void displayLives(const std::string& shaderName);
+    void displayLevel(const std::string& shaderName);
 
    public:
     /**

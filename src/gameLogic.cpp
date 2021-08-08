@@ -6,109 +6,189 @@
 #include <project/pellet.h>
 #include <project/resourceManager.h>
 #include <project/text_renderer.h>
+#include <spdlog/spdlog.h>
 #include <string>
 #include <vector>
 #include "project/windowManager.h"
 
 GameLogic::GameLogic(GameState& gameState) : gameState(gameState), text(0, 0) {
+    blinkyPtr = ResourceManager::GetSprite<Ghost>("blinky");
+    pinkyPtr = ResourceManager::GetSprite<Ghost>("pinky");
+    inkyPtr = ResourceManager::GetSprite<Ghost>("inky");
+    clydePtr = ResourceManager::GetSprite<Ghost>("clyde");
+    pacmanPtr = ResourceManager::GetSprite<Pacman>("pacman");
+    scatterCount = 1;
+    chaseCount = 1;
+    scoreMultiplier = 1;
+    currentMode = GhostMode::scatter;
     auto windowSize = WindowManager::getInstance()->getWindowSize();
     text = std::move(TextRenderer(windowSize.first, windowSize.second));
     text.Load(ResourceManager::resolvePath("resources/fonts/ARIAL.TTF"), 24);
-
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &blockEBO);
-    // clang-format off
-    float obstacleVertices[] = {
-        // positions             // colors               // texture coords
-        1.8F, 0.2F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 1.0F, 1.0F,  // top right
-        1.8F, 1.8F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 1.0F, 0.0F,  // bottom right
-        0.2F, 1.8F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F,  // bottom left
-        0.2F, 0.2F, 0.05F, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F, 1.0F   // top left
-    };
-    unsigned int indices[] = {
-        0, 1, 3,
-        1, 2, 3
-    };
-    // clang-format on
-
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, blockEBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(obstacleVertices), obstacleVertices, GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)nullptr);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(4 * sizeof(float)));
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(8 * sizeof(float)));
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
-    glBindVertexArray(0);
 }
 
 void GameLogic::draw(std::string shaderName) {
-    checkStatus();
-    displayScore();
-    displayLives(shaderName);
-    displayLevel(shaderName);
-}
-
-void GameLogic::displayScore() {
-    int currentScore = ResourceManager::GetSprite<Pellet>("pellet")->getScore();
-    std::string textToRender = "Score : " + std::to_string(currentScore);
-}
-
-void GameLogic::displayLives(const std::string& shaderName) {
-    auto shader = ResourceManager::GetShader(shaderName);
-    shader.Use();
-    glBindVertexArray(VAO);
-
-    glm::mat4 model = glm::mat4(1.0F);
-    model = glm::translate(model, glm::vec3(0.0F, 34.0F, 0.0F));
-    glm::mat4 view = glm::mat4(1.0F);
-    glm::mat4 projection = glm::ortho(0.0F, 28.0F, 36.0F, 0.0F, -1.0F, 1.0F);
-    shader.SetMatrix4("view", view);
-    shader.SetMatrix4("projection", projection);
-    shader.SetFloat("textureColorMix", 0.0F);
-    auto texture = ResourceManager::GetTexture("pacman");
-    texture.Bind(0);
-    shader.SetInteger("texture1", 0, true);
-
-    for (int i = 1, lives = gameState.getLives(); i < lives; i++) {
-        model = glm::translate(model, glm::vec3(2.0F, 0.0F, 0.0F));
-        shader.SetMatrix4("model", model);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+    if (Game::getState().isPaused() || !Game::getState().isStarted() || Game::getState().isReady()) {
+        modeTimer.pause();
+        return;
     }
-}
-
-void GameLogic::displayLevel(const std::string& shaderName) {
-    auto currentLevel = gameState.getLevel();
-
-    auto shader = ResourceManager::GetShader(shaderName);
-    shader.Use();
-    glBindVertexArray(VAO);
-
-    glm::mat4 model = glm::mat4(1.0F);
-    model = glm::translate(model, glm::vec3(24.0F, 34.0F, 0.0F));
-    glm::mat4 view = glm::mat4(1.0F);
-    glm::mat4 projection = glm::ortho(0.0F, 28.0F, 36.0F, 0.0F, -1.0F, 1.0F);
-    shader.SetMatrix4("model", model);
-    shader.SetMatrix4("view", view);
-    shader.SetMatrix4("projection", projection);
-    shader.SetFloat("textureColorMix", 0.0F);
-    auto texture2 = ResourceManager::GetTexture("cherry");
-    texture2.Bind(1);
-    shader.SetInteger("texture1", 1, true);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-
-    // tile coordinates multiplied to convert to pixel coordinates
-    auto levelText = std::to_string(currentLevel);
-    text.RenderText(levelText, 26.0F * 16, 34.5F * 16, 1.0F);
-    glBindVertexArray(0);
+    else {
+        modeTimer.resume();
+    }
+    levelData = Game::getState().getLevelData();
+    checkStatus();
+    checkPellet();
+    if(Game::getState().getFrightened()) {
+        handleFright();
+    }
+    else {
+        modeTimer.start();
+        changeGhostMode();
+    }
 }
 
 GameLogic::~GameLogic() = default;
 
-void GameLogic::checkStatus() {}
+void GameLogic::checkStatus() {
+    constexpr auto toInt = [](std::pair<float, float> pos) {
+        std::pair<int, int> ans = pos;
+        if ((pos.first - int(pos.first)) >= 0.5) {
+            ans.first++;
+        }
+        if ((pos.second - int(pos.second)) >= 0.5) {
+            ans.second++;
+        }
+        return ans;
+    };
+    if (toInt(pacmanPtr->getPosition()) == toInt(blinkyPtr->getPosition())) {
+        handleCollision(blinkyPtr);
+    }
+    if (toInt(pacmanPtr->getPosition()) == toInt(pinkyPtr->getPosition())) {
+        handleCollision(pinkyPtr);
+    }
+    if (toInt(pacmanPtr->getPosition()) == toInt(inkyPtr->getPosition())) {
+        handleCollision(inkyPtr);
+    }
+    if (toInt(pacmanPtr->getPosition()) == toInt(clydePtr->getPosition())) {
+        handleCollision(clydePtr);
+    }
+}
 
-void GameLogic::reset() {}
+void GameLogic::handleCollision(std::shared_ptr<Ghost> ghostPtr) {
+    if (ghostPtr->getMode() == GhostMode::frightened) {
+        auto pelletPtr = ResourceManager::GetSprite<Pellet>("pellet");
+        pelletPtr->addToScore(200 * scoreMultiplier++);
+        ghostPtr->setMode(GhostMode::dead);
+    } else if (ghostPtr->getMode() == GhostMode::chase ||
+               ghostPtr->getMode() == GhostMode::scatter) {
+        Game::getState().setLives(Game::getState().getLives() - 1);
+        Game::getState().setReady(true);
+        handleEnd();
+        ResourceManager::resetSprites({"pellet"});
+    }
+}
+
+void GameLogic::setFright() {
+    // Ghost when dead and returning to Ghost Pen won't change to frightened mode when another power pellet is eaten.
+    if (blinkyPtr->getMode() != GhostMode::dead) {
+        blinkyPtr->setMode(GhostMode::frightened);
+    }
+    if (pinkyPtr->getMode() != GhostMode::dead) {
+        pinkyPtr->setMode(GhostMode::frightened);
+    }
+    if (inkyPtr->getMode() != GhostMode::dead) {
+        inkyPtr->setMode(GhostMode::frightened);
+    }
+    if (clydePtr->getMode() != GhostMode::dead) {
+        clydePtr->setMode(GhostMode::frightened);
+    }
+    pacmanPtr->setMultiplier(levelData["pacmanFrightSpeed"].get<float>());
+    Game::getState().setFrightened(true);
+    Game::getState().setFrightenedTimer(levelData["frightTime"].get<int>());
+    frightTimer.start();
+    modeTimer.pause();
+}
+
+void GameLogic::handleFright() {
+    if (frightTimer.timeElapsed() >= Game::getState().getFrightenedTimer()) {
+        frightTimer = Timer();
+        if (blinkyPtr->getMode() != GhostMode::dead) {
+            blinkyPtr->setMode(currentMode);
+        }
+        if (pinkyPtr->getMode() != GhostMode::dead) {
+            pinkyPtr->setMode(currentMode);
+        }
+        if (inkyPtr->getMode() != GhostMode::dead) {
+            inkyPtr->setMode(currentMode);
+        }
+        if (clydePtr->getMode() != GhostMode::dead) {
+            clydePtr->setMode(currentMode);
+        }
+        pacmanPtr->setMultiplier(levelData["pacmanSpeed"].get<float>());
+        modeTimer.resume();
+        scoreMultiplier = 1;
+        Game::getState().setFrightened(false);
+    }
+}
+
+void GameLogic::changeGhostMode() {
+    if (currentMode == GhostMode::chase) {
+        if (chaseCount > 3) {
+            return;
+        }
+        if (modeTimer.timeElapsed() > levelData["chase"][chaseCount-1].get<int>()) {
+            currentMode = GhostMode::scatter;
+            blinkyPtr->setMode(GhostMode::scatter);
+            pinkyPtr->setMode(GhostMode::scatter);
+            inkyPtr->setMode(GhostMode::scatter);
+            clydePtr->setMode(GhostMode::scatter);
+            chaseCount++;
+            modeTimer = Timer("", true);
+        }
+    }
+    else if (currentMode == GhostMode::scatter) {
+        if (modeTimer.timeElapsed() > levelData["scatter"][scatterCount-1].get<int>()) {
+            currentMode = GhostMode::chase;
+            blinkyPtr->setMode(GhostMode::chase);
+            pinkyPtr->setMode(GhostMode::chase);
+            inkyPtr->setMode(GhostMode::chase);
+            clydePtr->setMode(GhostMode::chase);
+            scatterCount++;
+            modeTimer = Timer("", true);
+        }
+    }
+}
+
+void GameLogic::checkPellet() {
+    if (ResourceManager::GetSprite<Pellet>("pellet")->getPelletsEaten() >= 244) {
+        Game::reset();
+        int level = Game::getState().getLevel();
+        int lives = Game::getState().getLives();
+        Game::getState().reset(true);
+        Game::getState().setLevel(level + 1);
+        Game::getState().setLives(lives);
+        ResourceManager::resetSprites();
+    }
+}
+
+void GameLogic::reset() {
+    frightTimer = Timer();
+    scatterCount = 1;
+    chaseCount = 1;
+    scoreMultiplier = 1;
+    modeTimer = Timer();
+    currentMode = GhostMode::scatter;
+}
+
+void GameLogic::handleEnd() {
+    if (Game::getState().getLives()  == 0) {
+        Game::reset();
+        Game::getState().setGameOver(true);
+        Game::getState().setReady(false);
+        Game::getState().reset();
+        ResourceManager::resetSprites();
+    }
+}
+
+GhostMode GameLogic::getMode() {
+    return currentMode;
+}

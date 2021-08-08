@@ -41,16 +41,20 @@ class Ghost : public Sprite {
     std::shared_ptr<spdlog::logger> logger;
     double speedMultiplier{};
     Timer ghostTimer;
+    void setMultiplier(double newSpeed);
 
    public:
     Ghost() = delete;
     Ghost(const std::string& name);
+    Ghost(const Ghost&) = delete;   // Copy might cause problems
+    Ghost(Ghost&&) = default;
+    Ghost& operator=(const Ghost&) = delete;
+    Ghost& operator=(Ghost&&) = default;
     void draw(std::string shader) override;
     void drawEyes(const std::string& shader) const;
     [[nodiscard]] GhostMode getMode() const;
     void setMode(GhostMode newMode);
     [[nodiscard]] float getMultiplier() const;
-    void setMultiplier(double newSpeed);
     void reset() override;
     ~Ghost() override = default;
 };

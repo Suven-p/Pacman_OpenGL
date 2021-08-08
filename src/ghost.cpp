@@ -1,6 +1,7 @@
 #include <project/common.h>
 #include <project/game.h>
 #include <project/ghost.h>
+#include <project/gameLogic.h>
 #include <project/pacman.h>
 #include <project/pellet.h>
 #include <project/resourceManager.h>
@@ -29,7 +30,6 @@ const std::map<std::string, int> Ghost::timeToLeave = {{"blinky", 0},
 std::random_device rd;   // Will be used to obtain a seed for the random number engine
 std::mt19937 gen(rd());  // Standard mersenne_twister_engine seeded with rd()
 
-// TODO scatter/chase timer, reset game state, clear resources
 Ghost::Ghost(const std::string& name) : name(name) {
     glGenVertexArrays(1, &vao);
     glGenBuffers(2, vbo);
@@ -76,7 +76,7 @@ Ghost::Ghost(const std::string& name) : name(name) {
     position = initialPosition.at(name);
     currentDirection = (name == "blinky") ? DIRECTION::right : DIRECTION::up;
     nextDirection = DIRECTION::right;
-    currentMode = GhostMode::frightened;
+    currentMode = GhostMode::scatter;
 
     setMultiplier(0.75);
 
@@ -146,7 +146,7 @@ void Ghost::drawEyes(const std::string& shader) const {
 }
 
 void Ghost::recalculatePosition() {
-    if (Game::getState().isPaused()) {
+    if (Game::getState().isPaused() || !Game::getState().isStarted() || Game::getState().isReady()) {
         ghostTimer.pause();
         return;
     }
@@ -186,7 +186,7 @@ void Ghost::calculateMultiplier() {
         return;
     }
     if (name == "blinky" &&
-        (currentMode != GhostMode::frightened || currentMode != GhostMode::dead)) {
+        (currentMode != GhostMode::frightened && currentMode != GhostMode::dead)) {
         if ((244 - pelletPtr->getPelletsEaten()) <= levelData["elroy2Dots"].get<int>()) {
             setMultiplier(levelData["elroy2Speed"].get<float>());
             return;
@@ -270,7 +270,7 @@ void Ghost::basicMovement() {
     logger->trace("Switching direction to {}", toString(nextDirection));
 
     if (currentMode == GhostMode::dead && position == targetTile) {
-        setMode(GhostMode::chase);
+        setMode(ResourceManager::GetSprite<GameLogic>("gameLogic")->getMode());
     }
     // Adjustment for tunnel passthrough
     handleSpecialZone();

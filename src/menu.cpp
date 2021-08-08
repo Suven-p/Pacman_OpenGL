@@ -10,25 +10,14 @@
 #include "project/helpers.h"
 #include "project/windowManager.h"
 
-const std::vector<std::string> optionNames = {"Continue", "Restart", "Exit"};
-auto continueFunc = []() {
-    if (Game::getState().isPaused()) {
-        Game::getState().invertPaused();
-    }
-};
-auto restartFunc = []() {
-    Game::reset();
-    ResourceManager::resetSprites();
-};
-auto exitFunc = []() { WindowManager::getInstance()->exit(); };
-auto defaultFunc = []() {};
-const std::map<std::string, std::function<void(void)>> optionFunc = {{"Continue", continueFunc},
-                                                                     {"Restart", restartFunc},
-                                                                     {"Exit", exitFunc}};
-
-PauseMenu::PauseMenu() : selectedOption(0) {
-    options = optionNames;
-
+BorderedMenu::BorderedMenu(std::string title,
+                           std::vector<std::string> names,
+                           std::map<std::string, std::function<void(void)>> callbacks) :
+    title(title),
+    optionNames(names),
+    optionCallbacks(callbacks),
+    selectedOption(0),
+    isActive(false) {
     glGenVertexArrays(3, vao);
     glGenBuffers(4, vbo);
     glGenBuffers(1, &ebo);
@@ -86,22 +75,19 @@ PauseMenu::PauseMenu() : selectedOption(0) {
     glBindVertexArray(0);
 
     auto callback = [&](auto key) {
-        this->handleKeyboardInput(key);
+        if (isActive) {
+            handleKeyboardInput(key);
+        }
     };
     keyboardCallbackID = Game::registerKeyboardCallback(callback);
 }
 
-PauseMenu::~PauseMenu() {
+BorderedMenu::~BorderedMenu() {
     Game::unregisterKeyboardCallback(keyboardCallbackID);
 }
 
-void PauseMenu::draw(std::string shader) {
-    if (!Game::getState().isPaused()) {
-        return;
-    }
-
+void BorderedMenu::draw(std::string shader) {
     ResourceManager::GetShader(shader).Use();
-
     // Draw dark overlay
     glBindVertexArray(vao[0]);
     glm::mat4 model = glm::mat4(1.0F);
@@ -129,7 +115,7 @@ void PauseMenu::draw(std::string shader) {
     glBindVertexArray(0);
 }
 
-void PauseMenu::show_options() {
+void BorderedMenu::show_options() {
     auto sz = WindowManager::getInstance()->getWindowSize();
     static auto text = TextRenderer(sz.first, sz.second);
     static bool initText = false;
@@ -138,27 +124,28 @@ void PauseMenu::show_options() {
         text.Load(ResourceManager::resolvePath("resources/fonts/ARIAL.TTF"), 24);
     }
 
-    for (int i=0; i < options.size(); i++) {
+    int xOffset = (sz.first/2) - int(title.size() * 12 / 2);
+    constexpr int yOffset = 50;
+    text.RenderText(title, xOffset, 150.0F, 1.0F);
+    int count = 0;
+    for (const auto name: optionNames) {
         constexpr glm::vec3 colorSelected = {1.0F, 1.0F, 1.0F};
         constexpr glm::vec3 colorUnselected = {0.5, 0.5, 0.5};
-        auto optionColor = (i == selectedOption)?colorSelected:colorUnselected;
-        int xOffset = (sz.first/2) - int(options[i].size() * 12 / 2);
-        constexpr int yOffset = 50;
-        text.RenderText(options[i], xOffset, 200.0F + yOffset * i, 1.0F, optionColor);
+        auto optionColor = (count == selectedOption)?colorSelected:colorUnselected;
+        xOffset = (sz.first/2) - int(name.size() * 12 / 2);
+        text.RenderText(name, xOffset, 150.0F + yOffset * (count + 1), 1.0F, optionColor);
+        count++;
     }
 }
 
-void PauseMenu::handleKeyboardInput(int key) {
-    if (!Game::getState().isPaused()) {
-        return;
-    }
+void BorderedMenu::handleKeyboardInput(int key) {
     switch (key) {
         case int('s'): {
-            selectedOption = (selectedOption == (options.size() - 1)) ? 0 : selectedOption + 1;
+            selectedOption = (selectedOption == (optionNames.size() - 1)) ? 0 : selectedOption + 1;
             break;
         }
-        case int('a'): {
-            selectedOption = (selectedOption == 0) ? (options.size() - 1) : selectedOption - 1;
+        case int('w'): {
+            selectedOption = (selectedOption == 0) ? (optionNames.size() - 1) : selectedOption - 1;
             break;
         }
         case int('\n'): {
@@ -167,7 +154,106 @@ void PauseMenu::handleKeyboardInput(int key) {
     }
 }
 
-void PauseMenu::executeFunction() {
-    auto option = options[selectedOption];
-    (optionFunc.at(option))();
+void BorderedMenu::executeFunction() {
+    auto option = optionNames[selectedOption];
+    (optionCallbacks.at(option))();
+}
+
+void BorderedMenu::activate(bool activate) {
+    isActive = activate;
+}
+
+MainMenu::MainMenu() {
+    glGenVertexArrays(1, &vao);
+    glGenBuffers(2, vbo);
+    glGenBuffers(1, &ebo);
+
+    // clang-format off
+    float colorDark[4] = {0.0, 0.0, 0.0, 0.65F};
+    float verticesPos[] = {
+        -1.0F, -1.0F, 0.8F, 1.0F,
+        -1.0F, 01.0F, 0.8F, 1.0F,
+        01.0F, 01.0F, 0.8F, 1.0F,
+        01.0F, -1.0F, 0.8F, 1.0F
+    };
+    float verticesColorDarken[] = {
+        colorDark[0], colorDark[1], colorDark[2], colorDark[3],
+        colorDark[0], colorDark[1], colorDark[2], colorDark[3],
+        colorDark[0], colorDark[1], colorDark[2], colorDark[3],
+        colorDark[0], colorDark[1], colorDark[2], colorDark[3]
+    };
+    GLuint indices[] = {
+        0, 1, 2,
+        0, 2, 3
+    };
+    // clang-format on
+
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesPos), verticesPos, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)nullptr);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesColorDarken), verticesColorDarken, GL_STATIC_DRAW);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)nullptr);
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glBindVertexArray(0);
+
+    auto callback = [](int key) {
+        if (key == int('\n')) {
+            Game::getState().setReady(true);
+        }
+    };
+    Game::registerKeyboardCallback(callback);
+}
+
+void MainMenu::draw(std::string shaderName) {
+    // Draw dark overlay
+    auto shader = ResourceManager::GetShader(shaderName);
+    shader.Use();
+    glBindVertexArray(vao);
+    glm::mat4 model = glm::mat4(1.0F);
+    glm::mat4 view = glm::mat4(1.0F);
+    glm::mat4 projection = glm::mat4(1.0F);
+    shader.SetMatrix4("model", model, true);
+    shader.SetMatrix4("view", view, true);
+    shader.SetMatrix4("projection", projection, true);
+    shader.SetFloat("textureColorMix", 1.0F);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)nullptr);
+
+    auto sz = WindowManager::getInstance()->getWindowSize();
+    static auto text = TextRenderer(sz.first, sz.second);
+    static bool initText = false;
+    if (!initText) {
+        initText = true;
+        text.Load(ResourceManager::resolvePath("resources/fonts/ARIAL.TTF"), 24);
+    }
+    std::string toRender = "PRESS ENTER TO CONTINUE";
+    int xOffset = (sz.first / 2) - (toRender.size() / 2 * 12);
+    int yOffset = (sz.second / 2) - (24);
+    text.RenderText(toRender, xOffset, yOffset, 1.0F);
+}
+
+
+void ReadyScreen::draw(std::string shaderName) {
+    auto sz = WindowManager::getInstance()->getWindowSize();
+    static auto text = TextRenderer(sz.first, sz.second);
+    static bool initText = false;
+    if (!initText) {
+        initText = true;
+        text.Load(ResourceManager::resolvePath("resources/fonts/ARIAL.TTF"), 24);
+    }
+    std::string toRender = "Ready!";
+    int xOffset = (sz.first / 2) - (toRender.size() / 2 * 12);
+    int yOffset = (sz.second / 2) + (30);
+    text.RenderText(toRender, xOffset, yOffset, 1.0F);
+    static Timer readyTimer;
+    readyTimer.start();
+    if (readyTimer.timeElapsed() > 3000) {
+        Game::getState().setReady(false);
+        Game::getState().setStarted(true);
+        readyTimer = Timer();
+    }
 }

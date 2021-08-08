@@ -1,5 +1,6 @@
 #include <project/common.h>
 #include <project/game.h>
+#include <project/gameLogic.h>
 #include <project/pacman.h>
 #include <project/pellet.h>
 #include <project/resourceManager.h>
@@ -16,11 +17,6 @@ Pellet::Pellet() {
     score = 0;
     pelletsEaten = 0;
     timeTillCherryDisappears = 0;
-    timeTillFrightenedModeStops = 0;
-    timeTillScatterMode = glfwGetTime() + 7;
-    timeTillChaseMode = timeTillScatterMode + 20;
-    chaseIteration = 0;
-    mode = 1;
 
     glGenVertexArrays(1, &blockVAO);
     glGenBuffers(1, &blockVBO);
@@ -64,7 +60,6 @@ void Pellet::draw(std::string shaderName) {
 
     auto pacmanPosition = ResourceManager::GetSprite<Pacman>("pacman")->getPosition();
     changePelletStatus(pacmanPosition);
-    setMode();
 
     glm::mat4 view = glm::mat4(1.0F);
     glm::mat4 projection = glm::ortho(0.0F, 28.0F, 36.0F, 0.0F, 1.0F, -1.0F);
@@ -116,10 +111,6 @@ void Pellet::draw(std::string shaderName) {
     glBindVertexArray(0);
 }
 
-void Pellet::drawCherry(const std::string& shaderName) {
-    return;
-}
-
 void Pellet::changePelletStatus(std::pair<float, float> pacmanPosition) {
     int xCoordinate = int(pacmanPosition.first), yCoordinate = int(pacmanPosition.second);
     if (Map::getBlockType(pacmanPosition) == MAP_OUTOFBOUNDS) {
@@ -133,25 +124,20 @@ void Pellet::changePelletStatus(std::pair<float, float> pacmanPosition) {
         mapData[xCoordinate][yCoordinate] = 'F';
         score += 50;
         pelletsEaten++;
-        // TODO : replace glfwGetTime()
-        timeTillFrightenedModeStops = glfwGetTime() + 6;
-
-        timeTillScatterMode += timeTillFrightenedModeStops;
-        timeTillChaseMode += timeTillFrightenedModeStops;
+        ResourceManager::GetSprite<GameLogic>("gameLogic")->setFright();
     } else if (mapData[xCoordinate][yCoordinate] == 'C') {
         mapData[xCoordinate][yCoordinate] = 'F';
-        score += 100;
+        auto levelData = Game::getState().getLevelData();
+        score += levelData["cherryValue"].get<int>();
     }
     if (pelletsEaten == 70 or pelletsEaten == 170) {
-        // TODO : replace glfwGetTime
-        timeTillCherryDisappears = glfwGetTime() + 10;
+        timeTillCherryDisappears = Game::getTimer().timeElapsed() + 10000;
         mapData[14][17] = 'C';
     }
 }
 
 bool Pellet::toDrawCherry() {
-    // TODO : replace glfwGetTime
-    if (glfwGetTime() > timeTillCherryDisappears) {
+    if (Game::getTimer().timeElapsed() > timeTillCherryDisappears) {
         mapData[14][17] = 'n';
         return false;
     } else
@@ -166,45 +152,6 @@ int Pellet::getPelletsEaten() {
     return pelletsEaten;
 }
 
-void Pellet::setMode() {
-    // Check for Frightened mode
-    if (glfwGetTime() < timeTillFrightenedModeStops) {
-        mode = 3;
-        return;
-    }
-
-    // If there have been 4 or more chases then there is no more future scatter mode
-    if (chaseIteration >= 4) {
-        mode = 2;
-        return;
-    }
-
-    if (timeTillScatterMode < timeTillChaseMode) {
-        // If scatter mode has just passed
-        if (glfwGetTime() > timeTillScatterMode) {
-            timeTillScatterMode = timeTillChaseMode + 7;
-            mode = 2;
-            chaseIteration++;
-        } else {
-            mode = 1;
-        }
-    }
-
-    if (timeTillChaseMode < timeTillScatterMode) {
-        // If chase mode has just just passed
-        if (glfwGetTime() > timeTillChaseMode and chaseIteration < 4) {
-            timeTillChaseMode = timeTillScatterMode + 20;
-            mode = 1;
-        } else {
-            mode = 2;
-        }
-    }
-}
-
-int Pellet::getMode() {
-    return mode;
-}
-
 bool Pellet::allPelletsEaten() {
     if (pelletsEaten == 244)
         return true;
@@ -216,11 +163,14 @@ void Pellet::addToScore(int value) {
     score += value;
 }
 
-void Pellet::initializeModeTimer() {
+void Pellet::reset() {
+    mapData = mapDataColRow;
+    // X in mapData denotes uneaten Power Pellet
+    mapData[1][3] = 'X', mapData[26][3] = 'X';
+    mapData[1][23] = 'X', mapData[26][23] = 'X';
+    score = 0;
+    pelletsEaten = 0;
     timeTillCherryDisappears = 0;
-    timeTillFrightenedModeStops = 0;
-    timeTillScatterMode = glfwGetTime() + 7;
-    timeTillChaseMode = timeTillScatterMode + 20;
 }
 
 Pellet::~Pellet() = default;

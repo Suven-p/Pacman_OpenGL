@@ -2,6 +2,7 @@
 #define RESOURCE_MANAGER_HPP_GUARD
 
 #include <map>
+#include <set>
 #include <memory>
 #include <string>
 
@@ -98,7 +99,7 @@ class ResourceManager {
      */
     static void Clear();
     static std::string resolvePath(const std::string& toResolve);
-    static void resetSprites();
+    static void resetSprites(std::set<std::string> excluded = {});
 
     ResourceManager() = delete;
     ~ResourceManager() = default;
