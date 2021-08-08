@@ -19,8 +19,8 @@ int main(int argc, char** argv) {
     windowData windowData;
     windowData.argc = &argc;
     windowData.argv = argv;
-    windowData.width = 672;
-    windowData.height = 864;
+    windowData.width = 448;
+    windowData.height = 576;
     windowData.refreshInterval = 1000.0F / 60.0F;
     auto* windowManagerPtr = WindowManager::getInstance();
     windowManagerPtr->createNewWindow(PROJECT_NAME, windowData);

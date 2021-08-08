@@ -142,7 +142,7 @@ void Map::displayLevel(const std::string& shaderName) {
 
     // tile coordinates multiplied to convert to pixel coordinates
     auto levelText = std::to_string(currentLevel);
-    text.RenderText(levelText, 26.0F * 24, 34.5F * 24, 1.0F);
+    text.RenderText(levelText, 26.0F * 16, 34.5F * 16, 1.0F);
     glBindVertexArray(0);
 }
 

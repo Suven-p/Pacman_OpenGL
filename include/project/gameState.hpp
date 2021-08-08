@@ -15,7 +15,7 @@ class GameState {
     bool _isOver;
     bool _isFrightened;
     bool _isReady;
-    //BaseSpeed is tiles per millisecond
+
     double _baseSpeed;
 
    public:
