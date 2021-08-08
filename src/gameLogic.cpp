@@ -88,6 +88,7 @@ void GameLogic::handleCollision(std::shared_ptr<Ghost> ghostPtr) {
 }
 
 void GameLogic::setFright() {
+    frightTimer = Timer();
     // Ghost when dead and returning to Ghost Pen won't change to frightened mode when another power pellet is eaten.
     if (blinkyPtr->getMode() != GhostMode::dead) {
         blinkyPtr->setMode(GhostMode::frightened);
