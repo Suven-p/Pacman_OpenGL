@@ -41,6 +41,7 @@ void GameLogic::draw(std::string shaderName) {
         handleFright();
     }
     else {
+        pacmanPtr->setMultiplier(levelData["pacmanSpeed"].get<float>());
         modeTimer.start();
         changeGhostMode();
     }
