@@ -116,7 +116,7 @@ void Pacman::draw(std::string shader) {
         oscillateTexture();
     }
     else {
-        currentTexture = 1;
+        currentTexture = 14;
     }
     ResourceManager::GetShader(shader).SetFloat("textureColorMix", 0.0F);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)nullptr);
