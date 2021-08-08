@@ -27,11 +27,15 @@ First, check out the git repo:
 
 #### Generate CMake build files
 Generate build files using CMake.
+On Windows:
 ```
-❯ cmake -B build -S .
+❯ cmake -B build -S . -G "MinGW Makefiles"
 ```
-This command creates a directory named `build` and generated files are placed in the same directory.
-By default, the build system is Visual Studio for Windows and Make for Linux. Other generators can be used by specifying via `-G` flag. For codeblocks with MinGW use `cmake -B build -S . -G "CodeBlocks - MinGW Makefiles"`. In most cases, it is sufficient to generate the files only once for each build system. If the build system is to be changed, delete the build/ directory and run this step again. See [CMake Documentaton](https://cmake.org/documentation/https://cmake.org/documentation/) for details.
+On Linux:
+```
+❯ cmake -B build -S . -G "Unix Makefiles"
+```
+This command creates a directory named build and generated files are placed in the same directory. By default, the build system is Visual Studio for Windows and Make for Linux. Other generators can be used by specifying via -G flag. However, this has been tested using "MingW Makefiles" on Windows and "Unix Makefiles" on Linux. For codeblocks with MinGW use cmake -B build -S . -G "CodeBlocks - MinGW Makefiles". See [CMake Documentaton](https://cmake.org/documentation/https://cmake.org/documentation/) for details.
 
 #### Build project
 Build the project using CMake. This should work for all build systems.
