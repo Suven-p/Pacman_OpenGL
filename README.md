@@ -1,3 +1,5 @@
+This is markdown version of readme file. Markdown version is better displayed in github but might be difficult to read in text form.
+
 [![Build](https://github.com/Suven-p/Pacman_OpenGL/actions/workflows/build.yml/badge.svg?branch=glfw)](https://github.com/Suven-p/Pacman_OpenGL/actions/workflows/build.yml)
 [![CodeQL](https://github.com/Suven-p/Pacman_OpenGL/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/Suven-p/Pacman_OpenGL/actions/workflows/codeql-analysis.yml)
 

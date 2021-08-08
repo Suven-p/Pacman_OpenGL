@@ -121,18 +121,18 @@ void BorderedMenu::show_options() {
     static bool initText = false;
     if (!initText) {
         initText = true;
-        text.Load(ResourceManager::resolvePath("resources/fonts/ARIAL.TTF"), 24);
+        text.Load(ResourceManager::resolvePath("resources/fonts/ARIAL.TTF"), 32);
     }
 
-    int xOffset = (sz.first/2) - int(title.size() * 12 / 2);
-    constexpr int yOffset = 50;
+    int xOffset = (sz.first/2) - int(title.size() * 16 / 2);
+    constexpr int yOffset = 150;
     text.RenderText(title, xOffset, 150.0F, 1.0F);
     int count = 0;
     for (const auto name: optionNames) {
         constexpr glm::vec3 colorSelected = {1.0F, 1.0F, 1.0F};
         constexpr glm::vec3 colorUnselected = {0.5, 0.5, 0.5};
         auto optionColor = (count == selectedOption)?colorSelected:colorUnselected;
-        xOffset = (sz.first/2) - int(name.size() * 12 / 2);
+        xOffset = (sz.first/2) - int(name.size() * 14 / 2);
         text.RenderText(name, xOffset, 150.0F + yOffset * (count + 1), 1.0F, optionColor);
         count++;
     }
@@ -228,11 +228,11 @@ void MainMenu::draw(std::string shaderName) {
     static bool initText = false;
     if (!initText) {
         initText = true;
-        text.Load(ResourceManager::resolvePath("resources/fonts/ARIAL.TTF"), 24);
+        text.Load(ResourceManager::resolvePath("resources/fonts/ARIAL.TTF"), 32);
     }
     std::string toRender = "PRESS ENTER TO CONTINUE";
-    int xOffset = (sz.first / 2) - (toRender.size() / 2 * 15);
-    int yOffset = (sz.second / 2) - (18);
+    int xOffset = (sz.first / 2) - (toRender.size() / 2 * 20);
+    int yOffset = (sz.second / 2) - (24);
     text.RenderText(toRender, xOffset, yOffset, 1.0F);
 }
 
@@ -243,11 +243,11 @@ void ReadyScreen::draw(std::string shaderName) {
     static bool initText = false;
     if (!initText) {
         initText = true;
-        text.Load(ResourceManager::resolvePath("resources/fonts/ARIAL.TTF"), 24);
+        text.Load(ResourceManager::resolvePath("resources/fonts/ARIAL.TTF"), 32);
     }
     std::string toRender = "Ready!";
-    int xOffset = (sz.first / 2) - (toRender.size() / 2 * 12);
-    int yOffset = (sz.second / 2) + (30);
+    int xOffset = (sz.first / 2) - (toRender.size() / 2 * 14);
+    int yOffset = (sz.second / 2) + (50);
     text.RenderText(toRender, xOffset, yOffset, 1.0F);
     static Timer readyTimer;
     readyTimer.start();
