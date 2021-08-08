@@ -159,14 +159,17 @@ void GameLogic::changeGhostMode() {
 }
 
 void GameLogic::checkPellet() {
-    if (ResourceManager::GetSprite<Pellet>("pellet")->getPelletsEaten() >= 244) {
+    auto pelletPtr = ResourceManager::GetSprite<Pellet>("pellet");
+    if (pelletPtr->getPelletsEaten() >= 244) {
         Game::reset();
         int level = Game::getState().getLevel();
         int lives = Game::getState().getLives();
+        int score = pelletPtr->getScore();
         Game::getState().reset(true);
         Game::getState().setLevel(level + 1);
         Game::getState().setLives(lives);
         ResourceManager::resetSprites();
+        pelletPtr->addToScore(score);
     }
 }
 

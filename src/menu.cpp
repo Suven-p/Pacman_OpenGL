@@ -231,8 +231,8 @@ void MainMenu::draw(std::string shaderName) {
         text.Load(ResourceManager::resolvePath("resources/fonts/ARIAL.TTF"), 24);
     }
     std::string toRender = "PRESS ENTER TO CONTINUE";
-    int xOffset = (sz.first / 2) - (toRender.size() / 2 * 12);
-    int yOffset = (sz.second / 2) - (24);
+    int xOffset = (sz.first / 2) - (toRender.size() / 2 * 15);
+    int yOffset = (sz.second / 2) - (18);
     text.RenderText(toRender, xOffset, yOffset, 1.0F);
 }
 

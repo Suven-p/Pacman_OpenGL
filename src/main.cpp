@@ -34,8 +34,9 @@ int main(int argc, char** argv) {
     spdlog::set_level(spdlog::level::debug);
     spdlog::get("ResourceManager")->set_level(spdlog::level::err);
 
-    glEnable(GL_DEBUG_OUTPUT);
-    glDebugMessageCallback(MessageCallback, nullptr);
+    // glEnable(GL_DEBUG_OUTPUT);
+    // glDebugMessageCallback(MessageCallback, nullptr);
+    
     // Blending should be enabled for transparency/alpha channel to work,
     // Depth test might not be required. If depth test is enabled, z-values
     // for ghosts must be modified according to name. With depth test disabled,
