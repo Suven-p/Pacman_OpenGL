@@ -84,7 +84,14 @@ void Map::draw(const std::string& shaderName, bool drawGrid) {
 
 void Map::drawGridLines(const std::string& shaderName) const {
     auto shader = ResourceManager::GetShader(shaderName);
+    shader.Use();
     glBindVertexArray(gridVAO);
+    glm::mat4 model = glm::mat4(1.0F);
+    glm::mat4 view = glm::mat4(1.0F);
+    glm::mat4 projection = glm::ortho(0.0F, 28.0F, 36.0F, 0.0F, -1.0F, 1.0F);
+    shader.SetMatrix4("model", model);
+    shader.SetMatrix4("view", view);
+    shader.SetMatrix4("projection", projection);
     shader.SetFloat("textureColorMix", 1.0F);
     glDrawArrays(GL_LINES, 0, (gridSize.first + gridSize.second) * 2);
 }
@@ -238,6 +245,7 @@ void Map::initializeTile() {
     glEnableVertexAttribArray(2);
     glBindVertexArray(0);
 }
+
 bool Map::checkObstacle(const std::pair<float, float>& toCheck,
                         const std::set<char>& obstacles) const {
     std::pair<int, int> position({toCheck.first, toCheck.second});
