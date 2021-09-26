@@ -34,11 +34,11 @@ GridBox::GridBox(const std::pair<float, float> &size):VAO(0), VBO{0, 0, 0}, EBO(
     glBindVertexArray(0);
 }
 
-void GridBox::setColor(const std::array<float, 4> &color) {
+void GridBox::setColor(const std::array<float, 4> &color) const {
     setColor({color, color, color, color});
 }
 
-void GridBox::setColor(const std::array<std::array<float, 4>, 4> &newColor) {
+void GridBox::setColor(const std::array<std::array<float, 4>, 4> &newColor) const {
     float color[] = {
         newColor[0][0], newColor[0][1], newColor[0][2], newColor[0][3],
         newColor[1][0], newColor[1][1], newColor[1][2], newColor[1][3],
@@ -53,7 +53,7 @@ void GridBox::setColor(const std::array<std::array<float, 4>, 4> &newColor) {
     glBindVertexArray(0);
 }
 
-void GridBox::setTexCoord(const std::array<std::array<float, 2>, 4> &newTextureCoord) {
+void GridBox::setTexCoord(const std::array<std::array<float, 2>, 4> &newTextureCoord) const {
     float texCoord[] = {
         newTextureCoord[0][0], newTextureCoord[0][1],
         newTextureCoord[1][0], newTextureCoord[1][1],
@@ -68,7 +68,7 @@ void GridBox::setTexCoord(const std::array<std::array<float, 2>, 4> &newTextureC
     glBindVertexArray(0);
 }
 
-void GridBox::draw(const std::array<float, 3> &position, const std::string &shaderName) {
+void GridBox::draw(const std::array<float, 3> &position, const std::string &shaderName) const {
     auto shader = ResourceManager::GetShader(shaderName);
     shader.Use();
     glBindVertexArray(VAO);
