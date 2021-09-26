@@ -53,17 +53,17 @@ void GridBox::setColor(const std::array<std::array<float, 4>, 4> &newColor) {
     glBindVertexArray(0);
 }
 
-void GridBox::setTexCoord(const std::array<std::array<float, 4>, 4> &newTextureCoord) {
+void GridBox::setTexCoord(const std::array<std::array<float, 2>, 4> &newTextureCoord) {
     float texCoord[] = {
-        newTextureCoord[0][0], newTextureCoord[0][1], newTextureCoord[0][2], newTextureCoord[0][3],
-        newTextureCoord[1][0], newTextureCoord[1][1], newTextureCoord[1][2], newTextureCoord[1][3],
-        newTextureCoord[2][0], newTextureCoord[2][1], newTextureCoord[2][2], newTextureCoord[2][3],
-        newTextureCoord[3][0], newTextureCoord[3][1], newTextureCoord[3][2], newTextureCoord[3][3],
+        newTextureCoord[0][0], newTextureCoord[0][1],
+        newTextureCoord[1][0], newTextureCoord[1][1],
+        newTextureCoord[2][0], newTextureCoord[2][1],
+        newTextureCoord[3][0], newTextureCoord[3][1],
     };
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(texCoord), texCoord, GL_STATIC_DRAW);
-    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)nullptr);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)nullptr);
     glEnableVertexAttribArray(2);
     glBindVertexArray(0);
 }
