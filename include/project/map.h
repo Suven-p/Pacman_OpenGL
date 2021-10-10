@@ -7,6 +7,7 @@
 #include <project/mapData.h>
 #include <project/sprite.h>
 #include <project/text_renderer.h>
+#include <project/gridBox.hpp>
 #include <set>
 #include <vector>
 
@@ -17,12 +18,10 @@
 class Map : public Sprite {
     std::pair<int, int> gridSize;
     std::vector<std::vector<int>> gridData;
-    GLuint VAO, VBO, EBO;
+    const GridBox box, tileBox;
     GLuint gridVAO, gridVBO;
-    GLuint tileVAO, tileVBO, tileEBO;
     TextRenderer text;
     void initializeGrid();
-    void initializeTile();
     void displayScore();
     void displayLives(const std::string& shaderName);
     void displayLevel(const std::string& shaderName);

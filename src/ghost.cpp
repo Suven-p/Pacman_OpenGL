@@ -30,48 +30,9 @@ const std::map<std::string, int> Ghost::timeToLeave = {{"blinky", 0},
 std::random_device rd;   // Will be used to obtain a seed for the random number engine
 std::mt19937 gen(rd());  // Standard mersenne_twister_engine seeded with rd()
 
-Ghost::Ghost(const std::string& name) : name(name) {
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(2, vbo);
-    glGenBuffers(1, &ebo);
-
-    // clang-format off
-    float vertices[] = {
-        -0.5F, -0.5F, 0.5F, 1.0F, 0.0F, 0.0F, 0.0F,  1.0F,
-        -0.5F, 01.5F, 0.5F, 1.0F, 0.0F, 0.0F, 0.0F,  1.0F,
-        01.5F, 01.5F, 0.5F, 1.0F, 0.0F, 0.0F, 0.0F,  1.0F,
-        01.5F, -0.5F, 0.5F, 1.0F, 0.0F, 0.0F, 0.0F,  1.0F
-    };
-
-    float texCoord[] = {
-        0.0F, 1.0F,
-        0.0F, 0.0F,
-        1.0F, 0.0F,
-        1.0F, 1.0F
-    };
-
-    GLuint indices[] = {
-        0, 1, 2,
-        0, 2, 3
-    };
-    // clang-format on
-
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)nullptr);
-    glVertexAttribPointer(
-        1, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(4 * sizeof(float)));  // NOLINT
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(texCoord), texCoord, GL_STATIC_DRAW);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)nullptr);
-
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
+Ghost::Ghost(const std::string& name) : name(name), box(GridBox({2, 2})) {
+    constexpr std::array<std::array<float, 2>, 4> texCoord= {{{0.0F, 0.0F}, {1.0F, 0.0F}, {1.0F, 1.0F}, {0.0F, 1.0F}}};
+    box.setTexCoord(texCoord);
 
     position = initialPosition.at(name);
     currentDirection = (name == "blinky") ? DIRECTION::right : DIRECTION::up;
@@ -91,30 +52,13 @@ void Ghost::draw(std::string shader) {
     ghostTimer.start();
     recalculatePosition();
 
-    ResourceManager::GetShader(shader).Use();
-    glBindVertexArray(vao);
-    glm::mat4 model = glm::mat4(1.0F);
-    model = glm::translate(model, glm::vec3(0.0F, 3.0F, 0.0F));
-    glm::mat4 view(1.0F);
-    glm::mat4 projection = glm::ortho(0.0F, 28.0F, 36.0F, 0.0F, -1.0F, 1.0F);
-    ResourceManager::GetShader(shader).SetMatrix4("view", view, true);
-    ResourceManager::GetShader(shader).SetMatrix4("projection", projection, true);
-
-    // This separation of temp_model from model was done so all ghosts could be
-    // rendered in same call. This is not required as each ghost has its own
-    // object.
-    glm::mat4 temp_model = glm::mat4(1.0F);
-    temp_model = glm::translate(model, glm::vec3(position.first, position.second, 0.0F));
-
-    ResourceManager::GetShader(shader).SetMatrix4("model", temp_model, true);
-
     if (currentMode != GhostMode::dead) {
         std::string textureToUse = (currentMode == GhostMode::frightened) ? "frightened" : name;
         auto texture = ResourceManager::GetTexture(textureToUse);
         texture.Bind(0);
         ResourceManager::GetShader(shader).SetInteger("texture1", 0, true);
         ResourceManager::GetShader(shader).SetFloat("textureColorMix", 0.0F);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)nullptr);
+        box.draw({position.first, position.second, 0.5F}, shader);
     }
     if (currentMode != GhostMode::frightened) {
         drawEyes(shader);
@@ -142,7 +86,7 @@ void Ghost::drawEyes(const std::string& shader) const {
     texture.Bind(0);
     ResourceManager::GetShader(shader).SetInteger("texture1", 0, true);
     ResourceManager::GetShader(shader).SetFloat("textureColorMix", 0.0F);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)nullptr);
+    box.draw({position.first, position.second, 0.5F}, shader);
 }
 
 void Ghost::recalculatePosition() {

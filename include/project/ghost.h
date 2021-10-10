@@ -2,6 +2,7 @@
 
 #include <project/common.h>
 #include <project/sprite.h>
+#include <project/gridBox.hpp>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <map>
 #include <project/timer.hpp>
@@ -17,7 +18,7 @@ enum struct GhostMode
 };
 
 class Ghost : public Sprite {
-    GLuint vao{}, vbo[2]{}, ebo{};
+    const GridBox box;
     std::string name;
     std::pair<float, float> targetTile;
     static const std::map<std::string, std::pair<float, float>> positionInPen;
@@ -49,7 +50,6 @@ class Ghost : public Sprite {
     Ghost(const Ghost&) = delete;   // Copy might cause problems
     Ghost(Ghost&&) = default;
     Ghost& operator=(const Ghost&) = delete;
-    Ghost& operator=(Ghost&&) = default;
     void draw(std::string shader) override;
     void drawEyes(const std::string& shader) const;
     [[nodiscard]] GhostMode getMode() const;
