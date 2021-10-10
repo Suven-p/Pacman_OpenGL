@@ -87,7 +87,19 @@ void TextRenderer::Load(const std::string& font, unsigned int fontSize) {
     FT_Done_FreeType(ft);
 }
 
-void TextRenderer::RenderText(const std::string& text,
+std::pair<float, float> TextRenderer::calculateDimension(const std::string& text, float scale) {
+    float X = 0, Y = 0;
+    for(auto c: text) {
+        auto ch = Characters[c];
+        X += (ch.Advance >> 6) * scale;
+        // (offset to start of character + size of character) * scale
+        float ch_Y = ((Characters['H'].Bearing.y - ch.Bearing.y) + ch.Size.y) * scale;
+        Y = std::max(Y, ch_Y);
+    }
+    return {X, Y};
+}
+
+std::pair<float, float> TextRenderer::RenderText(const std::string& text,
                               float x,
                               float y,
                               float scale,
@@ -98,6 +110,10 @@ void TextRenderer::RenderText(const std::string& text,
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(VAO);
 
+    float initialX = x;
+    float finalX = 0.0F;
+    float initialY = y;
+    float finalY = y;
     // Iterate through all characters
     std::string::const_iterator char_it;
     for (char_it = text.begin(); char_it != text.end(); char_it++) {
@@ -108,6 +124,8 @@ void TextRenderer::RenderText(const std::string& text,
 
         float w = ch.Size.x * scale;
         float h = ch.Size.y * scale;
+        // Different characters have different finalY so take maximum
+        finalY = std::max(finalY, ypos +h);
         // Update VBO for each character
         float vertices[6][4] = {{xpos, ypos + h, 0.0F, 1.0F},
                                 {xpos + w, ypos, 1.0F, 0.0F},
@@ -133,4 +151,7 @@ void TextRenderer::RenderText(const std::string& text,
     }
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
+
+    finalX = x;
+    return {finalX - initialX, finalY - initialY};
 }

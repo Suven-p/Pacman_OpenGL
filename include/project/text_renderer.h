@@ -1,5 +1,4 @@
-#ifndef TEXT_RENDERER_H
-#define TEXT_RENDERER_H
+#pragma once
 
 #include <glad/glad.h>
 #include <project/common.h>
@@ -12,7 +11,7 @@ struct Character {
     unsigned int TextureID;
     glm::ivec2 Size;
     glm::ivec2 Bearing;
-    unsigned int Advance;
+    long Advance;
 };
 
 class TextRenderer {
@@ -26,11 +25,10 @@ class TextRenderer {
     Shader TextShader;
 
     void Load(const std::string& font, unsigned int fontSize);
-    void RenderText(const std::string& text,
+    std::pair<float, float> calculateDimension(const std::string& text, float scale);
+    std::pair<float, float> RenderText(const std::string& text,
                     float x,
                     float y,
                     float scale,
                     glm::vec3 color = glm::vec3(1.0F));
 };
-
-#endif

@@ -53,6 +53,10 @@ struct windowData {
     int height{};
     int width{};
     int refreshInterval{60};
+    bool isResizable;
+    bool initialVisible;
+    bool initialFocus;
+    bool isDecorated;
 };
 
 #endif

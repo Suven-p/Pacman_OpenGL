@@ -17,7 +17,6 @@ class WindowManager {
     WindowManager();
     int width, height;
     static WindowManager* instance;
-    static void windowResizeCallback(GLFWwindow* window, int width, int height);
 
    public:
     /**

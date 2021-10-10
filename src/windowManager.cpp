@@ -9,7 +9,7 @@
 
 WindowManager::WindowManager() = default;
 WindowManager* WindowManager::instance = nullptr;
-void windowResizeCallback(GLFWwindow* window, int width, int height);
+void framebufferResizeCallback(GLFWwindow* window, int width, int height);
 void inputCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 // clang-format off
@@ -43,10 +43,13 @@ void WindowManager::createNewWindow(const std::string& windowName, const windowD
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+    glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+    // glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
+    width = data.width;
+    height = data.height;
     window = glfwCreateWindow(data.width, data.height, windowName.c_str(), nullptr, nullptr);
     if (!window) {
         glfwTerminate();
@@ -54,9 +57,13 @@ void WindowManager::createNewWindow(const std::string& windowName, const windowD
         return;
     }
     glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, windowResizeCallback);
+    glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
     glfwSetKeyCallback(window, inputCallback);
     glfwSwapInterval(1);
+    constexpr auto errorCallback = [](int code, const char* description) {
+        spdlog::error("Received error {}(Code {}) from glfw", description, code);
+    };
+    glfwSetErrorCallback(errorCallback);
 
     GLFWimage icons[1];
     int nrChannels;
@@ -72,17 +79,18 @@ void WindowManager::createNewWindow(const std::string& windowName, const windowD
         glfwSetWindowIcon(window, 1, icons);
         stbi_image_free(icons[0].pixels);
     }
+
+    // glfwSetWindowSize(window, 800, 800);
+    glfwSetWindowAspectRatio(window, 28, 36);
 }
 
 std::pair<double, double> WindowManager::getWindowSize() {
-    int w, h;
-    glfwGetWindowSize(window, &w, &h);
-    width = w;
-    height = h;
     return std::make_pair(width, height);
 }
 
 void WindowManager::setWindowSize(std::pair<double, double> newSize) {
+    width = newSize.first;
+    height = newSize.second;
     glfwSetWindowSize(window, newSize.first, newSize.second);
 }
 
@@ -96,7 +104,7 @@ void WindowManager::run() {
     glfwTerminate();
 }
 
-void WindowManager::windowResizeCallback(GLFWwindow* window, int w, int h) {
+void framebufferResizeCallback(GLFWwindow* window, int w, int h) {
     glViewport(0, 0, w, h);
 }
 
