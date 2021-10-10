@@ -106,5 +106,6 @@
     ],
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "clang-tidy.buildPath": "build",
-    "clang-tidy.lintOnSave": false
+    "clang-tidy.lintOnSave": false,
+    "C_Cpp.intelliSenseEngineFallback": "Enabled",
 }
