@@ -71,7 +71,7 @@ Game::Game() {
         getState().setGameOver(false);
         ResourceManager::resetSprites();
     };
-    auto exitFunc = []() { WindowManager::getInstance()->exit(); };
+    auto exitFunc = []() { ResourceManager::getMainWindow()->exit(); };
     const std::map<std::string, std::function<void(void)>> options = {
         {"Continue", continueFunc}, {"Restart", restartFunc}, {"Exit", exitFunc}};
 

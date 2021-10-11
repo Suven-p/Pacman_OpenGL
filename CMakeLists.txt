@@ -33,7 +33,7 @@ set(${PROJECT_NAME}_SOURCES
     ${CMAKE_SOURCE_DIR}/src/sprite.cpp
     ${CMAKE_SOURCE_DIR}/src/texture.cpp
     ${CMAKE_SOURCE_DIR}/src/timer.cpp
-    ${CMAKE_SOURCE_DIR}/src/windowManager.cpp
+    ${CMAKE_SOURCE_DIR}/src/MainWindow.cpp
     ${CMAKE_SOURCE_DIR}/src/text_renderer.cpp
     ${CMAKE_SOURCE_DIR}/src/gridBox.cpp
 )

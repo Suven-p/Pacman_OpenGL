@@ -3,7 +3,6 @@
 #include <project/map.h>
 #include <project/pellet.h>
 #include <project/resourceManager.h>
-#include <project/windowManager.h>
 #include <utility>
 
 Map::Map() : gridSize({28, 36}), box({28, 31}), tileBox({2, 2}), gridVAO(0), gridVBO(0), text({0, 0}) {
@@ -12,7 +11,7 @@ Map::Map() : gridSize({28, 36}), box({28, 31}), tileBox({2, 2}), gridVAO(0), gri
     constexpr std::array<std::array<float, 2>, 4> texCoordTile= {{{1.0F, 0.0F}, {0.0F, 0.0F}, {0.0F, 1.0F}, {1.0F, 1.0F}}};
     tileBox.setTexCoord(texCoord);
 
-    auto windowSize = WindowManager::getInstance()->getWindowSize();
+    auto windowSize = ResourceManager::getMainWindow()->getWindowSize();
     text = std::move(TextRenderer(windowSize.first, windowSize.second));
     text.Load(ResourceManager::resolvePath("resources/fonts/ARIAL.TTF"), 24);
 

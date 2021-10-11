@@ -1,5 +1,4 @@
-#ifndef WINDOW_MANAGER_HPP_GUARD
-#define WINDOW_MANAGER_HPP_GUARD
+#pragma once
 
 #include <project/common.h>
 #include <project/helpers.h>
@@ -9,28 +8,19 @@
 /**
  * @brief Abstraction for window management.
  * Allow swapping of window manager by swapping this class with equivalent class
- * for other library such as glfw.
+ * for other library.
  */
-class WindowManager {
+class MainWindow {
    private:
     GLFWwindow* window;
-    WindowManager();
     int width, height;
-    static WindowManager* instance;
 
    public:
-    /**
-     * @brief Get the current instance if it exists and create one if it doesn't.
-     * Enforce singleton pattern.
-     * @return WindowManager*
-     */
-    static WindowManager* getInstance();
+    MainWindow();
     GLFWwindow* getWindow();
-    void createNewWindow(const std::string& windowName, const windowData& data);
+    void createWindow(const std::string& windowName, const windowData& data);
     std::pair<double, double> getWindowSize();
     void setWindowSize(std::pair<double, double> newSize);
     void run();
     void exit();
 };
-
-#endif

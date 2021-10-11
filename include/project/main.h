@@ -3,6 +3,5 @@
 
 #include <project/common.h>
 #include <project/game.h>
-#include <project/windowManager.h>
 
 #endif

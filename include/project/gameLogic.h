@@ -6,7 +6,6 @@
 #include <project/sprite.h>
 #include <project/timer.hpp>
 #include <project/text_renderer.h>
-#include <project/windowManager.h>
 #include <memory>
 #include <project/gameState.hpp>
 #include <vector>

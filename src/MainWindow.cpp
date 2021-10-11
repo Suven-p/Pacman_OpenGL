@@ -1,14 +1,13 @@
 #include <project/common.h>
 #include <project/game.h>
 #include <project/resourceManager.h>
-#include <project/windowManager.h>
+#include <project/MainWindow.hpp>
 #include <spdlog/spdlog.h>
 
 #include <stb_image/stb_image.h>
 #include "GLFW/glfw3.h"
 
-WindowManager::WindowManager() = default;
-WindowManager* WindowManager::instance = nullptr;
+MainWindow::MainWindow() = default;
 void framebufferResizeCallback(GLFWwindow* window, int width, int height);
 void inputCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
@@ -27,14 +26,7 @@ std::unordered_map<int, int> key_map = {
 };
 // clang-format on
 
-WindowManager* WindowManager::getInstance() {
-    if (!instance) {
-        instance = new WindowManager();
-    }
-    return instance;
-}
-
-void WindowManager::createNewWindow(const std::string& windowName, const windowData& data) {
+void MainWindow::createWindow(const std::string& windowName, const windowData& data) {
     if (!glfwInit()) {
         spdlog::error("Could not initialize glfw library!");
         return;
@@ -84,17 +76,17 @@ void WindowManager::createNewWindow(const std::string& windowName, const windowD
     glfwSetWindowAspectRatio(window, 28, 36);
 }
 
-std::pair<double, double> WindowManager::getWindowSize() {
+std::pair<double, double> MainWindow::getWindowSize() {
     return std::make_pair(width, height);
 }
 
-void WindowManager::setWindowSize(std::pair<double, double> newSize) {
+void MainWindow::setWindowSize(std::pair<double, double> newSize) {
     width = newSize.first;
     height = newSize.second;
     glfwSetWindowSize(window, newSize.first, newSize.second);
 }
 
-void WindowManager::run() {
+void MainWindow::run() {
     while (glfwWindowShouldClose(window) == 0) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         Game::render();
@@ -119,10 +111,10 @@ void inputCallback(GLFWwindow* window, int key, int scancode, int action, int mo
     }
 }
 
-GLFWwindow* WindowManager::getWindow() {
+GLFWwindow* MainWindow::getWindow() {
     return window;
 }
 
-void WindowManager::exit() {
+void MainWindow::exit() {
     glfwSetWindowShouldClose(window, 1);
 }

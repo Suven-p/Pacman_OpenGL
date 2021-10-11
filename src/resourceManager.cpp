@@ -1,3 +1,4 @@
+#include <project/MainWindow.hpp>
 #include <project/resourceManager.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
@@ -14,6 +15,14 @@
 std::map<std::string, Texture2D> ResourceManager::Textures;
 std::map<std::string, Shader> ResourceManager::Shaders;
 std::map<std::string, std::shared_ptr<Sprite>> ResourceManager::Sprites;
+std::shared_ptr<MainWindow> ResourceManager::mainWindow;
+
+std::shared_ptr<MainWindow> ResourceManager::getMainWindow() {
+    if (!mainWindow) {
+        mainWindow = std::make_shared<MainWindow>();
+    }
+    return mainWindow;
+}
 
 Shader ResourceManager::LoadShader(const char* vShaderFile,
                                    const char* fShaderFile,

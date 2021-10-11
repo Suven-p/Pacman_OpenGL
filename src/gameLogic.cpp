@@ -9,7 +9,6 @@
 #include <spdlog/spdlog.h>
 #include <string>
 #include <vector>
-#include "project/windowManager.h"
 
 GameLogic::GameLogic(GameState& gameState) : gameState(gameState), text(0, 0) {
     blinkyPtr = ResourceManager::GetSprite<Ghost>("blinky");
@@ -21,7 +20,7 @@ GameLogic::GameLogic(GameState& gameState) : gameState(gameState), text(0, 0) {
     chaseCount = 1;
     scoreMultiplier = 1;
     currentMode = GhostMode::scatter;
-    auto windowSize = WindowManager::getInstance()->getWindowSize();
+    auto windowSize = ResourceManager::getMainWindow()->getWindowSize();
     text = std::move(TextRenderer(windowSize.first, windowSize.second));
     text.Load(ResourceManager::resolvePath("resources/fonts/ARIAL.TTF"), 24);
 }

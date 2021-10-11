@@ -1,6 +1,7 @@
 #include <project/main.h>
 #include <spdlog/spdlog.h>
 #include <project/gameState.hpp>
+#include <project/resourceManager.h>
 #ifdef SPDLOG_HEADER_ONLY
 #warning USING HEADER ONLY SPDLOG LIBRARY
 #endif
@@ -22,8 +23,8 @@ int main(int argc, char** argv) {
     windowData.width = 448;
     windowData.height = 576;
     windowData.refreshInterval = 1000.0F / 60.0F;
-    auto* windowManagerPtr = WindowManager::getInstance();
-    windowManagerPtr->createNewWindow(PROJECT_NAME, windowData);
+    auto windowManagerPtr = ResourceManager::getMainWindow();
+    windowManagerPtr->createWindow(PROJECT_NAME, windowData);
 
     if (gladLoadGL() == 0) {
         spdlog::error("Failed to initialize GLAD");
@@ -36,7 +37,7 @@ int main(int argc, char** argv) {
 
     // glEnable(GL_DEBUG_OUTPUT);
     // glDebugMessageCallback(MessageCallback, nullptr);
-    
+
     // Blending should be enabled for transparency/alpha channel to work,
     // Depth test might not be required. If depth test is enabled, z-values
     // for ghosts must be modified according to name. With depth test disabled,

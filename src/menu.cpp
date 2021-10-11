@@ -8,7 +8,6 @@
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/fwd.hpp"
 #include "project/helpers.h"
-#include "project/windowManager.h"
 
 BorderedMenu::BorderedMenu(std::string title,
                            std::vector<std::string> names,
@@ -116,7 +115,7 @@ void BorderedMenu::draw(std::string shader) {
 }
 
 void BorderedMenu::show_options() {
-    auto sz = WindowManager::getInstance()->getWindowSize();
+    auto sz = ResourceManager::getMainWindow()->getWindowSize();
     static auto text = TextRenderer(sz.first, sz.second);
     static bool initText = false;
     if (!initText) {
@@ -223,7 +222,7 @@ void MainMenu::draw(std::string shaderName) {
     shader.SetFloat("textureColorMix", 1.0F);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)nullptr);
 
-    auto sz = WindowManager::getInstance()->getWindowSize();
+    auto sz = ResourceManager::getMainWindow()->getWindowSize();
     static auto text = TextRenderer(sz.first, sz.second);
     static bool initText = false;
     if (!initText) {
@@ -238,7 +237,7 @@ void MainMenu::draw(std::string shaderName) {
 
 
 void ReadyScreen::draw(std::string shaderName) {
-    auto sz = WindowManager::getInstance()->getWindowSize();
+    auto sz = ResourceManager::getMainWindow()->getWindowSize();
     static auto text = TextRenderer(sz.first, sz.second);
     static bool initText = false;
     if (!initText) {

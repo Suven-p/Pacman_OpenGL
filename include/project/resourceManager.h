@@ -12,6 +12,7 @@
 #include <project/texture.h>
 #include <spdlog/spdlog.h>
 #include <project/gameState.hpp>
+#include <project/MainWindow.hpp>
 
 /**
  * @brief Manage all game resources.
@@ -24,6 +25,9 @@ class ResourceManager {
     static std::map<std::string, Shader> Shaders;
     static std::map<std::string, Texture2D> Textures;
     static std::map<std::string, std::shared_ptr<Sprite>> Sprites;
+    static std::shared_ptr<MainWindow> mainWindow;
+
+    static std::shared_ptr<MainWindow> getMainWindow();
 
     /**
      * @brief Compile and link shaders.
