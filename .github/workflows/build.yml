@@ -44,8 +44,10 @@ jobs:
     steps:
       - name: Checkout Project
         uses: actions/checkout@v2
+      - name: Update apt
+        run: sudo apt-get update
       - name: Install freeglut package
-        run: sudo apt install freeglut3-dev xorg-dev
+        run: sudo apt-get install freeglut3-dev xorg-dev
       - name: Configure CMake
         run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
       - name: Build
