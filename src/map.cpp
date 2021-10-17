@@ -3,7 +3,12 @@
 #include <project/map.h>
 #include <project/pellet.h>
 #include <project/resourceManager.h>
+#include <project/Events.hpp>
 #include <utility>
+
+Events::RenderEventSlot on_render = [](std::string name){};
+// ResourceManager::events.render_event::slottype on_render;
+// auto on_render = std::bind(static_cast<void (Map::*)(std::string)>(&Map::draw), this, std::placeholders::_1);
 
 Map::Map() : gridSize({28, 36}), box({28, 31}), tileBox({2, 2}), gridVAO(0), gridVBO(0), text({0, 0}) {
     constexpr std::array<std::array<float, 2>, 4> texCoord= {{{0.0F, 0.0F}, {1.0F, 0.0F}, {1.0F, 1.0F}, {0.0F, 1.0F}}};
@@ -18,6 +23,8 @@ Map::Map() : gridSize({28, 36}), box({28, 31}), tileBox({2, 2}), gridVAO(0), gri
     initializeGrid();
 
     glBindVertexArray(0);
+
+    // ResourceManager::events.render_event.connect([&](std::string shaderName){this->draw(shaderName);});
 }
 
 void Map::draw(std::string shaderName) {
@@ -33,13 +40,6 @@ void Map::draw(std::string shaderName) {
     displayScore();
     displayLives(shaderName);
     displayLevel(shaderName);
-}
-
-void Map::draw(const std::string& shaderName, bool drawGrid) {
-    draw(shaderName);
-    if (drawGrid) {
-        drawGridLines(shaderName);
-    }
 }
 
 void Map::drawGridLines(const std::string& shaderName) const {

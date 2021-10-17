@@ -104,7 +104,7 @@ void Game::render() {
     // Objects drawn later appear above objects drawn
     // before.
     auto baseMapPtr = ResourceManager::GetSprite<Map>("baseMap");
-    baseMapPtr->draw("mainShader");
+    // baseMapPtr->draw("mainShader");
     // baseMapPtr->drawGridLines("mainShader");
     ResourceManager::GetSprite("gameLogic")->draw("mainShader");
     ResourceManager::GetSprite("pellet")->draw("mainShader");

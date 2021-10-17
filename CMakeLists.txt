@@ -18,6 +18,7 @@ file(
 )
 
 set(${PROJECT_NAME}_SOURCES
+    ${CMAKE_SOURCE_DIR}/src/Events.cpp
     ${CMAKE_SOURCE_DIR}/src/game.cpp
     ${CMAKE_SOURCE_DIR}/src/gameLogic.cpp
     ${CMAKE_SOURCE_DIR}/src/gameState.cpp
@@ -79,6 +80,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     ${CMAKE_SOURCE_DIR}/include
     ${OPENGL_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}/external/include
+    ${CMAKE_SOURCE_DIR}/external/signals2
 )
 target_link_libraries(${PROJECT_NAME} PUBLIC
     ${EXTRA_LIBS}

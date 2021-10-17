@@ -13,19 +13,21 @@
 
 using namespace std;
 
-const std::map<std::string, std::pair<float, float>> Ghost::positionInPen = {{"blinky", {13, 14}},
-                                                                             {"inky", {12, 14}},
-                                                                             {"pinky", {13, 14}},
-                                                                             {"clyde", {15, 14}}};
+const std::map<std::string, std::pair<float, float>> Ghost::positionInPen = {
+    {"blinky", {13, 14}},
+    {"inky", {12, 14}},
+    {"pinky", {13, 14}},
+    {"clyde", {15, 14}}};
 const std::map<std::string, std::pair<float, float>> Ghost::initialPosition = {
     {"blinky", {13.5, 11}},
     {"inky", {11.5, 14}},
     {"pinky", {13.5, 14}},
     {"clyde", {15.5, 14}}};
-const std::map<std::string, int> Ghost::timeToLeave = {{"blinky", 0},
-                                                       {"pinky", 2000},
-                                                       {"inky", 7000},
-                                                       {"clyde", 12000}};
+const std::map<std::string, int> Ghost::timeToLeave = {
+    {"blinky", 0},
+    {"pinky", 2000},
+    {"inky", 7000},
+    {"clyde", 12000}};
 
 std::random_device rd;   // Will be used to obtain a seed for the random number engine
 std::mt19937 gen(rd());  // Standard mersenne_twister_engine seeded with rd()
@@ -46,6 +48,8 @@ Ghost::Ghost(const std::string& name) : name(name), box(GridBox({2, 2})) {
     logger->set_level(spdlog::level::debug);
 
     outOfPen = false;
+
+    ResourceManager::events.render_event.connect(std::bind(Ghost::draw, this, std::placeholders::_1));
 }
 
 void Ghost::draw(std::string shader) {

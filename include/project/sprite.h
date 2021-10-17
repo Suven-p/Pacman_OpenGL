@@ -22,7 +22,5 @@ class Sprite {
     Sprite();
     void setPosition(std::pair<float, float> newPosition);
     std::pair<float, float> getPosition() const;
-    virtual void draw(std::string shader) = 0;
     virtual ~Sprite();
-    virtual void reset();
 };

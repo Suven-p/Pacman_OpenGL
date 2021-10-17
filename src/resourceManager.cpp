@@ -16,6 +16,7 @@ std::map<std::string, Texture2D> ResourceManager::Textures;
 std::map<std::string, Shader> ResourceManager::Shaders;
 std::map<std::string, std::shared_ptr<Sprite>> ResourceManager::Sprites;
 std::shared_ptr<MainWindow> ResourceManager::mainWindow;
+Events ResourceManager::events;
 
 std::shared_ptr<MainWindow> ResourceManager::getMainWindow() {
     if (!mainWindow) {

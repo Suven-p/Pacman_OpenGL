@@ -87,9 +87,12 @@ void MainWindow::setWindowSize(std::pair<double, double> newSize) {
 }
 
 void MainWindow::run() {
+    // ResourceManager::events.render_event.connect([&](std::string name){ResourceManager::GetSprite("pacman")->draw("mainShader");});
+    ResourceManager::events.render_event.connect(1, [&](std::string name){Game::render();});
     while (glfwWindowShouldClose(window) == 0) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        Game::render();
+        ResourceManager::events.render_event("mainShader");
+        // Game::render();
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
