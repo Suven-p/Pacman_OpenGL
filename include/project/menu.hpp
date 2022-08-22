@@ -4,6 +4,7 @@
 #include <project/sprite.h>
 #include <string>
 #include <vector>
+#include <map>
 #include "project/helpers.h"
 
 class BorderedMenu : public Sprite {
