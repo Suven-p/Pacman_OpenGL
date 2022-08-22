@@ -105,7 +105,6 @@ void BorderedMenu::draw(std::string shader) {
     model = glm::scale(model, glm::vec3(0.75F, 0.75F, 1.0F));
     ResourceManager::GetShader(shader).SetMatrix4("model", model, true);
     glDrawArrays(GL_LINE_LOOP, 0, 4);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)nullptr);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glLineWidth(1);
 
