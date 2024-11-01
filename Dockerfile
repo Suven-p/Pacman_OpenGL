@@ -28,5 +28,6 @@ WORKDIR /usr/src/app/pacman
 # Generate CMake build files
 RUN cmake -B build -S . -G "Unix Makefiles"
 
+RUN cmake --build build
 # Build the project
-CMD ["cmake --build build"]
+CMD ["./bin/pacman"]
